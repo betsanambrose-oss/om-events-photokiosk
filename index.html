@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>OM Events — AI Photo Kiosk</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/kiosk.css" />
+</head>
+<body>
+
+<!-- Background Effects -->
+<div class="bg-grain"></div>
+<div class="bg-glow top-left"></div>
+<div class="bg-glow bottom-right"></div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — HOME
+══════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+
+  <div class="header" style="text-align:center; margin-bottom:40px;">
+    <div class="om-logo">OM Events</div>
+    <div class="gold-line wide"></div>
+    <h1 class="headline">
+      Step Into<br><span>Your Story</span>
+    </h1>
+    <p class="subline">Choose your world — we'll place you in it</p>
+  </div>
+
+  <div id="category-grid" class="category-grid">
+    <!-- Rendered by app.js -->
+  </div>
+
+  <!-- Status indicator -->
+  <div style="position:absolute; bottom:20px; right:24px;">
+    <span id="online-indicator" style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#4CAF50;">● Online</span>
+  </div>
+
+  <!-- Admin access (hidden tap area) -->
+  <div id="admin-tap"
+    onclick="App.adminTaps = (App.adminTaps||0)+1; if(App.adminTaps>=5){ App.adminTaps=0; window.location.href='/admin'; }"
+    style="position:absolute; bottom:0; left:0; width:60px; height:60px; opacity:0; cursor:default;">
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — SCENE SELECT
+══════════════════════════════════════ -->
+<div id="screen-scenes" class="screen">
+
+  <button class="back-btn" id="back-to-home">
+    <svg viewBox="0 0 24 24" stroke-width="1.5"><polyline points="15,18 9,12 15,6"/></svg>
+    Back
+  </button>
+
+  <div class="scenes-header">
+    <div class="om-logo">OM Events</div>
+    <div class="gold-line"></div>
+    <h2 class="scenes-title" id="scenes-category-name">Choose Your Scene</h2>
+    <p style="font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-top:8px;">
+      Tap a scene to continue
+    </p>
+  </div>
+
+  <div id="scene-grid" class="scene-grid">
+    <!-- Rendered by app.js -->
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — CAMERA
+══════════════════════════════════════ -->
+<div id="screen-camera" class="screen">
+
+  <!-- Camera feed (left) -->
+  <div class="camera-left">
+    <video id="camera-feed" autoplay playsinline muted></video>
+
+    <!-- Top bar -->
+    <div class="camera-overlay-top">
+      <button class="back-btn" id="back-to-scenes" style="position:relative; top:auto; left:auto;">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <div style="margin-left:auto;">
+        <div class="om-logo" style="font-size:11px;">OM Events</div>
+      </div>
+    </div>
+
+    <!-- Face guide -->
+    <div class="face-guide">
+      <div class="face-guide-corners"></div>
+      <div class="face-guide-hint">Position your face here</div>
+    </div>
+
+    <!-- Countdown overlay -->
+    <div id="countdown-overlay" class="countdown-overlay">
+      <div id="countdown-number" class="countdown-number">3</div>
+    </div>
+  </div>
+
+  <!-- Right sidebar -->
+  <div class="camera-right">
+
+    <div class="om-logo" style="font-size:11px; margin-bottom:4px;">Your Scene</div>
+    <div class="gold-line"></div>
+
+    <!-- Selected scene preview -->
+    <div class="selected-scene-preview">
+      <div id="selected-scene-bg" class="preview-img" style="width:100%;height:100%;"></div>
+      <div class="preview-label" id="selected-scene-name">Scene Name</div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="camera-instruction">
+      <p>Stand still<br>Face the camera<br>Look at the lens</p>
+    </div>
+
+    <!-- Capture button -->
+    <button id="capture-btn" class="capture-btn" onclick="App.startCapture()">
+      <div class="capture-btn-pulse"></div>
+      <div class="capture-btn-inner"></div>
+    </button>
+
+    <p style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3);">
+      Tap to capture
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 — PROCESSING
+══════════════════════════════════════ -->
+<div id="screen-processing" class="screen">
+
+  <div class="processing-content">
+
+    <div class="processing-logo">
+      OM <span>Events</span>
+    </div>
+
+    <div class="gold-line wide"></div>
+
+    <div class="gold-spinner">
+      <div class="gold-spinner-inner"></div>
+    </div>
+
+    <div>
+      <p id="processing-message" class="processing-message">Creating your moment...</p>
+      <div style="display:flex; justify-content:center; margin-top:12px;">
+        <div class="processing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <p class="processing-tagline">Crafting your perfect scene</p>
+
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 5 — RESULT
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+
+  <!-- Generated image (left) -->
+  <div class="result-left">
+    <img id="result-image" src="" alt="Your generated photo" />
+    <div class="result-shine"></div>
+  </div>
+
+  <!-- QR + Info (right) -->
+  <div class="result-right">
+
+    <div class="result-heading">
+      <div class="om-logo">OM Events</div>
+      <div class="gold-line"></div>
+      <h2>Your Photo<br>is Ready</h2>
+      <p>Scan to download</p>
+    </div>
+
+    <!-- QR Section -->
+    <div id="qr-section">
+      <div class="qr-container">
+        <canvas id="qr-canvas" width="180" height="180"></canvas>
+        <div class="qr-corner tl"></div>
+        <div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div>
+        <div class="qr-corner br"></div>
+      </div>
+
+      <p class="qr-hint">Scan with your phone camera</p>
+
+      <!-- Timer bar -->
+      <div class="timer-bar-wrap">
+        <div class="timer-label">
+          <span>Download window</span>
+          <span id="timer-count">30</span>
+        </div>
+        <div class="timer-bar">
+          <div id="timer-fill" class="timer-bar-fill" style="width:100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OM Branding -->
+    <div class="result-branding">
+      <div class="gold-line"></div>
+      <div class="om-logo" style="font-size:10px;">Powered by OM Events</div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 6 — THANK YOU
+══════════════════════════════════════ -->
+<div id="screen-thankyou" class="screen">
+
+  <div class="thankyou-content">
+    <div class="thankyou-icon">✨</div>
+    <div class="om-logo" style="font-size:13px; margin-bottom:16px;">OM Events</div>
+    <div class="gold-line wide"></div>
+    <h1 class="thankyou-title">Thank<br><span>You</span></h1>
+    <p class="thankyou-sub">Enjoy your magical moment</p>
+    <p class="thankyou-countdown" id="thankyou-countdown">Returning in 5 seconds...</p>
+  </div>
+
+</div>
+
+
+<!-- ── Scripts ── -->
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- App scripts -->
+<script src="templates/templates.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/api.js"></script>
+<script src="js/qr.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      // Check for updates on each load
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    }).catch(err => console.log('SW registration failed:', err));
+  }
+</script>
+
+</body>
+</html>
