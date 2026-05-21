@@ -93,11 +93,17 @@ const App = {
 
     const videoEl = document.getElementById('camera-feed');
     const started = await Camera.init(videoEl);
-    if (started) {
-      this.setCameraStatus('');
-    } else {
-      this.setCameraStatus('Could not access camera.\nPlease allow camera permission and reload.');
-    }
+
+    // Double check — if video is actually playing, camera is working
+    setTimeout(() => {
+      if (videoEl.readyState >= 2 || videoEl.srcObject) {
+        this.setCameraStatus(''); // camera is working, clear error
+      } else if (!started) {
+        this.setCameraStatus('Could not access camera.\nPlease allow camera permission and reload.');
+      } else {
+        this.setCameraStatus('');
+      }
+    }, 1500);
   },
 
   setCameraStatus(msg) {
