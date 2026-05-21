@@ -82,7 +82,26 @@
 
   <!-- Camera feed (left) -->
   <div class="camera-left">
-    <video id="camera-feed" autoplay playsinline muted></video>
+    <video id="camera-feed" autoplay playsinline muted webkit-playsinline></video>
+
+    <!-- Camera error status -->
+    <div id="camera-status" style="
+      display:none;
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.85);
+      color:#C9A84C;
+      font-size:14px;
+      letter-spacing:1px;
+      line-height:2;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:40px;
+      white-space:pre-line;
+      z-index:30;
+      font-family:'Montserrat',sans-serif;
+    "></div>
 
     <!-- Top bar -->
     <div class="camera-overlay-top">
@@ -247,7 +266,7 @@
 
 <!-- ── Scripts ── -->
 <!-- QR Code library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
 <!-- App scripts -->
 <script src="templates/templates.js"></script>

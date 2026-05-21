@@ -1,47 +1,55 @@
-// js/qr.js — QR Code using qrcode npm library (jsdelivr CDN)
+// js/qr.js — Self-contained QR using qrcode-generator library
 
 const QRManager = {
   timerInterval: null,
 
   async generate(canvasEl, imageUrl) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       try {
-        if (typeof QRCode === 'undefined') {
-          console.error('QRCode library not loaded');
-          resolve(); // don't crash — just skip QR
+        // Use qrcode-generator which is always available via this CDN
+        if (typeof qrcode === 'undefined') {
+          console.warn('QR library not loaded, skipping QR');
+          resolve();
           return;
         }
 
-        // qrcode npm library uses QRCode.toCanvas(canvas, text, options, callback)
-        QRCode.toCanvas(canvasEl, imageUrl, {
-          width: 180,
-          margin: 1,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
+        const qr = qrcode(0, 'M');
+        qr.addData(imageUrl);
+        qr.make();
+
+        const size = 180;
+        const moduleCount = qr.getModuleCount();
+        const cellSize = Math.floor(size / moduleCount);
+        const margin = Math.floor((size - cellSize * moduleCount) / 2);
+
+        canvasEl.width = size;
+        canvasEl.height = size;
+        const ctx = canvasEl.getContext('2d');
+
+        // White background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, size, size);
+
+        // Draw modules
+        ctx.fillStyle = '#000000';
+        for (let row = 0; row < moduleCount; row++) {
+          for (let col = 0; col < moduleCount; col++) {
+            if (qr.isDark(row, col)) {
+              ctx.fillRect(
+                margin + col * cellSize,
+                margin + row * cellSize,
+                cellSize,
+                cellSize
+              );
+            }
           }
-        }, (err) => {
-          if (err) {
-            console.error('QR canvas error:', err);
-            // Fallback: try toDataURL instead
-            QRCode.toDataURL(imageUrl, { width: 180 }, (err2, url) => {
-              if (!err2 && url) {
-                const img = document.createElement('img');
-                img.src = url;
-                img.width = 180;
-                img.height = 180;
-                canvasEl.parentNode.insertBefore(img, canvasEl);
-                canvasEl.style.display = 'none';
-              }
-              resolve();
-            });
-          } else {
-            resolve();
-          }
-        });
+        }
+
+        console.log('QR generated successfully');
+        resolve();
       } catch (err) {
         console.error('QR error:', err);
-        resolve(); // don't block result screen
+        resolve(); // don't block the result screen
       }
     });
   },
