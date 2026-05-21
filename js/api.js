@@ -1,118 +1,134 @@
-// js/api.js — Queue polling via Cloudflare Worker
+// js/api.js — Full flow with face image upload + queue polling
 
 const WORKER_URL = 'https://om-events-proxy.betsanambrose.workers.dev';
 
 const API = {
 
   capturedFaceBase64: null,
+  faceImageUrl: null, // URL after upload
 
   setCapturedFace(dataUrl) {
     this.capturedFaceBase64 = dataUrl;
+    this.faceImageUrl = null; // reset on new capture
     console.log('Face captured, size:', dataUrl?.length);
   },
 
+  // ── Call Worker ──
   async callWorker(payload) {
-    console.log('→ Worker call:', payload.step);
+    console.log('→ Worker:', payload.step);
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    console.log('← Worker response:', payload.step, JSON.stringify(data).substring(0, 300));
+    const preview = JSON.stringify(data).substring(0, 200);
+    console.log('← Response:', payload.step, preview);
     if (data.error) throw new Error(`[${payload.step}] ${data.error}`);
     return data;
   },
 
-  // Poll status URL every 3 seconds until COMPLETED
+  // ── Upload face image to fal.ai storage ──
+  async uploadFaceImage(onProgress) {
+    if (this.faceImageUrl) return this.faceImageUrl; // reuse if already uploaded
+
+    onProgress?.('Uploading your photo...');
+    console.log('Uploading face image...');
+
+    // Strip data URL prefix to get pure base64
+    const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
+
+    const result = await this.callWorker({
+      step: 'upload',
+      base64,
+      mimeType: 'image/jpeg'
+    });
+
+    this.faceImageUrl = result.fileUrl;
+    console.log('Face uploaded:', this.faceImageUrl);
+    return this.faceImageUrl;
+  },
+
+  // ── Poll status URL until COMPLETED ──
   async pollStatus(statusUrl, responseUrl, onProgress, label) {
     let attempts = 0;
-    const maxAttempts = 40; // 40 × 3s = 2 min max
+    const maxAttempts = 40;
 
     while (attempts < maxAttempts) {
       await new Promise(r => setTimeout(r, 3000));
       attempts++;
 
-      const statusData = await this.callWorker({
-        step: 'status',
-        statusUrl
-      });
-
+      const statusData = await this.callWorker({ step: 'status', statusUrl });
       const status = statusData.status;
-      console.log(`Poll #${attempts} ${label}:`, status);
+      console.log(`Poll #${attempts} [${label}]:`, status);
 
       if (status === 'IN_QUEUE') {
-        onProgress?.(`${label} — In queue (${statusData.queuePosition ?? '?'})`);
+        const pos = statusData.queuePosition;
+        onProgress?.(`${label} — Queue position: ${pos ?? '...'}`);
       } else if (status === 'IN_PROGRESS') {
-        onProgress?.(`${label} — Processing...`);
+        onProgress?.(`${label} — Generating...`);
       } else if (status === 'COMPLETED') {
-        // Fetch actual result
-        const result = await this.callWorker({
-          step: 'getresult',
-          responseUrl
-        });
+        const result = await this.callWorker({ step: 'getresult', responseUrl });
         return result.data;
       } else {
-        throw new Error(`${label} failed with status: ${status}`);
+        throw new Error(`${label} failed: ${status}`);
       }
     }
-
-    throw new Error(`${label} timed out after ${maxAttempts} attempts`);
+    throw new Error(`${label} timed out`);
   },
 
   // ── Main generation flow ──
   async generatePhoto(prompt, negativePrompt, onProgress) {
     try {
-      // STEP 1 — Submit scene generation
-      onProgress?.('Submitting scene...');
-      const sceneSubmit = await this.callWorker({
+      // 1. Upload face image to get URL
+      const faceUrl = await this.uploadFaceImage(onProgress);
+
+      // 2. Submit scene generation
+      onProgress?.('Creating your scene...');
+      const sceneJob = await this.callWorker({
         step: 'generate',
         prompt,
         negativePrompt
       });
+      console.log('Scene job:', sceneJob.requestId);
 
-      console.log('Scene job ID:', sceneSubmit.requestId);
-
-      // STEP 2 — Poll until scene ready
-      onProgress?.('Generating scene...');
+      // 3. Poll scene until done
       const sceneResult = await this.pollStatus(
-        sceneSubmit.statusUrl,
-        sceneSubmit.responseUrl,
+        sceneJob.statusUrl,
+        sceneJob.responseUrl,
         onProgress,
-        'Generating scene'
+        'Creating scene'
       );
 
       const sceneUrl = sceneResult?.images?.[0]?.url;
-      if (!sceneUrl) throw new Error('No scene image in result: ' + JSON.stringify(sceneResult));
-      console.log('Scene URL:', sceneUrl);
+      if (!sceneUrl) throw new Error('No scene URL returned: ' + JSON.stringify(sceneResult));
+      console.log('Scene ready:', sceneUrl);
 
-      // STEP 3 — Submit face swap
-      onProgress?.('Submitting face placement...');
-      const faceSubmit = await this.callWorker({
+      // 4. Submit face swap (using URL not base64)
+      onProgress?.('Placing you in the scene...');
+      const faceJob = await this.callWorker({
         step: 'faceswap',
-        faceImageBase64: this.capturedFaceBase64,
+        faceImageUrl: faceUrl,
         sceneUrl
       });
+      console.log('Face swap job:', faceJob.requestId);
 
-      console.log('Face swap job ID:', faceSubmit.requestId);
-
-      // STEP 4 — Poll until face swap ready
-      onProgress?.('Placing you in the scene...');
+      // 5. Poll face swap until done
       const faceResult = await this.pollStatus(
-        faceSubmit.statusUrl,
-        faceSubmit.responseUrl,
+        faceJob.statusUrl,
+        faceJob.responseUrl,
         onProgress,
         'Placing you in scene'
       );
 
       const resultUrl = faceResult?.image?.url;
-      if (!resultUrl) throw new Error('No face result: ' + JSON.stringify(faceResult));
-      console.log('Final result:', resultUrl);
+      if (!resultUrl) throw new Error('No result URL: ' + JSON.stringify(faceResult));
+      console.log('Final image:', resultUrl);
 
       return { success: true, imageUrl: resultUrl };
 
     } catch (err) {
-      console.error('API failed:', err.message);
+      console.error('Generation failed:', err.message);
       return { success: false, error: err.message };
     }
   },
@@ -139,9 +155,9 @@ const API = {
         ctx.font = 'bold 22px Georgia';
         ctx.textAlign = 'center';
         ctx.fillText('OM EVENTS', canvas.width / 2, canvas.height - 60);
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
         ctx.font = '14px Georgia';
-        ctx.fillText('Offline Mode — No Internet', canvas.width / 2, canvas.height - 30);
+        ctx.fillText('Offline Mode', canvas.width / 2, canvas.height - 30);
         resolve({ success: true, imageUrl: canvas.toDataURL('image/jpeg', 0.9) });
       };
 
