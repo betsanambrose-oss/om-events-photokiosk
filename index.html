@@ -12,7 +12,15 @@
 </head>
 <body>
 
-<!-- Background Effects -->
+<!-- Force unregister old service workers to prevent stale cache -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(reg => reg.unregister());
+    });
+  }
+</script>
+
 <div class="bg-grain"></div>
 <div class="bg-glow top-left"></div>
 <div class="bg-glow bottom-right"></div>

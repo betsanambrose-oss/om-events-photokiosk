@@ -1,6 +1,6 @@
 // sw.js — Service Worker for offline caching and auto updates
 
-const CACHE_NAME = 'om-kiosk-v2';
+const CACHE_NAME = 'om-kiosk-v3';
 const CACHE_ASSETS = [
   '/om-events-photokiosk/',
   '/om-events-photokiosk/index.html',
