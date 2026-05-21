@@ -1,7 +1,7 @@
 // js/api.js — Calls Cloudflare Worker proxy (never calls fal.ai directly)
 
 // !! Replace this URL after deploying your Cloudflare Worker !!
-const WORKER_URL = 'https://om-events-proxy.YOUR-SUBDOMAIN.workers.dev';
+const WORKER_URL = 'https://om-events-proxy.betsanambrose.workers.dev';
 
 const API = {
 
