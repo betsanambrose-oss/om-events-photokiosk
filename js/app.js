@@ -286,7 +286,8 @@ const App = {
       this.resetAndGoHome();
     }, 3000);
   },
-    this.state.selectedCategory = null;
+
+  resetAndGoHome() {
     this.state.selectedScene = null;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
