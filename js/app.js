@@ -46,7 +46,17 @@ const App = {
   renderCategories() {
     const grid = document.getElementById('category-grid');
     if (!grid) return;
-    grid.innerHTML = TEMPLATES.categories.map(cat => `
+
+    const s = Settings.load();
+    let categories = TEMPLATES.categories;
+
+    // If admin set a specific category, show only that one
+    if (s.activeCategory) {
+      const cat = TEMPLATES.categories.find(c => c.id === s.activeCategory);
+      if (cat) categories = [cat];
+    }
+
+    grid.innerHTML = categories.map(cat => `
       <div class="category-card cat-${cat.id}" onclick="App.selectCategory('${cat.id}')">
         <div class="card-bg" style="background:${cat.gradient}"></div>
         <div class="card-overlay"></div>
@@ -54,7 +64,7 @@ const App = {
         <div class="card-content">
           <div class="card-icon">${cat.icon}</div>
           <div class="card-name">${cat.name}</div>
-          <div class="card-count">${cat.scenes.length} Scenes</div>
+          <div class="card-count">${Settings.getActiveScenes(cat.id).length} Scenes</div>
         </div>
       </div>
     `).join('');
@@ -68,8 +78,12 @@ const App = {
     const grid = document.getElementById('scene-grid');
     const title = document.getElementById('scenes-category-name');
     if (title) title.innerHTML = `<span>${cat.name}</span> Scenes`;
+
+    // Only show admin-enabled scenes
+    const activeScenes = Settings.getActiveScenes(categoryId);
+
     if (grid) {
-      grid.innerHTML = cat.scenes.map(scene => `
+      grid.innerHTML = activeScenes.map(scene => `
         <div class="scene-card" onclick="App.selectScene('${scene.id}')">
           <div class="scene-preview" style="background:${scene.gradient}"></div>
           <div class="scene-overlay"></div>
@@ -171,6 +185,7 @@ const App = {
       if (messageEl) messageEl.textContent = msg;
       console.log('Status:', msg);
     };
+    this.updateMessage = updateMessage;
 
     updateMessage('Starting...');
 
@@ -192,8 +207,17 @@ const App = {
       return;
     }
 
-    this.state.resultImageUrl = result.imageUrl;
-    this.showResultScreen(result.imageUrl);
+    // Apply watermark + frame overlays
+    this.updateMessage?.('Applying final touches...');
+    let finalImageUrl = result.imageUrl;
+    try {
+      finalImageUrl = await Settings.applyOverlays(result.imageUrl);
+    } catch (e) {
+      console.warn('Overlay failed, using original:', e);
+    }
+
+    this.state.resultImageUrl = finalImageUrl;
+    this.showResultScreen(finalImageUrl);
   },
 
   showError(errorMsg) {
@@ -358,10 +382,13 @@ const App = {
 
   loadSettings() {
     try {
-      const saved = localStorage.getItem('om-kiosk-settings');
-      if (saved) {
-        const s = JSON.parse(saved);
-        this.state.mode = s.mode || 'soft';
+      const s = Settings.load();
+      this.state.mode = s.mode || 'soft';
+      this.state.watermarkEnabled = s.omWatermark !== false;
+      // Apply active category from admin if set
+      if (s.activeCategory) {
+        const cat = TEMPLATES.categories.find(c => c.id === s.activeCategory);
+        if (cat) this.state.activeCategory = cat;
       }
     } catch (e) {}
   }

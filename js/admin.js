@@ -58,6 +58,13 @@ const Admin = {
     // Branding
     document.getElementById('toggle-om-watermark').checked = s.omWatermark !== false;
     document.getElementById('toggle-client-logo').checked = !!s.clientLogo;
+    document.getElementById('toggle-client-frame').checked = !!s.clientFrame;
+
+    if (s.clientFrame) {
+      document.getElementById('client-frame-section').style.display = 'block';
+      document.getElementById('frame-preview').src = s.clientFrame;
+      document.getElementById('frame-preview').style.display = 'block';
+    }
     if (s.clientLogo) {
       document.getElementById('client-logo-section').style.display = 'block';
       document.getElementById('logo-preview').src = s.clientLogo;
@@ -128,6 +135,45 @@ const Admin = {
   },
 
   // ── BRANDING ──
+  toggleClientFrame() {
+    const enabled = document.getElementById('toggle-client-frame').checked;
+    document.getElementById('client-frame-section').style.display = enabled ? 'block' : 'none';
+    if (!enabled) {
+      this.settings.clientFrame = null;
+      document.getElementById('frame-preview').style.display = 'none';
+      this.saveSettings();
+    }
+  },
+
+  handleFrameUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!file.type.includes('png')) {
+      alert('Please upload a PNG file for the frame');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      this.settings.clientFrame = dataUrl;
+      const preview = document.getElementById('frame-preview');
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+      this.saveSettings();
+      this.showToast('✓ Frame Uploaded');
+    };
+    reader.readAsDataURL(file);
+  },
+
+  removeFrame() {
+    this.settings.clientFrame = null;
+    document.getElementById('frame-preview').style.display = 'none';
+    document.getElementById('toggle-client-frame').checked = false;
+    document.getElementById('client-frame-section').style.display = 'none';
+    this.saveSettings();
+    this.showToast('✓ Frame Removed');
+  },
+
   toggleClientLogo() {
     const enabled = document.getElementById('toggle-client-logo').checked;
     document.getElementById('client-logo-section').style.display = enabled ? 'block' : 'none';

@@ -143,6 +143,34 @@
         </div>
       </div>
       <div class="card">
+        <div class="card-title">Client Frame Overlay</div>
+        <div class="toggle-row" style="margin-bottom:16px;">
+          <div>
+            <div class="toggle-label">Apply Client Frame</div>
+            <div class="toggle-desc">PNG frame overlaid on top of the full generated image</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-client-frame" onchange="Admin.toggleClientFrame()"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="client-frame-section" style="display:none;">
+          <div style="font-size:10px;color:var(--gold-dim);letter-spacing:2px;margin-bottom:12px;">
+            Upload a PNG with transparent center — it will be stretched over the full photo as a decorative border/frame
+          </div>
+          <div class="upload-area">
+            <input type="file" id="frame-file-input" accept="image/png" onchange="Admin.handleFrameUpload(event)"/>
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-hint">Upload PNG frame (transparent center recommended)</div>
+          </div>
+          <img id="frame-preview" src="" alt="Frame preview" style="max-width:100%;margin-top:16px;display:none;border:1px solid var(--black-border);"/>
+          <div class="btn-row" style="margin-top:8px;">
+            <button class="btn btn-outline" onclick="Admin.removeFrame()">Remove Frame</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-title">Client Logo</div>
         <div class="toggle-row" style="margin-bottom:16px;">
           <div>
@@ -328,6 +356,7 @@
 <div id="save-toast">✓ Settings Saved</div>
 
 <script src="../templates/templates.js"></script>
+<script src="../js/settings.js"></script>
 <script src="../js/admin.js"></script>
 </body>
 </html>
