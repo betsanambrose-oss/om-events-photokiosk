@@ -71,7 +71,10 @@ const API = {
       if (!this.capturedFaceBase64) throw new Error('No face image captured');
 
       const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
+      if (!base64 || base64.length < 100) throw new Error('Face image data is empty or too small');
+
       const uploaded = await this.callWorker({ step: 'upload', base64 });
+      if (!uploaded.fileUrl) throw new Error('Upload succeeded but no file URL returned');
       this.faceImageUrl = uploaded.fileUrl;
       console.log('Face uploaded:', this.faceImageUrl);
 

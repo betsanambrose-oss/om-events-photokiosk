@@ -121,8 +121,12 @@ const App = {
   },
 
   startCapture() {
-    // Prevent double tap
-    if (this.generationStarted) return;
+    // Prevent double tap — but reset if stuck
+    if (this.generationStarted) {
+      console.warn('Resetting stuck generation flag');
+      this.generationStarted = false;
+      API.isGenerating = false;
+    }
 
     const overlay = document.getElementById('countdown-overlay');
     const countNum = document.getElementById('countdown-number');
@@ -174,13 +178,11 @@ const App = {
       result = await API.generateOfflineFallback();
     }
 
-    // If online failed — show error, go home
-    // Do NOT auto retry, do NOT call offline fallback as backup
+    // If online failed — show error screen then go home
     if (!result || !result.success) {
       console.error('Generation failed:', result?.error);
-      alert(`Generation failed:\n${result?.error || 'Unknown error'}\n\nReturning to home.`);
       this.generationStarted = false;
-      this.resetAndGoHome();
+      this.showErrorAndGoHome(result?.error || 'Unknown error');
       return;
     }
 
@@ -258,7 +260,32 @@ const App = {
     }, 1000);
   },
 
-  resetAndGoHome() {
+  showErrorAndGoHome(errorMsg) {
+    // Show error on processing screen then auto go home
+    const messageEl = document.getElementById('processing-message');
+    if (messageEl) {
+      messageEl.innerHTML = `
+        <span style="color:#ff6b6b; font-size:16px;">Something went wrong</span>
+        <br><br>
+        <span style="font-size:12px; opacity:0.7; letter-spacing:1px;">${errorMsg.substring(0, 100)}</span>
+        <br><br>
+        <span style="font-size:11px; color:#C9A84C; letter-spacing:2px;">Returning to home...</span>
+      `;
+    }
+    // Stop spinner
+    const spinner = document.querySelector('.gold-spinner');
+    if (spinner) spinner.style.display = 'none';
+    const dots = document.querySelector('.processing-dots');
+    if (dots) dots.style.display = 'none';
+
+    // Go home after 3 seconds
+    setTimeout(() => {
+      if (spinner) spinner.style.display = '';
+      if (dots) dots.style.display = '';
+      if (messageEl) messageEl.innerHTML = 'Creating your moment...';
+      this.resetAndGoHome();
+    }, 3000);
+  },
     this.state.selectedCategory = null;
     this.state.selectedScene = null;
     this.state.capturedImage = null;
