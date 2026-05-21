@@ -1,36 +1,47 @@
-// js/qr.js — QR Code generation and 30-second timer
+// js/qr.js — QR Code generation using qrcodejs library
 
 const QRManager = {
   timerInterval: null,
-  timerSeconds: 30,
 
-  // Generate QR code pointing to image URL
-  // Uses qrcode.js library loaded from CDN
+  // Generate QR code — uses qrcodejs which creates a canvas/img element
   async generate(canvasEl, imageUrl) {
     return new Promise((resolve, reject) => {
-      if (typeof QRCode === 'undefined') {
-        reject(new Error('QRCode library not loaded'));
-        return;
-      }
-
-      // Clear canvas
-      const ctx = canvasEl.getContext('2d');
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-
       try {
-        QRCode.toCanvas(canvasEl, imageUrl, {
+        // Clear the container
+        const container = canvasEl.parentElement || document.getElementById('qr-container');
+
+        // Remove old QR if any
+        const old = document.getElementById('qr-generated');
+        if (old) old.remove();
+
+        // Hide original canvas
+        canvasEl.style.display = 'none';
+
+        // Create wrapper div for qrcodejs
+        const wrapper = document.createElement('div');
+        wrapper.id = 'qr-generated';
+        wrapper.style.cssText = 'width:180px; height:180px; display:flex; align-items:center; justify-content:center;';
+        canvasEl.parentElement.insertBefore(wrapper, canvasEl);
+
+        if (typeof QRCode === 'undefined') {
+          // Fallback: show URL text if library failed
+          wrapper.innerHTML = `<div style="font-size:9px;word-break:break-all;color:#000;padding:8px;">${imageUrl}</div>`;
+          resolve();
+          return;
+        }
+
+        new QRCode(wrapper, {
+          text: imageUrl,
           width: 180,
-          margin: 1,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          },
-          errorCorrectionLevel: 'M'
-        }, (err) => {
-          if (err) reject(err);
-          else resolve();
+          height: 180,
+          colorDark: '#000000',
+          colorLight: '#FFFFFF',
+          correctLevel: QRCode.CorrectLevel.M
         });
+
+        resolve();
       } catch (err) {
+        console.error('QR error:', err);
         reject(err);
       }
     });
@@ -40,13 +51,11 @@ const QRManager = {
   startTimer(seconds, onTick, onComplete) {
     this.stopTimer();
     let remaining = seconds;
-
     onTick?.(remaining, seconds);
 
     this.timerInterval = setInterval(() => {
       remaining--;
       onTick?.(remaining, seconds);
-
       if (remaining <= 0) {
         this.stopTimer();
         onComplete?.();
