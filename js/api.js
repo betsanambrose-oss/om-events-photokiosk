@@ -1,135 +1,108 @@
-// js/api.js — SAFE VERSION: Single attempt, hard stop on failure, no retries
+// js/api.js — Direct calls, single execution guarantee
 
 const WORKER_URL = 'https://om-events-proxy.betsanambrose.workers.dev';
 
 const API = {
   capturedFaceBase64: null,
   faceImageUrl: null,
-  isGenerating: false, // HARD LOCK — prevents any double calls
+  isGenerating: false,
 
   setCapturedFace(dataUrl) {
     this.capturedFaceBase64 = dataUrl;
     this.faceImageUrl = null;
-    console.log('Face captured');
+    console.log('Face captured, size:', dataUrl?.length);
   },
 
-  // ── Single worker call — throws on any error ──
+  // Single worker call — no retry, throws immediately on error
   async callWorker(payload) {
     console.log('→ Worker:', payload.step);
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    console.log('← Worker:', payload.step, JSON.stringify(data).substring(0, 150));
-    if (data.error) throw new Error(`[${payload.step}] ${data.error}`);
+
+    let res, data;
+    try {
+      res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      data = await res.json();
+    } catch (networkErr) {
+      throw new Error(`Network error on ${payload.step}: ${networkErr.message}`);
+    }
+
+    console.log('← Response:', payload.step, JSON.stringify(data).substring(0, 200));
+
+    if (data.error) {
+      throw new Error(`[${payload.step}] ${data.error}`);
+    }
     return data;
   },
 
-  // ── Poll with MAX 20 attempts (60 seconds total) — then hard stop ──
-  async pollOnce(statusUrl, responseUrl, label, onProgress) {
-    const MAX_POLLS = 60; // 60 × 3s = 3 minutes max
-
-    for (let i = 0; i < MAX_POLLS; i++) {
-      await new Promise(r => setTimeout(r, 3000));
-
-      const statusData = await this.callWorker({ step: 'status', statusUrl });
-      const status = statusData.status;
-      console.log(`[${label}] poll ${i + 1}/${MAX_POLLS}: ${status}`);
-
-      if (status === 'IN_QUEUE') {
-        onProgress?.(`${label} — waiting (${statusData.queuePosition ?? i + 1})`);
-      } else if (status === 'IN_PROGRESS') {
-        onProgress?.(`${label} — processing...`);
-      } else if (status === 'COMPLETED') {
-        const result = await this.callWorker({ step: 'getresult', responseUrl });
-        return result.data;
-      } else {
-        // Any other status = hard stop
-        throw new Error(`${label} stopped with status: ${status}`);
-      }
-    }
-
-    throw new Error(`${label} timed out after ${MAX_POLLS} attempts`);
-  },
-
-  // ── Main generation — runs ONCE, stops on any error ──
+  // Main generation — 3 sequential steps, no retry, no loop
   async generatePhoto(prompt, negativePrompt, onProgress) {
+
+    // Absolute hard guard
+    if (this.isGenerating) {
+      return { success: false, error: 'Already running — please wait' };
+    }
     this.isGenerating = true;
+
     try {
-      // STEP 1 — Upload face image
+      // ── STEP 1: Upload face ──
       onProgress?.('Uploading your photo...');
-      if (!this.capturedFaceBase64) throw new Error('No face image captured');
+      if (!this.capturedFaceBase64) {
+        throw new Error('No face image — please capture again');
+      }
 
       const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
-      if (!base64 || base64.length < 100) throw new Error('Face image data is empty or too small');
+      if (!base64 || base64.length < 1000) {
+        throw new Error('Face image too small or empty');
+      }
 
       const uploaded = await this.callWorker({ step: 'upload', base64 });
-      if (!uploaded.fileUrl) throw new Error('Upload succeeded but no file URL returned');
+      if (!uploaded.fileUrl) throw new Error('Upload returned no URL');
       this.faceImageUrl = uploaded.fileUrl;
-      console.log('Face uploaded:', this.faceImageUrl);
+      console.log('✅ Face uploaded:', this.faceImageUrl);
 
-      // STEP 2 — Submit scene generation
-      onProgress?.('Generating scene...');
-      const sceneJob = await this.callWorker({ step: 'generate', prompt, negativePrompt });
-      console.log('Scene job submitted:', sceneJob.requestId);
+      // ── STEP 2: Generate scene ──
+      onProgress?.('Generating your scene...');
+      const sceneData = await this.callWorker({
+        step: 'generate',
+        prompt: prompt
+      });
+      if (!sceneData.sceneUrl) throw new Error('Scene generation returned no image');
+      console.log('✅ Scene ready:', sceneData.sceneUrl);
 
-      // STEP 3 — Poll scene (max 60 seconds)
-      const sceneResult = await this.pollOnce(
-        sceneJob.statusUrl,
-        sceneJob.responseUrl,
-        'Scene',
-        onProgress
-      );
-
-      const sceneUrl = sceneResult?.images?.[0]?.url;
-      if (!sceneUrl) throw new Error('No scene image returned');
-      console.log('Scene ready:', sceneUrl);
-
-      // STEP 4 — Submit face swap
+      // ── STEP 3: Face swap ──
       onProgress?.('Placing you in the scene...');
-      const faceJob = await this.callWorker({
+      const faceData = await this.callWorker({
         step: 'faceswap',
         faceImageUrl: this.faceImageUrl,
-        sceneUrl
+        sceneUrl: sceneData.sceneUrl
       });
-      console.log('Face swap submitted:', faceJob.requestId);
+      if (!faceData.resultUrl) throw new Error('Face swap returned no image');
+      console.log('✅ Final result:', faceData.resultUrl);
 
-      // STEP 5 — Poll face swap (max 60 seconds)
-      const faceResult = await this.pollOnce(
-        faceJob.statusUrl,
-        faceJob.responseUrl,
-        'Face swap',
-        onProgress
-      );
-
-      const resultUrl = faceResult?.image?.url;
-      if (!resultUrl) throw new Error('No face swap result returned');
-      console.log('SUCCESS — Final image:', resultUrl);
-
-      return { success: true, imageUrl: resultUrl };
+      return { success: true, imageUrl: faceData.resultUrl };
 
     } catch (err) {
-      console.error('GENERATION FAILED — hard stop:', err.message);
+      console.error('❌ GENERATION FAILED:', err.message);
       return { success: false, error: err.message };
 
     } finally {
-      // Always release the lock
+      // Always release lock — no matter what happens
       this.isGenerating = false;
     }
   },
 
-  // ── Offline fallback — only used when NO internet at all ──
+  // Offline fallback — zero API calls
   async generateOfflineFallback() {
-    console.log('OFFLINE MODE — no API calls');
+    console.log('OFFLINE MODE — no API calls made');
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
       canvas.width = 768;
       canvas.height = 1024;
       const ctx = canvas.getContext('2d');
-
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
       grad.addColorStop(0, '#1a1a2e');
       grad.addColorStop(1, '#16213e');
       ctx.fillStyle = grad;
@@ -137,14 +110,11 @@ const API = {
 
       const finalize = () => {
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
-        ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
+        ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
         ctx.fillStyle = '#C9A84C';
-        ctx.font = 'bold 22px Georgia';
+        ctx.font = 'bold 24px Georgia';
         ctx.textAlign = 'center';
-        ctx.fillText('OM EVENTS', canvas.width / 2, canvas.height - 60);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = '14px Georgia';
-        ctx.fillText('No Internet — Offline Mode', canvas.width / 2, canvas.height - 30);
+        ctx.fillText('OM EVENTS — Offline Mode', canvas.width / 2, canvas.height - 35);
         resolve({ success: true, imageUrl: canvas.toDataURL('image/jpeg', 0.9) });
       };
 
@@ -152,8 +122,10 @@ const API = {
         const img = new Image();
         img.onload = () => {
           const scale = Math.min(canvas.width / img.width, (canvas.height * 0.8) / img.height);
-          const x = (canvas.width - img.width * scale) / 2;
-          ctx.drawImage(img, x, canvas.height * 0.05, img.width * scale, img.height * scale);
+          ctx.drawImage(img,
+            (canvas.width - img.width * scale) / 2, 50,
+            img.width * scale, img.height * scale
+          );
           finalize();
         };
         img.onerror = finalize;
