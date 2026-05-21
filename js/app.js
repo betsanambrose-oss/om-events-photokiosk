@@ -1,4 +1,4 @@
-// js/app.js — SAFE VERSION: Single flow, no automatic retries
+// js/app.js — FINAL SAFE VERSION
 
 const App = {
   state: {
@@ -13,7 +13,7 @@ const App = {
   currentScreen: 'home',
   adminTaps: 0,
   thankYouInterval: null,
-  generationStarted: false, // hard guard
+  LOCKED: false, // single global lock — when true, nothing can start
 
   async init() {
     this.renderCategories();
@@ -24,15 +24,23 @@ const App = {
     console.log('OM Events Kiosk ready');
   },
 
+  lock() {
+    this.LOCKED = true;
+    console.log('🔒 LOCKED');
+  },
+
+  unlock() {
+    this.LOCKED = false;
+    API.isGenerating = false;
+    console.log('🔓 UNLOCKED');
+  },
+
   showScreen(name) {
     if (name === 'home') this.cleanup();
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(`screen-${name}`);
-    if (el) {
-      el.classList.add('active');
-      this.currentScreen = name;
-      console.log('Screen:', name);
-    }
+    if (el) { el.classList.add('active'); this.currentScreen = name; }
+    console.log('Screen:', name);
   },
 
   renderCategories() {
@@ -53,6 +61,7 @@ const App = {
   },
 
   selectCategory(categoryId) {
+    if (this.LOCKED) return;
     const cat = TEMPLATES.categories.find(c => c.id === categoryId);
     if (!cat) return;
     this.state.selectedCategory = cat;
@@ -73,6 +82,7 @@ const App = {
   },
 
   async selectScene(sceneId) {
+    if (this.LOCKED) return;
     const cat = this.state.selectedCategory;
     const scene = cat.scenes.find(s => s.id === sceneId);
     if (!scene) return;
@@ -94,10 +104,9 @@ const App = {
     const videoEl = document.getElementById('camera-feed');
     const started = await Camera.init(videoEl);
 
-    // Double check — if video is actually playing, camera is working
     setTimeout(() => {
       if (videoEl.readyState >= 2 || videoEl.srcObject) {
-        this.setCameraStatus(''); // camera is working, clear error
+        this.setCameraStatus('');
       } else if (!started) {
         this.setCameraStatus('Could not access camera.\nPlease allow camera permission and reload.');
       } else {
@@ -121,11 +130,13 @@ const App = {
   },
 
   startCapture() {
-    // Block if already in progress
-    if (this.generationStarted) {
-      console.warn('Capture already in progress — ignoring');
+    if (this.LOCKED) {
+      console.warn('LOCKED — ignoring capture tap');
       return;
     }
+
+    // Lock immediately on first tap
+    this.lock();
 
     const overlay = document.getElementById('countdown-overlay');
     const countNum = document.getElementById('countdown-number');
@@ -148,7 +159,6 @@ const App = {
         this.state.capturedImage = imageData;
         API.setCapturedFace(imageData);
         Camera.stop();
-        this.generationStarted = true;
         this.showScreen('processing');
         await this.startGeneration();
       }
@@ -157,8 +167,6 @@ const App = {
 
   async startGeneration() {
     const messageEl = document.getElementById('processing-message');
-    const scene = this.state.selectedScene;
-
     const updateMessage = (msg) => {
       if (messageEl) messageEl.textContent = msg;
       console.log('Status:', msg);
@@ -169,25 +177,47 @@ const App = {
     let result;
 
     if (navigator.onLine) {
-      // Single attempt — no retry
-      result = await API.generatePhoto(scene.prompt, scene.negative, updateMessage);
+      result = await API.generatePhoto(
+        this.state.selectedScene.prompt,
+        this.state.selectedScene.negative,
+        updateMessage
+      );
     } else {
-      // Offline — use fallback immediately
-      console.log('No internet — using offline mode');
       result = await API.generateOfflineFallback();
     }
 
-    // If online failed — show error screen then go home
     if (!result || !result.success) {
       console.error('Generation failed:', result?.error);
-      this.generationStarted = false;
-      this.showErrorAndGoHome(result?.error || 'Unknown error');
+      this.showError(result?.error || 'Unknown error');
       return;
     }
 
-    // Success — show result ONCE
     this.state.resultImageUrl = result.imageUrl;
     this.showResultScreen(result.imageUrl);
+  },
+
+  showError(errorMsg) {
+    // Unlock so user can try again
+    this.unlock();
+
+    const messageEl = document.getElementById('processing-message');
+    const spinner = document.querySelector('.gold-spinner');
+    const dots = document.querySelector('.processing-dots');
+    if (spinner) spinner.style.display = 'none';
+    if (dots) dots.style.display = 'none';
+
+    if (messageEl) {
+      messageEl.innerHTML = `
+        <span style="color:#ff6b6b;font-size:16px;">Something went wrong</span><br><br>
+        <span style="font-size:11px;opacity:0.6;line-height:1.6;">${errorMsg.substring(0, 150)}</span><br><br>
+        <button onclick="App.resetAndGoHome()" style="
+          background:#C9A84C;color:#000;border:none;padding:12px 32px;
+          font-size:12px;letter-spacing:3px;text-transform:uppercase;
+          border-radius:2px;cursor:pointer;margin-top:8px;">
+          TRY AGAIN
+        </button>
+      `;
+    }
   },
 
   async showResultScreen(imageUrl) {
@@ -195,14 +225,10 @@ const App = {
     if (resultImg) resultImg.src = imageUrl;
     this.showScreen('result');
 
-    // Generate QR
     const qrCanvas = document.getElementById('qr-canvas');
     if (qrCanvas) {
-      try {
-        await QRManager.generate(qrCanvas, imageUrl);
-      } catch (err) {
-        console.error('QR failed:', err);
-      }
+      try { await QRManager.generate(qrCanvas, imageUrl); }
+      catch (err) { console.error('QR failed:', err); }
     }
 
     const mode = this.state.mode;
@@ -255,58 +281,34 @@ const App = {
     this.thankYouInterval = setInterval(() => {
       count--;
       if (el) el.textContent = `Returning in ${count} seconds...`;
-      if (count <= 0) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; this.resetAndGoHome(); }
+      if (count <= 0) {
+        clearInterval(this.thankYouInterval);
+        this.thankYouInterval = null;
+        this.resetAndGoHome();
+      }
     }, 1000);
   },
 
-  showErrorAndGoHome(errorMsg) {
-    // Reset ALL flags immediately
-    this.generationStarted = false;
-    API.isGenerating = false;
-
-    const messageEl = document.getElementById('processing-message');
-    const spinner = document.querySelector('.gold-spinner');
-    const dots = document.querySelector('.processing-dots');
-
-    if (spinner) spinner.style.display = 'none';
-    if (dots) dots.style.display = 'none';
-
-    if (messageEl) {
-      messageEl.innerHTML = `
-        <span style="color:#ff6b6b;font-size:16px;">Something went wrong</span><br><br>
-        <span style="font-size:11px;opacity:0.6;">${errorMsg.substring(0, 120)}</span><br><br>
-        <button onclick="App.resetAndGoHome()" style="
-          background:#C9A84C; color:#000; border:none; padding:12px 32px;
-          font-size:12px; letter-spacing:3px; text-transform:uppercase;
-          border-radius:2px; cursor:pointer; margin-top:8px;">
-          GO HOME
-        </button>
-      `;
-    }
-  },
-
   resetAndGoHome() {
+    this.unlock();
     this.state.selectedCategory = null;
     this.state.selectedScene = null;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
-    this.generationStarted = false;
     API.capturedFaceBase64 = null;
     API.faceImageUrl = null;
-    API.isGenerating = false;
     Camera.stop();
     Camera.cancelCountdown();
     QRManager.stopTimer();
     if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
 
-    // Restore processing screen to original state
+    // Restore processing screen
     const messageEl = document.getElementById('processing-message');
     if (messageEl) messageEl.textContent = 'Creating your moment...';
     const spinner = document.querySelector('.gold-spinner');
     if (spinner) spinner.style.display = '';
     const dots = document.querySelector('.processing-dots');
     if (dots) dots.style.display = '';
-
     const captureBtn = document.getElementById('capture-btn');
     if (captureBtn) captureBtn.style.display = 'flex';
     document.getElementById('qr-section')?.style.removeProperty('display');
@@ -314,6 +316,7 @@ const App = {
     if (resultImg) resultImg.src = '';
     const overlay = document.getElementById('countdown-overlay');
     if (overlay) overlay.classList.remove('active');
+
     this.showScreen('home');
   },
 
@@ -324,9 +327,20 @@ const App = {
   },
 
   bindEvents() {
-    document.getElementById('back-to-home')?.addEventListener('click', () => { Camera.stop(); this.showScreen('home'); });
-    document.getElementById('back-to-scenes')?.addEventListener('click', () => { Camera.cancelCountdown(); Camera.stop(); this.showScreen('scenes'); });
-    document.getElementById('capture-btn')?.addEventListener('click', () => { this.startCapture(); });
+    document.getElementById('back-to-home')?.addEventListener('click', () => {
+      this.unlock();
+      Camera.stop();
+      this.showScreen('home');
+    });
+    document.getElementById('back-to-scenes')?.addEventListener('click', () => {
+      this.unlock();
+      Camera.cancelCountdown();
+      Camera.stop();
+      this.showScreen('scenes');
+    });
+    document.getElementById('capture-btn')?.addEventListener('click', () => {
+      this.startCapture();
+    });
   },
 
   checkOnlineStatus() {

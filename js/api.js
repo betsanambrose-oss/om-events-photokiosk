@@ -29,7 +29,7 @@ const API = {
 
   // ── Poll with MAX 20 attempts (60 seconds total) — then hard stop ──
   async pollOnce(statusUrl, responseUrl, label, onProgress) {
-    const MAX_POLLS = 20; // 20 × 3s = 60 seconds max
+    const MAX_POLLS = 60; // 60 × 3s = 3 minutes max
 
     for (let i = 0; i < MAX_POLLS; i++) {
       await new Promise(r => setTimeout(r, 3000));
