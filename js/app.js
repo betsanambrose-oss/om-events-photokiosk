@@ -1,4 +1,4 @@
-// js/app.js — Main application state and screen navigation
+// js/app.js — SAFE VERSION: Single flow, no automatic retries
 
 const App = {
   state: {
@@ -6,15 +6,14 @@ const App = {
     selectedScene: null,
     capturedImage: null,
     resultImageUrl: null,
-    mode: 'soft', // soft | print | both
-    watermarkEnabled: true,
-    clientLogo: null,
-    isOnline: true
+    mode: 'soft',
+    watermarkEnabled: true
   },
 
   currentScreen: 'home',
   adminTaps: 0,
   thankYouInterval: null,
+  generationStarted: false, // hard guard
 
   async init() {
     this.renderCategories();
@@ -22,14 +21,11 @@ const App = {
     this.checkOnlineStatus();
     this.loadSettings();
     this.showScreen('home');
-    console.log('OM Events Photo Kiosk initialized');
+    console.log('OM Events Kiosk ready');
   },
 
-  // ── Screen Navigation ──
   showScreen(name) {
-    // Clear any running timers when switching screens
     if (name === 'home') this.cleanup();
-
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(`screen-${name}`);
     if (el) {
@@ -39,7 +35,6 @@ const App = {
     }
   },
 
-  // ── Render Category Grid ──
   renderCategories() {
     const grid = document.getElementById('category-grid');
     if (!grid) return;
@@ -57,12 +52,10 @@ const App = {
     `).join('');
   },
 
-  // ── Select Category ──
   selectCategory(categoryId) {
     const cat = TEMPLATES.categories.find(c => c.id === categoryId);
     if (!cat) return;
     this.state.selectedCategory = cat;
-
     const grid = document.getElementById('scene-grid');
     const title = document.getElementById('scenes-category-name');
     if (title) title.innerHTML = `<span>${cat.name}</span> Scenes`;
@@ -79,7 +72,6 @@ const App = {
     this.showScreen('scenes');
   },
 
-  // ── Select Scene → Camera ──
   async selectScene(sceneId) {
     const cat = this.state.selectedCategory;
     const scene = cat.scenes.find(s => s.id === sceneId);
@@ -101,11 +93,10 @@ const App = {
 
     const videoEl = document.getElementById('camera-feed');
     const started = await Camera.init(videoEl);
-
     if (started) {
       this.setCameraStatus('');
     } else {
-      this.setCameraStatus('Could not access camera.\n\nPlease allow camera permission\nand reload the page.');
+      this.setCameraStatus('Could not access camera.\nPlease allow camera permission and reload.');
     }
   },
 
@@ -123,8 +114,10 @@ const App = {
     }
   },
 
-  // ── Capture ──
   startCapture() {
+    // Prevent double tap
+    if (this.generationStarted) return;
+
     const overlay = document.getElementById('countdown-overlay');
     const countNum = document.getElementById('countdown-number');
     const captureBtn = document.getElementById('capture-btn');
@@ -137,228 +130,165 @@ const App = {
         if (countNum) {
           countNum.textContent = count;
           countNum.style.animation = 'none';
-          countNum.offsetHeight; // force reflow
+          countNum.offsetHeight;
           countNum.style.animation = 'countPop 1s cubic-bezier(0.4,0,0.2,1) both';
         }
       },
       async (imageData) => {
-        // Hide countdown immediately
         if (overlay) overlay.classList.remove('active');
-
-        // Store face image
         this.state.capturedImage = imageData;
         API.setCapturedFace(imageData);
-
-        // Stop camera
         Camera.stop();
-
-        // Go to processing — stay here until fully done
+        this.generationStarted = true;
         this.showScreen('processing');
-
-        // Start generation — only moves to result when complete
         await this.startGeneration();
       }
     );
   },
 
-  // ── AI Generation ──
   async startGeneration() {
     const messageEl = document.getElementById('processing-message');
     const scene = this.state.selectedScene;
 
     const updateMessage = (msg) => {
       if (messageEl) messageEl.textContent = msg;
+      console.log('Status:', msg);
     };
 
-    updateMessage('Creating your moment...');
+    updateMessage('Starting...');
 
     let result;
 
     if (navigator.onLine) {
+      // Single attempt — no retry
       result = await API.generatePhoto(scene.prompt, scene.negative, updateMessage);
-    }
-
-    // Fallback if offline or failed
-    if (!navigator.onLine || !result?.success) {
-      updateMessage('Preparing your photo...');
-      result = await API.generateOfflineFallback(scene.prompt);
-    }
-
-    if (result?.success) {
-      this.state.resultImageUrl = result.imageUrl;
-      // Only called ONCE when generation is fully done
-      this.showResultScreen(result.imageUrl);
     } else {
-      alert('Something went wrong. Please try again.');
-      this.resetAndGoHome();
+      // Offline — use fallback immediately
+      console.log('No internet — using offline mode');
+      result = await API.generateOfflineFallback();
     }
+
+    // If online failed — show error, go home
+    // Do NOT auto retry, do NOT call offline fallback as backup
+    if (!result || !result.success) {
+      console.error('Generation failed:', result?.error);
+      alert(`Generation failed:\n${result?.error || 'Unknown error'}\n\nReturning to home.`);
+      this.generationStarted = false;
+      this.resetAndGoHome();
+      return;
+    }
+
+    // Success — show result ONCE
+    this.state.resultImageUrl = result.imageUrl;
+    this.showResultScreen(result.imageUrl);
   },
 
-  // ── Result Screen — called ONCE only ──
   async showResultScreen(imageUrl) {
-    // Set image
     const resultImg = document.getElementById('result-image');
-    if (resultImg) {
-      resultImg.src = imageUrl;
-    }
-
-    // Switch to result screen ONCE
+    if (resultImg) resultImg.src = imageUrl;
     this.showScreen('result');
 
     // Generate QR
     const qrCanvas = document.getElementById('qr-canvas');
-    try {
-      await QRManager.generate(qrCanvas, imageUrl);
-    } catch (err) {
-      console.error('QR failed:', err);
+    if (qrCanvas) {
+      try {
+        await QRManager.generate(qrCanvas, imageUrl);
+      } catch (err) {
+        console.error('QR failed:', err);
+      }
     }
 
     const mode = this.state.mode;
 
-    // ── Print only mode ──
     if (mode === 'print') {
-      const qrSection = document.getElementById('qr-section');
-      if (qrSection) qrSection.style.display = 'none';
+      document.getElementById('qr-section')?.style.setProperty('display', 'none');
       setTimeout(() => this.triggerPrint(imageUrl), 1500);
       setTimeout(() => this.showThankYou(), 5000);
       return;
     }
 
-    // ── Soft or Both mode — show QR with 30 sec timer ──
     const timerFill = document.getElementById('timer-fill');
     const timerCount = document.getElementById('timer-count');
-
-    // Reset timer bar to full
-    if (timerFill) timerFill.style.transition = 'none';
-    if (timerFill) timerFill.style.width = '100%';
+    if (timerFill) { timerFill.style.transition = 'none'; timerFill.style.width = '100%'; }
     if (timerCount) timerCount.textContent = '30';
 
-    // Small delay then start countdown
     setTimeout(() => {
       if (timerFill) timerFill.style.transition = 'width 1s linear';
-
       QRManager.startTimer(30,
         (remaining, total) => {
+          if (this.currentScreen !== 'result') { QRManager.stopTimer(); return; }
           if (timerFill) timerFill.style.width = `${(remaining / total) * 100}%`;
           if (timerCount) timerCount.textContent = remaining;
         },
         () => {
-          // Timer finished — print if both mode, then thank you
           if (mode === 'both') this.triggerPrint(imageUrl);
           this.showThankYou();
         }
       );
-    }, 300);
+    }, 500);
   },
 
-  // ── Print ──
   triggerPrint(imageUrl) {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    printWindow.document.write(`
-      <html><head><title>OM Events Photo</title>
-      <style>
-        * { margin:0; padding:0; }
-        body { display:flex; align-items:center; justify-content:center; background:#000; }
-        img { width:6in; height:4in; object-fit:cover; display:block; }
-        @media print { @page { size:6in 4in; margin:0; } img { width:100vw; height:100vh; } }
-      </style></head>
-      <body><img src="${imageUrl}" onload="window.print(); setTimeout(()=>window.close(),1000);" /></body>
-      </html>
-    `);
-    printWindow.document.close();
+    const w = window.open('', '_blank');
+    if (!w) return;
+    w.document.write(`<html><head><title>OM Events</title>
+    <style>*{margin:0;padding:0;}img{width:6in;height:4in;object-fit:cover;display:block;}
+    @media print{@page{size:6in 4in;margin:0;}img{width:100vw;height:100vh;}}</style>
+    </head><body><img src="${imageUrl}" onload="window.print();setTimeout(()=>window.close(),1000);"/></body></html>`);
+    w.document.close();
   },
 
-  // ── Thank You ──
   showThankYou() {
     QRManager.stopTimer();
     this.showScreen('thankyou');
-
     let count = 5;
-    const countEl = document.getElementById('thankyou-countdown');
-    if (countEl) countEl.textContent = `Returning in ${count} seconds...`;
-
+    const el = document.getElementById('thankyou-countdown');
+    if (el) el.textContent = `Returning in ${count} seconds...`;
     if (this.thankYouInterval) clearInterval(this.thankYouInterval);
-
     this.thankYouInterval = setInterval(() => {
       count--;
-      if (countEl) countEl.textContent = `Returning in ${count} seconds...`;
-      if (count <= 0) {
-        clearInterval(this.thankYouInterval);
-        this.thankYouInterval = null;
-        this.resetAndGoHome();
-      }
+      if (el) el.textContent = `Returning in ${count} seconds...`;
+      if (count <= 0) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; this.resetAndGoHome(); }
     }, 1000);
   },
 
-  // ── Reset & Home ──
   resetAndGoHome() {
     this.state.selectedCategory = null;
     this.state.selectedScene = null;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
+    this.generationStarted = false;
     API.capturedFaceBase64 = null;
-
+    API.faceImageUrl = null;
+    API.isGenerating = false;
     Camera.stop();
     Camera.cancelCountdown();
     QRManager.stopTimer();
-
-    if (this.thankYouInterval) {
-      clearInterval(this.thankYouInterval);
-      this.thankYouInterval = null;
-    }
-
-    // Reset UI elements
+    if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
     const captureBtn = document.getElementById('capture-btn');
     if (captureBtn) captureBtn.style.display = 'flex';
-
-    const qrSection = document.getElementById('qr-section');
-    if (qrSection) qrSection.style.display = '';
-
+    document.getElementById('qr-section')?.style.removeProperty('display');
     const resultImg = document.getElementById('result-image');
     if (resultImg) resultImg.src = '';
-
-    const timerFill = document.getElementById('timer-fill');
-    if (timerFill) timerFill.style.width = '100%';
-
     const overlay = document.getElementById('countdown-overlay');
     if (overlay) overlay.classList.remove('active');
-
     this.showScreen('home');
   },
 
-  // ── Cleanup (called when going home) ──
   cleanup() {
     QRManager.stopTimer();
     Camera.cancelCountdown();
-    if (this.thankYouInterval) {
-      clearInterval(this.thankYouInterval);
-      this.thankYouInterval = null;
-    }
+    if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
   },
 
-  // ── Event Bindings ──
   bindEvents() {
-    document.getElementById('back-to-home')?.addEventListener('click', () => {
-      Camera.stop();
-      this.showScreen('home');
-    });
-
-    document.getElementById('back-to-scenes')?.addEventListener('click', () => {
-      Camera.cancelCountdown();
-      Camera.stop();
-      this.showScreen('scenes');
-    });
-
-    document.getElementById('capture-btn')?.addEventListener('click', () => {
-      this.startCapture();
-    });
+    document.getElementById('back-to-home')?.addEventListener('click', () => { Camera.stop(); this.showScreen('home'); });
+    document.getElementById('back-to-scenes')?.addEventListener('click', () => { Camera.cancelCountdown(); Camera.stop(); this.showScreen('scenes'); });
+    document.getElementById('capture-btn')?.addEventListener('click', () => { this.startCapture(); });
   },
 
-  // ── Online Status ──
   checkOnlineStatus() {
     const update = () => {
-      this.state.isOnline = navigator.onLine;
       const indicator = document.getElementById('online-indicator');
       if (indicator) {
         indicator.textContent = navigator.onLine ? '● Online' : '○ Offline Mode';
@@ -370,24 +300,13 @@ const App = {
     update();
   },
 
-  // ── Settings ──
   loadSettings() {
     try {
       const saved = localStorage.getItem('om-kiosk-settings');
       if (saved) {
         const s = JSON.parse(saved);
         this.state.mode = s.mode || 'soft';
-        this.state.watermarkEnabled = s.watermarkEnabled !== false;
       }
-    } catch (e) {}
-  },
-
-  saveSettings() {
-    try {
-      localStorage.setItem('om-kiosk-settings', JSON.stringify({
-        mode: this.state.mode,
-        watermarkEnabled: this.state.watermarkEnabled
-      }));
     } catch (e) {}
   }
 };
