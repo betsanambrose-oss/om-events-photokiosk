@@ -121,11 +121,10 @@ const App = {
   },
 
   startCapture() {
-    // Prevent double tap — but reset if stuck
+    // Block if already in progress
     if (this.generationStarted) {
-      console.warn('Resetting stuck generation flag');
-      this.generationStarted = false;
-      API.isGenerating = false;
+      console.warn('Capture already in progress — ignoring');
+      return;
     }
 
     const overlay = document.getElementById('countdown-overlay');
@@ -261,33 +260,33 @@ const App = {
   },
 
   showErrorAndGoHome(errorMsg) {
-    // Show error on processing screen then auto go home
+    // Reset ALL flags immediately
+    this.generationStarted = false;
+    API.isGenerating = false;
+
     const messageEl = document.getElementById('processing-message');
-    if (messageEl) {
-      messageEl.innerHTML = `
-        <span style="color:#ff6b6b; font-size:16px;">Something went wrong</span>
-        <br><br>
-        <span style="font-size:12px; opacity:0.7; letter-spacing:1px;">${errorMsg.substring(0, 100)}</span>
-        <br><br>
-        <span style="font-size:11px; color:#C9A84C; letter-spacing:2px;">Returning to home...</span>
-      `;
-    }
-    // Stop spinner
     const spinner = document.querySelector('.gold-spinner');
-    if (spinner) spinner.style.display = 'none';
     const dots = document.querySelector('.processing-dots');
+
+    if (spinner) spinner.style.display = 'none';
     if (dots) dots.style.display = 'none';
 
-    // Go home after 3 seconds
-    setTimeout(() => {
-      if (spinner) spinner.style.display = '';
-      if (dots) dots.style.display = '';
-      if (messageEl) messageEl.innerHTML = 'Creating your moment...';
-      this.resetAndGoHome();
-    }, 3000);
+    if (messageEl) {
+      messageEl.innerHTML = `
+        <span style="color:#ff6b6b;font-size:16px;">Something went wrong</span><br><br>
+        <span style="font-size:11px;opacity:0.6;">${errorMsg.substring(0, 120)}</span><br><br>
+        <button onclick="App.resetAndGoHome()" style="
+          background:#C9A84C; color:#000; border:none; padding:12px 32px;
+          font-size:12px; letter-spacing:3px; text-transform:uppercase;
+          border-radius:2px; cursor:pointer; margin-top:8px;">
+          GO HOME
+        </button>
+      `;
+    }
   },
 
   resetAndGoHome() {
+    this.state.selectedCategory = null;
     this.state.selectedScene = null;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
@@ -299,6 +298,15 @@ const App = {
     Camera.cancelCountdown();
     QRManager.stopTimer();
     if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
+
+    // Restore processing screen to original state
+    const messageEl = document.getElementById('processing-message');
+    if (messageEl) messageEl.textContent = 'Creating your moment...';
+    const spinner = document.querySelector('.gold-spinner');
+    if (spinner) spinner.style.display = '';
+    const dots = document.querySelector('.processing-dots');
+    if (dots) dots.style.display = '';
+
     const captureBtn = document.getElementById('capture-btn');
     if (captureBtn) captureBtn.style.display = 'flex';
     document.getElementById('qr-section')?.style.removeProperty('display');

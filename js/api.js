@@ -56,15 +56,7 @@ const API = {
 
   // ── Main generation — runs ONCE, stops on any error ──
   async generatePhoto(prompt, negativePrompt, onProgress) {
-
-    // Hard lock — prevents double execution
-    if (this.isGenerating) {
-      console.warn('Already generating — ignoring duplicate call');
-      return { success: false, error: 'Already generating' };
-    }
-
     this.isGenerating = true;
-
     try {
       // STEP 1 — Upload face image
       onProgress?.('Uploading your photo...');
