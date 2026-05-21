@@ -1,53 +1,51 @@
-// js/qr.js — QR Code generation using qrcodejs library
+// js/qr.js — QR Code using qrcode npm library (jsdelivr CDN)
 
 const QRManager = {
   timerInterval: null,
 
-  // Generate QR code — uses qrcodejs which creates a canvas/img element
   async generate(canvasEl, imageUrl) {
     return new Promise((resolve, reject) => {
       try {
-        // Clear the container
-        const container = canvasEl.parentElement || document.getElementById('qr-container');
-
-        // Remove old QR if any
-        const old = document.getElementById('qr-generated');
-        if (old) old.remove();
-
-        // Hide original canvas
-        canvasEl.style.display = 'none';
-
-        // Create wrapper div for qrcodejs
-        const wrapper = document.createElement('div');
-        wrapper.id = 'qr-generated';
-        wrapper.style.cssText = 'width:180px; height:180px; display:flex; align-items:center; justify-content:center;';
-        canvasEl.parentElement.insertBefore(wrapper, canvasEl);
-
         if (typeof QRCode === 'undefined') {
-          // Fallback: show URL text if library failed
-          wrapper.innerHTML = `<div style="font-size:9px;word-break:break-all;color:#000;padding:8px;">${imageUrl}</div>`;
-          resolve();
+          console.error('QRCode library not loaded');
+          resolve(); // don't crash — just skip QR
           return;
         }
 
-        new QRCode(wrapper, {
-          text: imageUrl,
+        // qrcode npm library uses QRCode.toCanvas(canvas, text, options, callback)
+        QRCode.toCanvas(canvasEl, imageUrl, {
           width: 180,
-          height: 180,
-          colorDark: '#000000',
-          colorLight: '#FFFFFF',
-          correctLevel: QRCode.CorrectLevel.M
+          margin: 1,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        }, (err) => {
+          if (err) {
+            console.error('QR canvas error:', err);
+            // Fallback: try toDataURL instead
+            QRCode.toDataURL(imageUrl, { width: 180 }, (err2, url) => {
+              if (!err2 && url) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.width = 180;
+                img.height = 180;
+                canvasEl.parentNode.insertBefore(img, canvasEl);
+                canvasEl.style.display = 'none';
+              }
+              resolve();
+            });
+          } else {
+            resolve();
+          }
         });
-
-        resolve();
       } catch (err) {
         console.error('QR error:', err);
-        reject(err);
+        resolve(); // don't block result screen
       }
     });
   },
 
-  // Start 30-second countdown timer
   startTimer(seconds, onTick, onComplete) {
     this.stopTimer();
     let remaining = seconds;
