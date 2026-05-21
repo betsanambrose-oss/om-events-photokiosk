@@ -15,6 +15,19 @@ const Admin = {
     setTimeout(() => document.getElementById('password-input')?.focus(), 100);
   },
 
+  resetPassword() {
+    const masterKey = prompt('Enter master recovery code:');
+    if (masterKey === 'OMEVENTS2024RESET') {
+      localStorage.removeItem('om-admin-password');
+      alert('Password reset to default: omevents2024');
+      document.getElementById('login-error').textContent = '';
+      document.getElementById('password-input').value = '';
+      document.getElementById('password-input').focus();
+    } else if (masterKey !== null) {
+      alert('Incorrect recovery code');
+    }
+  },
+
   // ── LOGIN ──
   login() {
     const input = document.getElementById('password-input');

@@ -27,6 +27,13 @@
       onkeydown="if(event.key==='Enter') Admin.login()"/>
     <button class="login-btn" onclick="Admin.login()">Access Admin</button>
     <div class="login-error" id="login-error"></div>
+    <div style="margin-top:20px;">
+      <span onclick="Admin.resetPassword()"
+        style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.3);
+        text-transform:uppercase;cursor:pointer;text-decoration:underline;">
+        Forgot Password?
+      </span>
+    </div>
   </div>
 </div>
 
@@ -190,10 +197,14 @@
           </label>
         </div>
         <div id="client-logo-section" style="display:none;">
+          <div style="font-size:10px;color:var(--gold-dim);letter-spacing:2px;margin-bottom:12px;line-height:1.8;">
+            Recommended size: <strong style="color:var(--gold);">400 × 200px</strong> PNG with transparent background.<br/>
+            Logo is placed top-right corner at 12% of image height.
+          </div>
           <div class="upload-area">
             <input type="file" id="logo-file-input" accept="image/png,image/jpeg" onchange="Admin.handleLogoUpload(event)"/>
             <div class="upload-icon">🖼️</div>
-            <div class="upload-hint">Tap to upload client logo (PNG recommended)</div>
+            <div class="upload-hint">Upload PNG logo (400×200px recommended)</div>
           </div>
           <img id="logo-preview" src="" alt="Logo preview"/>
         </div>

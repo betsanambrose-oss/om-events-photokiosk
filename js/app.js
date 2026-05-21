@@ -280,13 +280,7 @@ const App = {
   },
 
   triggerPrint(imageUrl) {
-    const w = window.open('', '_blank');
-    if (!w) return;
-    w.document.write(`<html><head><title>OM Events</title>
-    <style>*{margin:0;padding:0;}img{width:6in;height:4in;object-fit:cover;display:block;}
-    @media print{@page{size:6in 4in;margin:0;}img{width:100vw;height:100vh;}}</style>
-    </head><body><img src="${imageUrl}" onload="window.print();setTimeout(()=>window.close(),1000);"/></body></html>`);
-    w.document.close();
+    Settings.printImage(imageUrl);
   },
 
   showThankYou() {

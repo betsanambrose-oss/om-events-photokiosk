@@ -1,4 +1,4 @@
-// js/qr.js — QR Code with auto type sizing for long URLs
+// js/qr.js — QR that works with long URLs by creating a short local key
 
 const QRManager = {
   timerInterval: null,
@@ -12,18 +12,37 @@ const QRManager = {
           return;
         }
 
-        // Auto-detect type based on URL length
-        // Type 0 = auto, but long URLs need higher type
-        let type = 0;
-        if (imageUrl.length > 500) type = 10;
-        if (imageUrl.length > 1000) type = 20;
-        if (imageUrl.length > 1500) type = 30;
-        if (imageUrl.length > 2000) type = 40;
+        // Store full URL in sessionStorage with a short key
+        // QR points to local download page with that key
+        const key = 'photo_' + Date.now();
+        try {
+          sessionStorage.setItem(key, imageUrl);
+        } catch(e) {}
 
-        console.log('QR URL length:', imageUrl.length, 'type:', type);
+        // Build short local URL for QR
+        const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+        const shortUrl = baseUrl + 'download.html?k=' + key;
 
-        const qr = qrcode(type, 'L'); // L = lowest error correction = fits more data
-        qr.addData(imageUrl);
+        // Also try direct URL first, fallback to short URL
+        let urlToEncode = imageUrl;
+
+        // If URL is too long (>500 chars), use the short local URL
+        if (imageUrl.length > 500) {
+          urlToEncode = shortUrl;
+          console.log('Using short URL for QR:', shortUrl);
+        }
+
+        console.log('QR URL length:', urlToEncode.length);
+
+        // Pick QR type based on length
+        let type = 1;
+        if (urlToEncode.length > 100) type = 3;
+        if (urlToEncode.length > 200) type = 5;
+        if (urlToEncode.length > 300) type = 8;
+        if (urlToEncode.length > 400) type = 10;
+
+        const qr = qrcode(type, 'L');
+        qr.addData(urlToEncode);
         qr.make();
 
         const size = 180;
@@ -37,8 +56,8 @@ const QRManager = {
 
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, actualSize, actualSize);
-
         ctx.fillStyle = '#000000';
+
         for (let row = 0; row < moduleCount; row++) {
           for (let col = 0; col < moduleCount; col++) {
             if (qr.isDark(row, col)) {
@@ -47,20 +66,22 @@ const QRManager = {
           }
         }
 
-        console.log('QR generated, modules:', moduleCount);
+        console.log('QR generated ✅, modules:', moduleCount);
         resolve();
+
       } catch (err) {
-        console.error('QR error:', err.message);
-        // Show URL as text fallback
+        console.error('QR failed:', err.message);
+        // Draw direct link as fallback text
         try {
-          const ctx = canvasEl.getContext('2d');
           canvasEl.width = 180; canvasEl.height = 180;
+          const ctx = canvasEl.getContext('2d');
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, 180, 180);
-          ctx.fillStyle = '#000000';
-          ctx.font = '8px Arial';
+          ctx.fillStyle = '#888';
+          ctx.font = '10px Arial';
           ctx.textAlign = 'center';
-          ctx.fillText('QR Error', 90, 90);
+          ctx.fillText('Tap image to', 90, 80);
+          ctx.fillText('download', 90, 95);
         } catch(e) {}
         resolve();
       }
