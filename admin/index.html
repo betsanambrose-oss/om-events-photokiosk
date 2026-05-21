@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OM Events — Admin Panel</title>
+  <link rel="stylesheet" href="../css/kiosk.css"/>
+  <link rel="stylesheet" href="../css/admin.css"/>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">OM <span>Events</span></div>
+    <div class="gold-line"></div>
+    <div class="login-subtitle">Admin Panel</div>
+    <input type="password" id="password-input" class="login-input"
+      placeholder="Enter password" autocomplete="off"
+      onkeydown="if(event.key==='Enter') Admin.login()"/>
+    <button class="login-btn" onclick="Admin.login()">Access Admin</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div id="admin-app">
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">OM <span>Events</span></div>
+      <div class="sidebar-badge">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="Admin.showSection('event')" data-section="event">
+        <span class="nav-icon">📋</span> Event Setup
+      </div>
+      <div class="nav-item" onclick="Admin.showSection('branding')" data-section="branding">
+        <span class="nav-icon">🎨</span> Branding
+      </div>
+      <div class="nav-item" onclick="Admin.showSection('camera')" data-section="camera">
+        <span class="nav-icon">📷</span> Camera
+      </div>
+      <div class="nav-item" onclick="Admin.showSection('printer')" data-section="printer">
+        <span class="nav-icon">🖨️</span> Printer
+      </div>
+      <div class="nav-item" onclick="Admin.showSection('system')" data-section="system">
+        <span class="nav-icon">⚙️</span> System
+      </div>
+      <div class="nav-item" onclick="Admin.showSection('password')" data-section="password">
+        <span class="nav-icon">🔒</span> Security
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="online-badge">
+        <div class="online-dot" id="sidebar-online-dot"></div>
+        <span id="sidebar-online-text">Online</span>
+      </div>
+      <button class="exit-btn" onclick="Admin.exitToKiosk()">← Back to Kiosk</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- EVENT SETUP -->
+    <div class="section active" id="section-event">
+      <div class="section-header">
+        <h1 class="section-title">Event <span>Setup</span></h1>
+        <p class="section-subtitle">Configure today's event settings</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Event Information</div>
+        <div class="form-group">
+          <label class="form-label">Event Name</label>
+          <input type="text" id="event-name" class="form-input" placeholder="e.g. TechCorp Annual Day 2025"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organizer</label>
+          <input type="text" id="event-organizer" class="form-input" placeholder="e.g. TechCorp Pvt Ltd"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Event Date</label>
+          <input type="date" id="event-date" class="form-input"/>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Active Category</div>
+        <div class="form-group">
+          <label class="form-label">Select Category for Today</label>
+          <select id="active-category" class="form-select" onchange="Admin.renderSceneToggles()"></select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Active Scenes</div>
+        <p style="font-size:11px;color:var(--white-dim);margin-bottom:16px;letter-spacing:1px;">Toggle scenes on or off for today</p>
+        <div class="scene-toggle-grid" id="scene-toggle-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Output Mode</div>
+        <div class="mode-grid">
+          <div class="mode-card active" data-mode="soft" onclick="Admin.setMode('soft')">
+            <div class="mode-icon">📱</div>
+            <div class="mode-name">Soft Copy</div>
+          </div>
+          <div class="mode-card" data-mode="print" onclick="Admin.setMode('print')">
+            <div class="mode-icon">🖨️</div>
+            <div class="mode-name">Print Only</div>
+          </div>
+          <div class="mode-card" data-mode="both" onclick="Admin.setMode('both')">
+            <div class="mode-icon">✨</div>
+            <div class="mode-name">Both</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="Admin.saveSettings()">Save Settings</button>
+        <button class="btn btn-outline" onclick="Admin.resetDefaults()">Reset Defaults</button>
+      </div>
+    </div>
+
+    <!-- BRANDING -->
+    <div class="section" id="section-branding">
+      <div class="section-header">
+        <h1 class="section-title">Brand <span>Settings</span></h1>
+        <p class="section-subtitle">Watermark and logo configuration</p>
+      </div>
+      <div class="card">
+        <div class="card-title">OM Events Watermark</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Show OM Events Branding</div>
+            <div class="toggle-desc">Display OM Events logo on generated photos</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-om-watermark" checked onchange="Admin.saveSettings()"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Client Logo</div>
+        <div class="toggle-row" style="margin-bottom:16px;">
+          <div>
+            <div class="toggle-label">Show Client Logo</div>
+            <div class="toggle-desc">Upload and display client branding on photos</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-client-logo" onchange="Admin.toggleClientLogo()"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="client-logo-section" style="display:none;">
+          <div class="upload-area">
+            <input type="file" id="logo-file-input" accept="image/png,image/jpeg" onchange="Admin.handleLogoUpload(event)"/>
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-hint">Tap to upload client logo (PNG recommended)</div>
+          </div>
+          <img id="logo-preview" src="" alt="Logo preview"/>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Watermark Position</div>
+        <div class="position-grid">
+          <button class="position-btn" data-pos="top-left" onclick="Admin.setWatermarkPos('top-left')">Top Left</button>
+          <button class="position-btn" data-pos="top-right" onclick="Admin.setWatermarkPos('top-right')">Top Right</button>
+          <button class="position-btn active" data-pos="bottom-left" onclick="Admin.setWatermarkPos('bottom-left')">Bottom Left</button>
+          <button class="position-btn" data-pos="bottom-right" onclick="Admin.setWatermarkPos('bottom-right')">Bottom Right</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="Admin.saveSettings()">Save Settings</button>
+      </div>
+    </div>
+
+    <!-- CAMERA -->
+    <div class="section" id="section-camera">
+      <div class="section-header">
+        <h1 class="section-title">Camera <span>Setup</span></h1>
+        <p class="section-subtitle">Configure and test camera source</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Camera Source</div>
+        <div class="form-group">
+          <label class="form-label">Select Camera</label>
+          <select id="camera-select" class="form-select" onchange="Admin.switchCamera()">
+            <option value="">Loading cameras...</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="Admin.refreshCameras()">🔄 Refresh</button>
+          <button class="btn btn-gold" onclick="Admin.startCameraPreview()">▶ Start Preview</button>
+          <button class="btn btn-outline" onclick="Admin.stopCameraPreview()">⏹ Stop</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Live Preview</div>
+        <video id="admin-camera-preview" autoplay playsinline muted></video>
+      </div>
+    </div>
+
+    <!-- PRINTER -->
+    <div class="section" id="section-printer">
+      <div class="section-header">
+        <h1 class="section-title">Printer <span>Setup</span></h1>
+        <p class="section-subtitle">Configure print settings</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Print Settings</div>
+        <div class="status-row">
+          <div class="status-dot gold"></div>
+          <span class="status-label">Paper Size</span>
+          <span class="status-value">6 × 4 inches</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot" id="printer-status-dot" style="background:var(--white-dim)"></div>
+          <span class="status-label">Printer Status</span>
+          <span class="status-value" id="printer-status-text">Not tested</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot gold"></div>
+          <span class="status-label">Print Method</span>
+          <span class="status-value">WiFi / System Dialog</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Test Print</div>
+        <div class="btn-row">
+          <button class="btn btn-gold" onclick="Admin.testPrint()">🖨️ Send Test Print</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Print Notes</div>
+        <div style="font-size:11px;color:var(--white-dim);line-height:2.2;letter-spacing:1px;">
+          • Connect printer to same WiFi hotspot as this device<br/>
+          • Canon PIXMA and HP Smart series recommended<br/>
+          • Use 6×4 glossy photo paper for best results<br/>
+          • Always test print before each event starts
+        </div>
+      </div>
+    </div>
+
+    <!-- SYSTEM -->
+    <div class="section" id="section-system">
+      <div class="section-header">
+        <h1 class="section-title">System <span>Status</span></h1>
+        <p class="section-subtitle">Monitor and manage system</p>
+      </div>
+      <div class="card">
+        <div class="card-title">System Status</div>
+        <div class="status-row">
+          <div class="status-dot green" id="sys-online-dot"></div>
+          <span class="status-label">Internet Connection</span>
+          <span class="status-value" id="sys-online-text">Online</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot gold"></div>
+          <span class="status-label">AI Provider</span>
+          <span class="status-value">fal.ai — Flux Kontext Pro</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot gold"></div>
+          <span class="status-label">Version</span>
+          <span class="status-value">Phase 2 — v1.0</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot gold"></div>
+          <span class="status-label">Hosting</span>
+          <span class="status-value">GitHub Pages + Cloudflare</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Maintenance</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Force Offline Mode</div>
+            <div class="toggle-desc">Test fallback without internet</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-force-offline" onchange="Admin.toggleForceOffline()"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn btn-outline" onclick="Admin.clearCache()">🗑️ Clear Cache</button>
+          <button class="btn btn-outline" onclick="Admin.testWorker()">🔌 Test API</button>
+        </div>
+        <div id="worker-test-result" style="margin-top:12px;font-size:11px;letter-spacing:1px;color:var(--gold);"></div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="section" id="section-password">
+      <div class="section-header">
+        <h1 class="section-title">Security <span>Settings</span></h1>
+        <p class="section-subtitle">Change admin password</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Change Password</div>
+        <div class="password-grid">
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" id="current-password" class="form-input" placeholder="Current password"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" id="new-password" class="form-input" placeholder="New password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" id="confirm-password" class="form-input" placeholder="Confirm new password"/>
+        </div>
+        <div id="password-message" style="font-size:11px;margin:8px 0;letter-spacing:1px;min-height:20px;"></div>
+        <div class="btn-row">
+          <button class="btn btn-gold" onclick="Admin.changePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="save-toast">✓ Settings Saved</div>
+
+<script src="../templates/templates.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>
