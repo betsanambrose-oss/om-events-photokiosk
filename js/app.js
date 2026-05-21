@@ -47,14 +47,8 @@ const App = {
     const grid = document.getElementById('category-grid');
     if (!grid) return;
 
-    const s = Settings.load();
-    let categories = TEMPLATES.categories;
-
-    // If admin set a specific category, show only that one
-    if (s.activeCategory) {
-      const cat = TEMPLATES.categories.find(c => c.id === s.activeCategory);
-      if (cat) categories = [cat];
-    }
+    // Get only admin-enabled categories
+    const categories = Settings.getActiveCategories();
 
     grid.innerHTML = categories.map(cat => `
       <div class="category-card cat-${cat.id}" onclick="App.selectCategory('${cat.id}')">

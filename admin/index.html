@@ -89,15 +89,22 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-title">Active Category</div>
+        <div class="card-title">Active Categories</div>
+        <p style="font-size:11px;color:var(--white-dim);margin-bottom:16px;letter-spacing:1px;">
+          Select which categories guests can choose from today
+        </p>
+        <div id="category-toggle-grid" style="display:flex;flex-direction:column;gap:0;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Scene Manager</div>
+        <p style="font-size:11px;color:var(--white-dim);margin-bottom:16px;letter-spacing:1px;">
+          Select a category to manage its scenes
+        </p>
         <div class="form-group">
-          <label class="form-label">Select Category for Today</label>
+          <label class="form-label">Select Category</label>
           <select id="active-category" class="form-select" onchange="Admin.renderSceneToggles()"></select>
         </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Active Scenes</div>
-        <p style="font-size:11px;color:var(--white-dim);margin-bottom:16px;letter-spacing:1px;">Toggle scenes on or off for today</p>
         <div class="scene-toggle-grid" id="scene-toggle-grid"></div>
       </div>
       <div class="card">

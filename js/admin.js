@@ -45,12 +45,17 @@ const Admin = {
     if (s.eventOrganizer) document.getElementById('event-organizer').value = s.eventOrganizer;
     if (s.eventDate) document.getElementById('event-date').value = s.eventDate;
 
-    // Category select
+    // Category toggles
+    this.renderCategoryToggles();
+
+    // Scene manager dropdown
     const catSelect = document.getElementById('active-category');
-    catSelect.innerHTML = TEMPLATES.categories.map(c =>
-      `<option value="${c.id}" ${s.activeCategory === c.id ? 'selected' : ''}>${c.name}</option>`
-    ).join('');
-    this.renderSceneToggles();
+    if (catSelect) {
+      catSelect.innerHTML = TEMPLATES.categories.map(c =>
+        `<option value="${c.id}">${c.name}</option>`
+      ).join('');
+      this.renderSceneToggles();
+    }
 
     // Mode
     this.setMode(s.mode || 'soft', false);
@@ -86,6 +91,44 @@ const Admin = {
 
     // Auto-load camera list when switching to camera section
     if (name === 'camera') this.refreshCameras();
+  },
+
+  // ── CATEGORY TOGGLES (multiple) ──
+  renderCategoryToggles() {
+    const grid = document.getElementById('category-toggle-grid');
+    if (!grid) return;
+
+    const activeCategories = this.settings.activeCategories ||
+      TEMPLATES.categories.map(c => c.id); // all active by default
+
+    grid.innerHTML = TEMPLATES.categories.map(cat => `
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">${cat.icon} ${cat.name}</div>
+          <div class="toggle-desc">${cat.scenes.length} scenes available</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-cat="${cat.id}"
+            ${activeCategories.includes(cat.id) ? 'checked' : ''}
+            onchange="Admin.updateCategoryToggle('${cat.id}', this.checked)"/>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    `).join('');
+  },
+
+  updateCategoryToggle(catId, enabled) {
+    if (!this.settings.activeCategories) {
+      this.settings.activeCategories = TEMPLATES.categories.map(c => c.id);
+    }
+    if (enabled) {
+      if (!this.settings.activeCategories.includes(catId)) {
+        this.settings.activeCategories.push(catId);
+      }
+    } else {
+      this.settings.activeCategories = this.settings.activeCategories.filter(id => id !== catId);
+    }
+    this.saveSettings();
   },
 
   // ── SCENE TOGGLES ──
@@ -393,9 +436,11 @@ const Admin = {
     this.settings.eventName = document.getElementById('event-name')?.value || '';
     this.settings.eventOrganizer = document.getElementById('event-organizer')?.value || '';
     this.settings.eventDate = document.getElementById('event-date')?.value || '';
-    this.settings.activeCategory = document.getElementById('active-category')?.value || '';
     this.settings.omWatermark = document.getElementById('toggle-om-watermark')?.checked !== false;
     this.settings.forceOffline = document.getElementById('toggle-force-offline')?.checked || false;
+
+    // activeCategories is saved directly via updateCategoryToggle
+    // activeScenes is saved directly via updateSceneToggle
 
     // Save to localStorage
     localStorage.setItem('om-kiosk-settings', JSON.stringify(this.settings));

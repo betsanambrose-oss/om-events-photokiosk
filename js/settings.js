@@ -21,7 +21,16 @@ const Settings = {
     } catch (e) {}
   },
 
-  // Get active category from settings
+  // Get active categories (multiple)
+  getActiveCategories() {
+    const s = this.load();
+    if (!s.activeCategories || s.activeCategories.length === 0) {
+      return TEMPLATES.categories; // all by default
+    }
+    return TEMPLATES.categories.filter(c => s.activeCategories.includes(c.id));
+  },
+
+  // Get active category from settings (legacy single)
   getActiveCategory() {
     const s = this.load();
     if (!s.activeCategory) return TEMPLATES.categories[0];
