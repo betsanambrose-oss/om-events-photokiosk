@@ -98,7 +98,8 @@ const App = {
       <div class="scene-card-home" style="animation-delay:${i * 0.03}s"
         onclick="App.selectScene('${scene.id}', '${scene.categoryId}')">
         <div class="scene-card-inner">
-          <div class="scene-thumb" style="background:${scene.gradient};"
+          <div class="scene-thumb"
+            style="background:${scene.gradient}; background-size:cover; background-position:center;"
             data-thumb="assets/thumbnails/${scene.id}.webp"></div>
           <div class="scene-overlay-home"></div>
           <div class="scene-select-ring-home"></div>
@@ -407,16 +408,11 @@ const App = {
       this.state.mode = s.mode || 'soft';
       this.state.watermarkEnabled = s.omWatermark !== false;
 
-      // Clear stale activeCategories if they don't include new categories
-      if (s.activeCategories) {
-        const validIds = TEMPLATES.categories.map(c => c.id);
-        const hasNew = validIds.some(id => !['hollywood','royal','annual-day','summer','winter','family'].includes(id));
-        const savedHasNew = s.activeCategories.some(id => !['hollywood','royal','annual-day','summer','winter','family'].includes(id));
-        if (hasNew && !savedHasNew) {
-          // New categories added — reset to all
-          const updated = { ...s, activeCategories: validIds };
-          Settings.save(updated);
-        }
+      // Always ensure all current template categories are included
+      const validIds = TEMPLATES.categories.map(c => c.id);
+      if (!s.activeCategories || s.activeCategories.length < validIds.length) {
+        const updated = { ...s, activeCategories: validIds };
+        Settings.save(updated);
       }
     } catch (e) {}
   }
