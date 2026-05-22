@@ -404,10 +404,17 @@ const App = {
       const s = Settings.load();
       this.state.mode = s.mode || 'soft';
       this.state.watermarkEnabled = s.omWatermark !== false;
-      // Apply active category from admin if set
-      if (s.activeCategory) {
-        const cat = TEMPLATES.categories.find(c => c.id === s.activeCategory);
-        if (cat) this.state.activeCategory = cat;
+
+      // Clear stale activeCategories if they don't include new categories
+      if (s.activeCategories) {
+        const validIds = TEMPLATES.categories.map(c => c.id);
+        const hasNew = validIds.some(id => !['hollywood','royal','annual-day','summer','winter','family'].includes(id));
+        const savedHasNew = s.activeCategories.some(id => !['hollywood','royal','annual-day','summer','winter','family'].includes(id));
+        if (hasNew && !savedHasNew) {
+          // New categories added — reset to all
+          const updated = { ...s, activeCategories: validIds };
+          Settings.save(updated);
+        }
       }
     } catch (e) {}
   }

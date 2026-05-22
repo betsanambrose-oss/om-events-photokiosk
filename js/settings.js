@@ -20,9 +20,14 @@ const Settings = {
   getActiveCategories() {
     const s = this.load();
     if (!s.activeCategories || s.activeCategories.length === 0) {
-      return TEMPLATES.categories;
+      return TEMPLATES.categories; // all by default
     }
-    return TEMPLATES.categories.filter(c => s.activeCategories.includes(c.id));
+    // Filter to only valid category IDs that exist in current templates
+    const validIds = TEMPLATES.categories.map(c => c.id);
+    const filtered = s.activeCategories.filter(id => validIds.includes(id));
+    // If saved list has no valid categories (stale data), return all
+    if (filtered.length === 0) return TEMPLATES.categories;
+    return TEMPLATES.categories.filter(c => filtered.includes(c.id));
   },
 
   getActiveCategory() {
@@ -36,7 +41,11 @@ const Settings = {
     const cat = TEMPLATES.categories.find(c => c.id === categoryId);
     if (!cat) return [];
     if (!s.activeScenes || !s.activeScenes[categoryId]) return cat.scenes;
-    return cat.scenes.filter(scene => s.activeScenes[categoryId].includes(scene.id));
+    // Filter to only valid scene IDs that exist in current templates
+    const validIds = cat.scenes.map(sc => sc.id);
+    const filtered = s.activeScenes[categoryId].filter(id => validIds.includes(id));
+    if (filtered.length === 0) return cat.scenes; // stale data — return all
+    return cat.scenes.filter(scene => filtered.includes(scene.id));
   },
 
   getMode() { return this.load().mode || 'soft'; },
