@@ -975,8 +975,10 @@ html, body {
   scrollbar-color: var(--black-border) transparent;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: auto;
   gap: 12px;
   align-content: start;
+  align-items: start;
 }
 .scene-grid-home::-webkit-scrollbar { width: 3px; }
 .scene-grid-home::-webkit-scrollbar-track { background: transparent; }
@@ -1070,27 +1072,27 @@ html, body {
 
 /* 4K+ */
 @media (min-width: 2560px) {
-  .scene-grid-home { grid-template-columns: repeat(8, 1fr); gap: 16px; padding: 4px 48px 48px; }
+  .scene-grid-home { grid-template-columns: repeat(8, 1fr); grid-auto-rows: auto; gap: 16px; padding: 4px 48px 48px; }
   .home-header { padding: 0 48px; }
   .filter-bar { padding: 0 48px 16px; }
 }
 /* Full HD */
 @media (min-width: 1920px) and (max-width: 2559px) {
-  .scene-grid-home { grid-template-columns: repeat(7, 1fr); }
+  .scene-grid-home { grid-template-columns: repeat(7, 1fr); grid-auto-rows: auto; }
 }
 /* Standard laptop (default 6 cols) */
 @media (min-width: 1280px) and (max-width: 1919px) {
-  .scene-grid-home { grid-template-columns: repeat(6, 1fr); }
+  .scene-grid-home { grid-template-columns: repeat(6, 1fr); grid-auto-rows: auto; }
 }
 /* Small laptop */
 @media (min-width: 1024px) and (max-width: 1279px) {
-  .scene-grid-home { grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 24px 24px; }
+  .scene-grid-home { grid-template-columns: repeat(5, 1fr); grid-auto-rows: auto; gap: 10px; padding: 4px 24px 24px; }
   .filter-bar { padding: 0 24px 10px; }
   .home-header { padding: 0 24px; }
 }
 /* Tablet */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .scene-grid-home { grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 20px 24px; }
+  .scene-grid-home { grid-template-columns: repeat(4, 1fr); grid-auto-rows: auto; gap: 10px; padding: 4px 20px 24px; }
   .filter-bar { padding: 0 20px 10px; gap: 6px; }
   .filter-tab { padding: 6px 11px; font-size: 9px; }
   .home-header { padding: 0 20px; margin-bottom: 8px; }
@@ -1099,7 +1101,7 @@ html, body {
 /* Large phone landscape */
 @media (min-width: 600px) and (max-width: 767px) {
   #screen-home { padding: 16px 0 0; }
-  .scene-grid-home { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 4px 16px 20px; }
+  .scene-grid-home { grid-template-columns: repeat(3, 1fr); grid-auto-rows: auto; gap: 8px; padding: 4px 16px 20px; }
   .filter-bar { padding: 0 16px 8px; gap: 6px; }
   .filter-tab { padding: 5px 10px; font-size: 9px; letter-spacing: 1px; }
   .home-header { padding: 0 16px; margin-bottom: 8px; }
@@ -1109,7 +1111,7 @@ html, body {
 /* Mobile */
 @media (max-width: 599px) {
   #screen-home { padding: 14px 0 0; }
-  .scene-grid-home { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 4px 12px 20px; }
+  .scene-grid-home { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; gap: 8px; padding: 4px 12px 20px; }
   .filter-bar { padding: 0 12px 8px; gap: 5px; }
   .filter-tab { padding: 5px 9px; font-size: 9px; letter-spacing: 1px; }
   .home-header { padding: 0 12px; margin-bottom: 6px; }
