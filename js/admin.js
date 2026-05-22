@@ -445,25 +445,39 @@ const Admin = {
 
   // ── SAVE / LOAD ──
   saveSettings() {
-    // Read current UI values
     this.settings.eventName = document.getElementById('event-name')?.value || '';
     this.settings.eventOrganizer = document.getElementById('event-organizer')?.value || '';
     this.settings.eventDate = document.getElementById('event-date')?.value || '';
     this.settings.omWatermark = document.getElementById('toggle-om-watermark')?.checked !== false;
     this.settings.forceOffline = document.getElementById('toggle-force-offline')?.checked || false;
 
-    // activeCategories is saved directly via updateCategoryToggle
-    // activeScenes is saved directly via updateSceneToggle
+    // Ensure all valid categories are included if none saved
+    if (!this.settings.activeCategories || this.settings.activeCategories.length === 0) {
+      this.settings.activeCategories = TEMPLATES.categories.map(c => c.id);
+    }
 
-    // Save to localStorage
-    localStorage.setItem('om-kiosk-settings', JSON.stringify(this.settings));
+    if (typeof Settings !== 'undefined') {
+      Settings.save(this.settings);
+    } else {
+      localStorage.setItem('om-kiosk-settings', JSON.stringify(this.settings));
+    }
     this.showToast();
   },
 
   loadSettings() {
     try {
-      const saved = localStorage.getItem('om-kiosk-settings');
-      this.settings = saved ? JSON.parse(saved) : {};
+      // Use Settings.load() which handles template version reset automatically
+      if (typeof Settings !== 'undefined') {
+        this.settings = Settings.load();
+      } else {
+        const saved = localStorage.getItem('om-kiosk-settings');
+        this.settings = saved ? JSON.parse(saved) : {};
+      }
+      // Always ensure all current categories are in activeCategories
+      const validIds = TEMPLATES.categories.map(c => c.id);
+      if (!this.settings.activeCategories || this.settings.activeCategories.length < validIds.length) {
+        this.settings.activeCategories = validIds;
+      }
     } catch (e) {
       this.settings = {};
     }
