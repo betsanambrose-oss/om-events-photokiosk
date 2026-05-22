@@ -97,13 +97,15 @@ const App = {
     grid.innerHTML = scenes.map((scene, i) => `
       <div class="scene-card-home" style="animation-delay:${i * 0.03}s"
         onclick="App.selectScene('${scene.id}', '${scene.categoryId}')">
-        <div class="scene-thumb" style="background:${scene.gradient};"
-          data-thumb="assets/thumbnails/${scene.id}.webp"></div>
-        <div class="scene-overlay-home"></div>
-        <div class="scene-select-ring-home"></div>
-        <div class="scene-info">
-          <div class="scene-cat-badge">${scene.categoryName}</div>
-          <div class="scene-title-home">${scene.name}</div>
+        <div class="scene-card-inner">
+          <div class="scene-thumb" style="background:${scene.gradient};"
+            data-thumb="assets/thumbnails/${scene.id}.webp"></div>
+          <div class="scene-overlay-home"></div>
+          <div class="scene-select-ring-home"></div>
+          <div class="scene-info">
+            <span class="scene-cat-badge">${scene.categoryName}</span>
+            <span class="scene-title-home">${scene.name}</span>
+          </div>
         </div>
       </div>
     `).join('');
