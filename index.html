@@ -30,57 +30,38 @@
 ══════════════════════════════════════ -->
 <div id="screen-home" class="screen active">
 
-  <div class="header" style="text-align:center; margin-bottom:40px;">
+  <!-- Header -->
+  <div class="home-header">
     <div class="om-logo">OM Events</div>
     <div class="gold-line wide"></div>
-    <h1 class="headline">
-      Step Into<br><span>Your Story</span>
-    </h1>
+    <h1 class="headline">Step Into <span>Your Story</span></h1>
     <p class="subline">Choose your world — we'll place you in it</p>
   </div>
 
-  <div id="category-grid" class="category-grid">
+  <!-- Filter tabs -->
+  <div class="filter-bar" id="filter-bar">
     <!-- Rendered by app.js -->
   </div>
 
-  <!-- Status indicator -->
-  <div style="position:absolute; bottom:20px; right:24px;">
-    <span id="online-indicator" style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#4CAF50;">● Online</span>
+  <!-- Scene grid -->
+  <div class="scene-grid-home" id="scene-grid-home">
+    <!-- Rendered by app.js -->
   </div>
 
-  <!-- Admin access (hidden tap area) -->
+  <!-- Status + admin -->
+  <div style="position:fixed; bottom:16px; right:20px; z-index:50;">
+    <span id="online-indicator" style="font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#4CAF50;">● Online</span>
+  </div>
+
   <div id="admin-tap"
-    onclick="App.adminTaps = (App.adminTaps||0)+1; if(App.adminTaps>=5){ App.adminTaps=0; window.location.href='/admin'; }"
-    style="position:absolute; bottom:0; left:0; width:60px; height:60px; opacity:0; cursor:default;">
+    onclick="App.adminTaps=(App.adminTaps||0)+1; if(App.adminTaps>=5){App.adminTaps=0; window.location.href='admin/index.html';}"
+    style="position:fixed; bottom:0; left:0; width:60px; height:60px; opacity:0; cursor:default; z-index:50;">
   </div>
 
 </div>
 
 
-<!-- ══════════════════════════════════════
-     SCREEN 2 — SCENE SELECT
-══════════════════════════════════════ -->
-<div id="screen-scenes" class="screen">
-
-  <button class="back-btn" id="back-to-home">
-    <svg viewBox="0 0 24 24" stroke-width="1.5"><polyline points="15,18 9,12 15,6"/></svg>
-    Back
-  </button>
-
-  <div class="scenes-header">
-    <div class="om-logo">OM Events</div>
-    <div class="gold-line"></div>
-    <h2 class="scenes-title" id="scenes-category-name">Choose Your Scene</h2>
-    <p style="font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-top:8px;">
-      Tap a scene to continue
-    </p>
-  </div>
-
-  <div id="scene-grid" class="scene-grid">
-    <!-- Rendered by app.js -->
-  </div>
-
-</div>
+<!-- Scene select screen removed — scenes now shown directly on home screen -->
 
 
 <!-- ══════════════════════════════════════

@@ -893,3 +893,174 @@ html, body {
   text-transform: uppercase;
   color: var(--gold-dim);
 }
+
+/* ══════════════════════════════════════
+   NEW HOME SCREEN — Filter + Scene Grid
+══════════════════════════════════════ */
+
+/* Filter tabs */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 40px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-tab {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 2px;
+  border: 1px solid var(--black-border);
+  background: transparent;
+  color: var(--white-dim);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s var(--transition);
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  border-color: var(--gold-dim);
+  color: var(--white);
+}
+
+.filter-tab.active {
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+/* Scene grid — full home screen */
+.scene-grid-home {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 40px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--black-border) transparent;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  align-content: start;
+}
+
+.scene-grid-home::-webkit-scrollbar { width: 4px; }
+.scene-grid-home::-webkit-scrollbar-track { background: transparent; }
+.scene-grid-home::-webkit-scrollbar-thumb { background: var(--black-border); border-radius: 2px; }
+
+/* Scene card — home grid */
+.scene-card-home {
+  position: relative;
+  aspect-ratio: 3/4;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--black-border);
+  transition: transform 0.3s var(--transition), border-color 0.3s;
+  animation: fadeUp 0.4s var(--transition) both;
+}
+
+.scene-card-home:active { transform: scale(0.95); }
+.scene-card-home:hover { border-color: var(--gold); }
+
+.scene-card-home .scene-thumb {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s var(--transition);
+}
+
+.scene-card-home:hover .scene-thumb { transform: scale(1.06); }
+
+.scene-card-home .scene-overlay-home {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.9) 100%);
+}
+
+.scene-card-home .scene-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 16px 10px 10px;
+}
+
+.scene-card-home .scene-cat-badge {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+
+.scene-card-home .scene-title-home {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.scene-card-home .scene-select-ring-home {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.scene-card-home:hover .scene-select-ring-home { opacity: 1; }
+
+/* New home screen layout */
+#screen-home {
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 28px 0 0;
+  overflow: hidden;
+}
+
+#screen-home .home-header {
+  text-align: center;
+  padding: 0 40px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+#screen-home .home-header .om-logo {
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+#screen-home .home-header .headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--white);
+}
+
+#screen-home .home-header .headline span {
+  color: var(--gold);
+  font-style: italic;
+}
+
+#screen-home .home-header .subline {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-top: 6px;
+}

@@ -43,56 +43,87 @@ const App = {
     console.log('Screen:', name);
   },
 
-  renderCategories() {
-    const grid = document.getElementById('category-grid');
-    if (!grid) return;
+  activeFilter: 'all',
 
-    // Get only admin-enabled categories
-    const categories = Settings.getActiveCategories();
+  renderCategories() { this.renderHome(); },
 
-    grid.innerHTML = categories.map(cat => `
-      <div class="category-card cat-${cat.id}" onclick="App.selectCategory('${cat.id}')">
-        <div class="card-bg" style="background:${cat.gradient}"></div>
-        <div class="card-overlay"></div>
-        <div class="gold-corner"></div>
-        <div class="card-content">
-          <div class="card-icon">${cat.icon}</div>
-          <div class="card-name">${cat.name}</div>
-          <div class="card-count">${Settings.getActiveScenes(cat.id).length} Scenes</div>
-        </div>
-      </div>
+  renderHome() {
+    this.renderFilterBar();
+    this.renderSceneGrid();
+  },
+
+  renderFilterBar() {
+    const bar = document.getElementById('filter-bar');
+    if (!bar) return;
+    const cats = Settings.getActiveCategories();
+    const filters = [{ id: 'all', name: 'All', icon: '✨' }, ...cats.map(c => ({ id: c.id, name: c.name, icon: c.icon }))];
+    bar.innerHTML = filters.map(f => `
+      <button class="filter-tab ${f.id === this.activeFilter ? 'active' : ''}"
+        onclick="App.setFilter('${f.id}')">${f.icon} ${f.name}</button>
     `).join('');
   },
 
-  selectCategory(categoryId) {
-    if (this.LOCKED) return;
-    const cat = TEMPLATES.categories.find(c => c.id === categoryId);
-    if (!cat) return;
-    this.state.selectedCategory = cat;
-    const grid = document.getElementById('scene-grid');
-    const title = document.getElementById('scenes-category-name');
-    if (title) title.innerHTML = `<span>${cat.name}</span> Scenes`;
-
-    // Only show admin-enabled scenes
-    const activeScenes = Settings.getActiveScenes(categoryId);
-
-    if (grid) {
-      grid.innerHTML = activeScenes.map(scene => `
-        <div class="scene-card" onclick="App.selectScene('${scene.id}')">
-          <div class="scene-preview" style="background:${scene.gradient}"></div>
-          <div class="scene-overlay"></div>
-          <div class="scene-select-ring"></div>
-          <div class="scene-name">${scene.name}</div>
-        </div>
-      `).join('');
-    }
-    this.showScreen('scenes');
+  setFilter(filterId) {
+    this.activeFilter = filterId;
+    this.renderFilterBar();
+    this.renderSceneGrid();
   },
 
-  async selectScene(sceneId) {
+  renderSceneGrid() {
+    const grid = document.getElementById('scene-grid-home');
+    if (!grid) return;
+    const cats = Settings.getActiveCategories();
+    let scenes = [];
+    if (this.activeFilter === 'all') {
+      cats.forEach(cat => {
+        Settings.getActiveScenes(cat.id).forEach(scene => {
+          scenes.push({ ...scene, categoryId: cat.id, categoryName: cat.name });
+        });
+      });
+    } else {
+      const cat = cats.find(c => c.id === this.activeFilter);
+      if (cat) {
+        Settings.getActiveScenes(cat.id).forEach(scene => {
+          scenes.push({ ...scene, categoryId: cat.id, categoryName: cat.name });
+        });
+      }
+    }
+    if (scenes.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;
+        color:rgba(255,255,255,0.3);font-size:12px;letter-spacing:3px;text-transform:uppercase;">
+        No scenes available</div>`;
+      return;
+    }
+    grid.innerHTML = scenes.map((scene, i) => `
+      <div class="scene-card-home" style="animation-delay:${i * 0.03}s"
+        onclick="App.selectScene('${scene.id}', '${scene.categoryId}')">
+        <div class="scene-thumb" style="background:${scene.gradient};"
+          data-thumb="assets/thumbnails/${scene.id}.webp"></div>
+        <div class="scene-overlay-home"></div>
+        <div class="scene-select-ring-home"></div>
+        <div class="scene-info">
+          <div class="scene-cat-badge">${scene.categoryName}</div>
+          <div class="scene-title-home">${scene.name}</div>
+        </div>
+      </div>
+    `).join('');
+    this.loadThumbnails();
+  },
+
+  loadThumbnails() {
+    document.querySelectorAll('.scene-thumb[data-thumb]').forEach(el => {
+      const src = el.dataset.thumb;
+      const img = new Image();
+      img.onload = () => { el.style.backgroundImage = `url(${src})`; };
+      img.src = src;
+    });
+  },
+
+  async selectScene(sceneId, categoryId) {
     if (this.LOCKED) return;
-    const cat = this.state.selectedCategory;
-    const scene = cat.scenes.find(s => s.id === sceneId);
+    const catId = categoryId || this.activeFilter;
+    const cat = TEMPLATES.categories.find(c => c.id === catId) || TEMPLATES.categories.find(c => c.scenes.some(s => s.id === sceneId));
+    const scene = cat?.scenes.find(s => s.id === sceneId);
     if (!scene) return;
     this.state.selectedScene = scene;
 
@@ -348,7 +379,7 @@ const App = {
       this.unlock();
       Camera.cancelCountdown();
       Camera.stop();
-      this.showScreen('scenes');
+      this.showScreen('home');
     });
     document.getElementById('capture-btn')?.addEventListener('click', () => {
       this.startCapture();
