@@ -219,9 +219,18 @@ const App = {
 
     let result;
 
+    // Build final prompt — replace [GENDER] placeholder
+    // Default to gender-neutral "person" until face-api detection is added
+    const rawPrompt = this.state.selectedScene.prompt || '';
+    const finalPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
+
+    // Add seamless integration instruction to every prompt
+    const seamlessPrefix = 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
+    const enhancedPrompt = seamlessPrefix + finalPrompt;
+
     if (navigator.onLine) {
       result = await API.generatePhoto(
-        this.state.selectedScene.prompt,
+        enhancedPrompt,
         this.state.selectedScene.negative,
         updateMessage
       );
@@ -274,7 +283,12 @@ const App = {
 
   async showResultScreen(imageUrl) {
     const resultImg = document.getElementById('result-image');
-    if (resultImg) resultImg.src = imageUrl;
+    if (resultImg) {
+      resultImg.src = imageUrl;
+      // Make image tappable to open download URL directly
+      resultImg.style.cursor = 'pointer';
+      resultImg.onclick = () => window.open(imageUrl, '_blank');
+    }
     this.showScreen('result');
 
     const qrCanvas = document.getElementById('qr-canvas');
