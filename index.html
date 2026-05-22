@@ -12,13 +12,24 @@
 </head>
 <body>
 
-<!-- Force unregister old service workers to prevent stale cache -->
+<!-- Force unregister old service workers and reset stale template data -->
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(registrations => {
       registrations.forEach(reg => reg.unregister());
     });
+    // Clear all caches to force fresh load
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+    }
   }
+  // Force reset if old template version
+  try {
+    const s = JSON.parse(localStorage.getItem('om-kiosk-settings') || '{}');
+    if (s._templateVersion !== 'v2-12cats') {
+      localStorage.removeItem('om-kiosk-settings');
+    }
+  } catch(e) { localStorage.removeItem('om-kiosk-settings'); }
 </script>
 
 <div class="bg-grain"></div>

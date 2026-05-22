@@ -16,6 +16,14 @@
   </style>
 </head>
 <body>
+<script>
+  try {
+    const s = JSON.parse(localStorage.getItem('om-kiosk-settings') || '{}');
+    if (s._templateVersion !== 'v2-12cats') {
+      localStorage.removeItem('om-kiosk-settings');
+    }
+  } catch(e) { localStorage.removeItem('om-kiosk-settings'); }
+</script>
 
 <div id="login-screen">
   <div class="login-box">
