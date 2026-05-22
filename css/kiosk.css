@@ -896,10 +896,8 @@ html, body {
 
 /* ══════════════════════════════════════
    NEW HOME SCREEN — Filter + Scene Grid
-   Fully responsive: TV, laptop, tablet, mobile
 ══════════════════════════════════════ */
 
-/* ── Home Screen Container ── */
 #screen-home {
   flex-direction: column;
   justify-content: flex-start;
@@ -908,7 +906,6 @@ html, body {
   overflow: hidden;
 }
 
-/* ── Header ── */
 .home-header {
   text-align: center;
   padding: 0 32px;
@@ -932,7 +929,6 @@ html, body {
   margin-top: 4px;
 }
 
-/* ── Filter Bar ── */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -944,6 +940,7 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 .filter-bar::-webkit-scrollbar { display: none; }
+
 .filter-tab {
   flex-shrink: 0;
   padding: 7px 14px;
@@ -968,7 +965,6 @@ html, body {
   font-weight: 600;
 }
 
-/* ── Scene Grid ── */
 .scene-grid-home {
   flex: 1;
   min-height: 0;
@@ -986,34 +982,32 @@ html, body {
 .scene-grid-home::-webkit-scrollbar-track { background: transparent; }
 .scene-grid-home::-webkit-scrollbar-thumb { background: var(--black-border); border-radius: 2px; }
 
-/* ── Scene Card ──
-   KEY FIX: card is just the outer shell
-   scene-card-inner holds the padding-bottom trick
-   ALL absolute children go inside scene-card-inner
+/* ── Scene Card
+   Uses aspect-ratio property — most reliable cross-browser method
+   All children use position:absolute within the card itself
 ── */
 .scene-card-home {
   position: relative;
   width: 100%;
+  aspect-ratio: 3 / 4;
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid var(--black-border);
   transition: transform 0.3s var(--transition), border-color 0.3s;
   animation: fadeUp 0.4s var(--transition) both;
+  display: block;
 }
 .scene-card-home:active { transform: scale(0.96); }
 .scene-card-home:hover { border-color: var(--gold); }
 
-/* This inner div creates the 3:4 aspect ratio */
+/* scene-card-inner just passes through — no sizing role */
 .scene-card-inner {
-  position: relative;
-  width: 100%;
-  padding-bottom: 133.33%; /* 3:4 = 4/3 * 100 */
-  overflow: hidden;
-  border-radius: 4px;
+  position: absolute;
+  inset: 0;
 }
 
-/* All children positioned inside scene-card-inner */
+/* All children of scene-card-inner fill the card */
 .scene-card-inner .scene-thumb {
   position: absolute;
   inset: 0;
@@ -1028,7 +1022,7 @@ html, body {
   inset: 0;
   background: linear-gradient(180deg,
     rgba(0,0,0,0) 0%,
-    rgba(0,0,0,0.2) 40%,
+    rgba(0,0,0,0.15) 40%,
     rgba(0,0,0,0.95) 100%);
   z-index: 1;
 }
@@ -1038,7 +1032,7 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 24px 10px 10px;
+  padding: 20px 10px 10px;
   z-index: 2;
 }
 
@@ -1072,35 +1066,29 @@ html, body {
 }
 .scene-card-home:hover .scene-card-inner .scene-select-ring-home { opacity: 1; }
 
-/* ══════════════════════════════════════
-   RESPONSIVE BREAKPOINTS
-══════════════════════════════════════ */
+/* ══ RESPONSIVE ══ */
 
-/* 4K TV (2560px+) */
+/* 4K+ */
 @media (min-width: 2560px) {
   .scene-grid-home { grid-template-columns: repeat(8, 1fr); gap: 16px; padding: 4px 48px 48px; }
   .home-header { padding: 0 48px; }
   .filter-bar { padding: 0 48px 16px; }
 }
-
-/* Full HD (1920–2559px) */
+/* Full HD */
 @media (min-width: 1920px) and (max-width: 2559px) {
-  .scene-grid-home { grid-template-columns: repeat(7, 1fr); gap: 14px; }
+  .scene-grid-home { grid-template-columns: repeat(7, 1fr); }
 }
-
-/* Standard laptop (1280–1919px) */
+/* Standard laptop (default 6 cols) */
 @media (min-width: 1280px) and (max-width: 1919px) {
-  .scene-grid-home { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .scene-grid-home { grid-template-columns: repeat(6, 1fr); }
 }
-
-/* Small laptop (1024–1279px) */
+/* Small laptop */
 @media (min-width: 1024px) and (max-width: 1279px) {
   .scene-grid-home { grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 24px 24px; }
   .filter-bar { padding: 0 24px 10px; }
   .home-header { padding: 0 24px; }
 }
-
-/* Tablet portrait (768–1023px) */
+/* Tablet */
 @media (min-width: 768px) and (max-width: 1023px) {
   .scene-grid-home { grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 4px 20px 24px; }
   .filter-bar { padding: 0 20px 10px; gap: 6px; }
@@ -1108,8 +1096,7 @@ html, body {
   .home-header { padding: 0 20px; margin-bottom: 8px; }
   .home-header .headline { font-size: clamp(20px, 3.5vw, 34px); }
 }
-
-/* Large phone landscape (600–767px) */
+/* Large phone landscape */
 @media (min-width: 600px) and (max-width: 767px) {
   #screen-home { padding: 16px 0 0; }
   .scene-grid-home { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 4px 16px 20px; }
@@ -1119,8 +1106,7 @@ html, body {
   .home-header .headline { font-size: 20px; }
   .home-header .subline { display: none; }
 }
-
-/* Mobile portrait (<600px) */
+/* Mobile */
 @media (max-width: 599px) {
   #screen-home { padding: 14px 0 0; }
   .scene-grid-home { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 4px 12px 20px; }
