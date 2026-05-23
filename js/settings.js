@@ -86,9 +86,15 @@ const Settings = {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = async () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
+        // Scale up for print quality — target 2400px on longest side
+        const PRINT_TARGET = 2400;
+        const scale = img.width < PRINT_TARGET ? (PRINT_TARGET / Math.max(img.width, img.height)) : 1;
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        // Use high-quality image smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         if (wm.clientFrame) {
           await new Promise(res => {
             const fi = new Image();
@@ -131,7 +137,7 @@ const Settings = {
             li.src = wm.clientLogo;
           });
         }
-        resolve(canvas.toDataURL('image/jpeg', 0.95));
+        resolve(canvas.toDataURL('image/png')); // PNG — lossless, max quality for print
       };
       img.onerror = () => resolve(imageUrl);
       img.src = imageUrl;
