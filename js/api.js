@@ -49,7 +49,7 @@ const API = {
     throw new Error('Generation timed out after 3 minutes');
   },
 
-  async generatePhoto(prompt, negativePrompt, onProgress, personCount = 1) {
+  async generatePhoto(prompt, negativePrompt, onProgress) {
     if (this.isGenerating) {
       return { success: false, error: 'Already running — please wait' };
     }
@@ -57,7 +57,7 @@ const API = {
 
     try {
       // STEP 1 — Validate and upload face image
-      onProgress?.(personCount > 1 ? 'Uploading group photo...' : 'Uploading your photo...');
+      onProgress?.('Uploading your photo...');
 
       if (!this.capturedFaceBase64) {
         throw new Error('No photo captured. Please try again.');
@@ -94,7 +94,7 @@ const API = {
       console.log('✅ Kontext job submitted:', job.requestId);
 
       // STEP 3 — Poll until done
-      onProgress?.(personCount > 1 ? 'Placing your group in the scene...' : 'Creating your scene...');
+      onProgress?.('Creating your scene...');
       const resultUrl = await this.pollKontext(job.statusUrl, job.responseUrl, onProgress);
       if (!resultUrl) throw new Error('No result image returned');
       console.log('✅ Final result:', resultUrl);

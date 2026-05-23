@@ -4,7 +4,6 @@ const App = {
   state: {
     selectedCategory: null,
     selectedScene: null,
-    personCount: 1,
     capturedImage: null,
     resultImageUrl: null,
     mode: 'soft',
@@ -152,77 +151,18 @@ const App = {
     if (!scene) return;
     this.state.selectedScene = scene;
     this.state.selectedCategory = cat;
-
-    // Show person count screen before camera
-    this.showCountScreen(scene);
+    await this.goToCamera(scene);
   },
 
-  showCountScreen(scene) {
-    // Update count screen preview pill
-    const pill = document.getElementById('count-scene-label');
-    const thumb = document.getElementById('count-scene-thumb');
-    if (pill) pill.textContent = scene.name;
-    if (thumb) {
-      thumb.style.background = scene.gradient;
-      // Try thumbnail
-      const img = new Image();
-      img.onload = () => { thumb.style.backgroundImage = `url(assets/thumbnails/${scene.id}.webp)`; };
-      img.src = `assets/thumbnails/${scene.id}.webp`;
-    }
-
-    // Reset selected count buttons
-    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
-
-    this.showScreen('count');
-  },
-
-  async setPersonCount(count) {
-    this.state.personCount = count;
-
-    // Highlight selected button
-    document.querySelectorAll('.count-btn').forEach(b => {
-      b.classList.toggle('selected', parseInt(b.dataset.count) === count);
-    });
-
-    // Update camera instructions based on count
-    const instructionEl = document.getElementById('camera-instruction-text');
-    const hintEl = document.getElementById('face-guide-hint');
-
-    const faceGuide = document.querySelector('.face-guide');
-    if (count === 1) {
-      if (instructionEl) instructionEl.innerHTML = 'Stand 2-3 feet from camera<br>Face forward, look at lens<br>Full body visible in frame';
-      if (hintEl) hintEl.textContent = 'Position yourself here';
-      // Solo: medium portrait frame
-      if (faceGuide) {
-        faceGuide.style.width = '55%';
-        faceGuide.style.height = '70%';
-        faceGuide.style.top = '15%';
-        faceGuide.style.left = '22.5%';
-      }
-    } else {
-      if (instructionEl) instructionEl.innerHTML = `All ${count} people stand together<br>Everyone face the camera<br>Fit the whole group in frame`;
-      if (hintEl) hintEl.textContent = `Fit all ${count} people in frame`;
-      // Group: wider frame
-      const guideWidth = Math.min(95, 55 + (count - 1) * 8);
-      if (faceGuide) {
-        faceGuide.style.width = guideWidth + '%';
-        faceGuide.style.height = '80%';
-        faceGuide.style.top = '10%';
-        faceGuide.style.left = ((100 - guideWidth) / 2) + '%';
-      }
-    }
-
-    // Update scene preview on camera screen — show thumbnail if available
+  async goToCamera(scene) {
+    // Update camera screen preview
     const previewLabel = document.getElementById('selected-scene-name');
     const previewBg = document.getElementById('selected-scene-bg');
-    const scene = this.state.selectedScene;
     if (previewLabel) previewLabel.textContent = scene.name;
     if (previewBg) {
-      // Set gradient as fallback first
       previewBg.style.background = scene.gradient;
       previewBg.style.backgroundSize = 'cover';
       previewBg.style.backgroundPosition = 'center';
-      // Try loading the actual thumbnail
       const thumbImg = new Image();
       thumbImg.onload = () => {
         previewBg.style.backgroundImage = `url(assets/thumbnails/${scene.id}.webp)`;
@@ -232,8 +172,21 @@ const App = {
       thumbImg.src = `assets/thumbnails/${scene.id}.webp`;
     }
 
-    // Short delay for visual feedback then go to camera
-    await new Promise(r => setTimeout(r, 200));
+    // Camera instructions — same for all, no person count
+    const instructionEl = document.getElementById('camera-instruction-text');
+    const hintEl = document.getElementById('face-guide-hint');
+    if (instructionEl) instructionEl.innerHTML = 'Stand 3-4 feet from camera<br>Everyone face forward<br>Full body visible in frame';
+    if (hintEl) hintEl.textContent = 'Everyone stand in this area';
+
+    // Reset face guide to full-body frame
+    const faceGuide = document.querySelector('.face-guide');
+    if (faceGuide) {
+      faceGuide.style.width = '80%';
+      faceGuide.style.height = '85%';
+      faceGuide.style.top = '7%';
+      faceGuide.style.left = '10%';
+    }
+
     this.showScreen('camera');
     this.setCameraStatus('Starting camera...');
 
@@ -341,30 +294,25 @@ const App = {
 
     // Build gender-aware prompt
     const rawPrompt = this.state.selectedScene.prompt || '';
-    const personCount = this.state.personCount || 1;
 
     let enhancedPrompt;
 
     // Try gender detection — detect() handles all fallbacks internally
     if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
       const detection = await GenderDetector.detect(API.capturedFaceBase64);
-      enhancedPrompt = GenderDetector.buildPrompt(rawPrompt, detection, personCount);
+      enhancedPrompt = GenderDetector.buildPrompt(rawPrompt, detection, 1);
       console.log('Gender result:', detection.description, '| detected:', detection.detected);
     } else {
       // GenderDetector not available — build neutral prompt
-      const neutralPrompt = rawPrompt.replace(/\[GENDER\]/g, personCount > 1 ? 'people' : 'person');
-      const prefix = personCount > 1
-        ? `Using ONLY the group of exactly ${personCount} people visible in the reference image, with all their exact faces, skin tones, hair and proportions preserved — do not add or remove any people — naturally integrated into this scene: `
-        : 'Using ONLY the single person visible in the reference image, with their exact face, skin tone, hair, and all physical features precisely preserved — no other people should appear — naturally integrated into this scene: ';
-      enhancedPrompt = prefix + neutralPrompt;
+      const neutralPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
+      enhancedPrompt = 'Using ONLY the exact people visible in the reference image — preserve every face, skin tone, hair and physical feature precisely, do not add or remove any people — place them naturally into this scene: ' + neutralPrompt;
     }
 
     if (navigator.onLine) {
       result = await API.generatePhoto(
         enhancedPrompt,
         this.state.selectedScene.negative,
-        updateMessage,
-        personCount
+        updateMessage
       );
     } else {
       result = await API.generateOfflineFallback();
@@ -485,7 +433,6 @@ const App = {
     this.unlock();
     this.state.selectedCategory = null;
     this.state.selectedScene = null;
-    this.state.personCount = 1;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
     API.capturedFaceBase64 = null;
@@ -525,14 +472,11 @@ const App = {
       Camera.stop();
       this.showScreen('home');
     });
-    document.getElementById('back-to-home-from-count')?.addEventListener('click', () => {
-      this.showScreen('home');
-    });
     document.getElementById('back-to-scenes')?.addEventListener('click', () => {
       this.unlock();
       Camera.cancelCountdown();
       Camera.stop();
-      this.showScreen('count'); // back to count screen
+      this.showScreen('home');
     });
     document.getElementById('capture-btn')?.addEventListener('click', () => {
       this.startCapture();

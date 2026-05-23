@@ -128,21 +128,21 @@ const GenderDetector = {
   },
 
   // Build complete gender-aware prompt
-  buildPrompt(rawPrompt, detection, personCount) {
-    const count = personCount || detection.count || 1;
+  // personCount ignored — we use what's actually detected in the photo
+  buildPrompt(rawPrompt, detection) {
+    const count = detection.count || 1;
     const { description, groupDescription } = detection;
-    // subject/groupSubject may not exist in fallback — build safely
     const subject = detection.subject || (count === 1 ? 'the person' : `the group of ${groupDescription}`);
 
-    // Replace [GENDER] placeholder in the scene prompt
+    // Replace [GENDER] placeholder
     let prompt = rawPrompt.replace(/\[GENDER\]/g,
       count === 1 ? description : groupDescription
     );
 
-    // Build seamless integration prefix — ONLY keyword prevents extra people
+    // Strong ONLY instruction — Kontext must not invent extra people
     const prefix = count === 1
-      ? `Using ONLY ${subject} visible in the reference image, with their exact face, skin tone, hair, body proportions and natural expression preserved — do not add any other people — place them naturally into this scene: `
-      : `Using ONLY the ${subject} visible in the reference image — exactly ${count} people, no more — with all their exact faces, skin tones, hair and proportions preserved, naturally integrated together into this scene: `;
+      ? `Using ONLY ${subject} visible in the reference image, with their exact face, skin tone, hair, body proportions and natural expression preserved exactly — do not add any other people — place them naturally into this scene: `
+      : `Using ONLY the ${subject} visible in the reference image — preserve every face exactly, do not add or remove anyone — all naturally integrated together into this scene: `;
 
     return prefix + prompt;
   },
