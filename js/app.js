@@ -23,8 +23,13 @@ const App = {
     this.showScreen('home');
     console.log('OM Events Kiosk ready');
 
+    // Init tracker — restore active event if any
+    if (typeof Tracker !== 'undefined') Tracker.init();
+
+    // Show event name on home screen
+    this.updateHomeEventName();
+
     // Pre-load gender detection models in background (non-blocking)
-    // Try immediately, retry after delays if face-api not ready yet
     const tryLoadGender = (attempt = 0) => {
       if (typeof GenderDetector !== 'undefined' && typeof faceapi !== 'undefined') {
         GenderDetector.loadModels().catch(() => {});
@@ -33,6 +38,20 @@ const App = {
       }
     };
     setTimeout(() => tryLoadGender(), 1000);
+  },
+
+  updateHomeEventName() {
+    const eventNameEl = document.getElementById('home-event-name');
+    if (!eventNameEl) return;
+    const info = typeof Settings !== 'undefined' ? Settings.getEventInfo() : null;
+    const active = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
+    const name = active?.name || info?.name || '';
+    if (name && name !== 'OM Events') {
+      eventNameEl.textContent = name;
+      eventNameEl.style.display = 'block';
+    } else {
+      eventNameEl.style.display = 'none';
+    }
   },
 
   lock() {
@@ -335,7 +354,15 @@ const App = {
       console.warn('Overlay failed, using original:', e);
     }
 
-    this.state.resultImageUrl = originalUrl; // always store the short fal.ai URL
+    this.state.resultImageUrl = originalUrl;
+
+    // Track photo in event log
+    if (typeof Tracker !== 'undefined' && Tracker.isEventActive()) {
+      const scene = this.state.selectedScene;
+      const cat = this.state.selectedCategory;
+      this.state.currentPhotoId = Tracker.recordPhoto(scene, cat, originalUrl);
+    }
+
     this.showResultScreen(displayUrl, originalUrl);
   },
 
@@ -413,7 +440,17 @@ const App = {
   },
 
   triggerPrint(imageUrl) {
+    // Track print as sent
+    if (typeof Tracker !== 'undefined' && this.state.currentPhotoId) {
+      Tracker.updatePrintStatus(this.state.currentPhotoId, 'sent');
+    }
     Settings.printImage(imageUrl);
+    // Mark as success after a delay (browser print dialog accepted)
+    setTimeout(() => {
+      if (typeof Tracker !== 'undefined' && this.state.currentPhotoId) {
+        Tracker.updatePrintStatus(this.state.currentPhotoId, 'success');
+      }
+    }, 3000);
   },
 
   showThankYou() {
@@ -440,6 +477,7 @@ const App = {
     this.state.selectedScene = null;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
+    this.state.currentPhotoId = null;
     API.capturedFaceBase64 = null;
     API.faceImageUrl = null;
     Camera.stop();

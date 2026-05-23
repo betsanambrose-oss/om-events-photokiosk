@@ -11,7 +11,7 @@ const Admin = {
     this.updateOnlineStatus();
     window.addEventListener('online', () => this.updateOnlineStatus());
     window.addEventListener('offline', () => this.updateOnlineStatus());
-    // Auto-focus password field
+    if (typeof Tracker !== 'undefined') Tracker.init();
     setTimeout(() => document.getElementById('password-input')?.focus(), 100);
   },
 
@@ -92,20 +92,12 @@ const Admin = {
 
     // Force offline
     document.getElementById('toggle-force-offline').checked = !!s.forceOffline;
+
+    // Update event control UI
+    this.updateEventControlUI();
   },
 
   // ── SECTIONS ──
-  showSection(name) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('section-' + name)?.classList.add('active');
-
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector(`[data-section="${name}"]`)?.classList.add('active');
-
-    // Auto-load camera list when switching to camera section
-    if (name === 'camera') this.refreshCameras();
-  },
-
   // ── CATEGORY TOGGLES (multiple) ──
   renderCategoryToggles() {
     const grid = document.getElementById('category-toggle-grid');
@@ -262,7 +254,160 @@ const Admin = {
     if (save) this.saveSettings();
   },
 
-  // ── CAMERA ──
+  // ── EVENT CONTROL ──
+
+  updateEventControlUI() {
+    if (typeof Tracker === 'undefined') return;
+    const active = Tracker.getActiveEvent();
+    const dot = document.getElementById('event-active-dot');
+    const label = document.getElementById('event-active-label');
+    const count = document.getElementById('event-active-count');
+    const btnStart = document.getElementById('btn-start-event');
+    const btnClose = document.getElementById('btn-close-event');
+
+    if (active) {
+      const stats = Tracker.getStats();
+      if (dot) dot.style.background = 'var(--green)';
+      if (label) label.textContent = active.name;
+      if (count) count.textContent = stats.total + ' photos';
+      if (btnStart) btnStart.style.display = 'none';
+      if (btnClose) btnClose.style.display = 'inline-flex';
+    } else {
+      if (dot) dot.style.background = 'var(--white-dim)';
+      if (label) label.textContent = 'No active event';
+      if (count) count.textContent = '';
+      if (btnStart) btnStart.style.display = 'inline-flex';
+      if (btnClose) btnClose.style.display = 'none';
+    }
+  },
+
+  startEvent() {
+    if (typeof Tracker === 'undefined') return;
+    if (Tracker.isEventActive()) {
+      if (!confirm('An event is already active. Start a new one? The current event will be closed.')) return;
+      Tracker.closeEvent();
+    }
+    const name = document.getElementById('event-name')?.value || 'Event';
+    const organizer = document.getElementById('event-organizer')?.value || '';
+    const date = document.getElementById('event-date')?.value || '';
+    Tracker.startEvent(name, organizer, date);
+    this.updateEventControlUI();
+    this.showToast('✓ Event Started');
+  },
+
+  closeEvent() {
+    if (typeof Tracker === 'undefined') return;
+    const active = Tracker.getActiveEvent();
+    if (!active) return;
+    const stats = Tracker.getStats();
+    if (!confirm(`Close "${active.name}"?\n${stats.total} photos taken, ${stats.printSuccess} printed.`)) return;
+    Tracker.closeEvent();
+    this.updateEventControlUI();
+    this.showToast('✓ Event Closed');
+  },
+
+  // ── REPORTS ──
+
+  showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + name)?.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`[data-section="${name}"]`)?.classList.add('active');
+    if (name === 'camera') this.refreshCameras();
+    if (name === 'reports') this.renderReports();
+    if (name === 'event') this.updateEventControlUI();
+  },
+
+  renderReports() {
+    if (typeof Tracker === 'undefined') return;
+
+    // Active event summary
+    const activeEl = document.getElementById('active-event-summary');
+    const active = Tracker.getActiveEvent();
+    if (active && activeEl) {
+      const stats = Tracker.getStats();
+      activeEl.innerHTML = `
+        <div class="status-row">
+          <div class="status-dot" style="background:var(--green)"></div>
+          <span class="status-label">${active.name}</span>
+          <span class="status-value" style="color:var(--gold)">${stats.total} photos</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0;">
+          <div style="text-align:center;padding:12px;background:var(--black-soft);border:1px solid var(--black-border);border-radius:2px;">
+            <div style="font-size:28px;font-family:'Cormorant Garamond',serif;color:var(--white)">${stats.total}</div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--white-dim);margin-top:4px">Photos Taken</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--black-soft);border:1px solid var(--black-border);border-radius:2px;">
+            <div style="font-size:28px;font-family:'Cormorant Garamond',serif;color:var(--gold)">${stats.printSuccess}</div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--white-dim);margin-top:4px">Prints Success</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--black-soft);border:1px solid var(--black-border);border-radius:2px;">
+            <div style="font-size:28px;font-family:'Cormorant Garamond',serif;color:var(--red)">${stats.printFailed}</div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--white-dim);margin-top:4px">Prints Failed</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-gold" onclick="Tracker.exportToExcel()">⬇ Export CSV</button>
+        </div>
+      `;
+    } else if (activeEl) {
+      activeEl.innerHTML = '<p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No active event. Start an event from Event Setup.</p>';
+    }
+
+    // All events table
+    const tableEl = document.getElementById('events-table-container');
+    const events = Tracker.getAllEvents();
+    if (!tableEl) return;
+
+    if (!events.length) {
+      tableEl.innerHTML = '<p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No events recorded yet.</p>';
+      return;
+    }
+
+    // Sort newest first
+    const sorted = [...events].sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
+
+    tableEl.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--black-border);">
+              <th style="text-align:left;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Event</th>
+              <th style="text-align:left;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Date</th>
+              <th style="text-align:center;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Photos</th>
+              <th style="text-align:center;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Prints ✓</th>
+              <th style="text-align:center;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Prints ✗</th>
+              <th style="text-align:center;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Status</th>
+              <th style="text-align:center;padding:10px 8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Export</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sorted.map(evt => {
+              const stats = Tracker.getStats(evt);
+              const isActive = !evt.closedAt;
+              return `<tr style="border-bottom:1px solid var(--black-border);">
+                <td style="padding:10px 8px;color:var(--white)">${evt.name}</td>
+                <td style="padding:10px 8px;color:var(--white-dim)">${evt.date}</td>
+                <td style="padding:10px 8px;text-align:center;color:var(--white)">${stats.total}</td>
+                <td style="padding:10px 8px;text-align:center;color:var(--green)">${stats.printSuccess}</td>
+                <td style="padding:10px 8px;text-align:center;color:${stats.printFailed > 0 ? 'var(--red)' : 'var(--white-dim)'}">${stats.printFailed}</td>
+                <td style="padding:10px 8px;text-align:center;">
+                  <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:2px;background:${isActive ? 'rgba(76,175,80,0.15)' : 'rgba(255,255,255,0.06)'};color:${isActive ? 'var(--green)' : 'var(--white-dim)'};">
+                    ${isActive ? 'Active' : 'Closed'}
+                  </span>
+                </td>
+                <td style="padding:10px 8px;text-align:center;">
+                  <button onclick="Tracker.exportToExcel('${evt.id}')" style="padding:5px 12px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;">CSV</button>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  },
+
+  // ── CAMERA (override to fix section switching) ──
   async refreshCameras() {
     try {
       // Request permission first

@@ -67,6 +67,9 @@
       <div class="nav-item" onclick="Admin.showSection('system')" data-section="system">
         <span class="nav-icon">⚙️</span> System
       </div>
+      <div class="nav-item" onclick="Admin.showSection('reports')" data-section="reports">
+        <span class="nav-icon">📊</span> Reports
+      </div>
       <div class="nav-item" onclick="Admin.showSection('password')" data-section="password">
         <span class="nav-icon">🔒</span> Security
       </div>
@@ -142,6 +145,25 @@
       <div class="btn-row">
         <button class="btn btn-gold" onclick="Admin.saveSettings()">Save Settings</button>
         <button class="btn btn-outline" onclick="Admin.resetDefaults()">Reset Defaults</button>
+      </div>
+
+      <!-- Event Control -->
+      <div class="card" style="margin-top:20px; border-color:var(--gold-dim);">
+        <div class="card-title" style="color:var(--gold);">Event Control</div>
+        <div style="margin-bottom:16px;">
+          <div class="status-row">
+            <div class="status-dot" id="event-active-dot" style="background:var(--white-dim)"></div>
+            <span class="status-label" id="event-active-label">No active event</span>
+            <span class="status-value" id="event-active-count" style="color:var(--gold);"></span>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-gold" id="btn-start-event" onclick="Admin.startEvent()">▶ Start Event</button>
+          <button class="btn btn-danger" id="btn-close-event" onclick="Admin.closeEvent()" style="display:none;">⏹ Close Event</button>
+        </div>
+        <p style="font-size:10px;color:var(--white-dim);margin-top:12px;letter-spacing:1px;">
+          Auto-closes at midnight if not closed manually
+        </p>
       </div>
     </div>
 
@@ -347,6 +369,28 @@
       </div>
     </div>
 
+    <!-- REPORTS -->
+    <div class="section" id="section-reports">
+      <div class="section-header">
+        <h1 class="section-title">Event <span>Reports</span></h1>
+        <p class="section-subtitle">Photo and print statistics per event</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Current Event</div>
+        <div id="active-event-summary">
+          <p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No active event. Start an event from Event Setup.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">All Events</div>
+        <div id="events-table-container">
+          <p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No events recorded yet.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- SECURITY -->
     <div class="section" id="section-password">
       <div class="section-header">
@@ -383,6 +427,7 @@
 
 <script src="../templates/templates.js"></script>
 <script src="../js/settings.js"></script>
+<script src="../js/tracker.js"></script>
 <script src="../js/admin.js"></script>
 </body>
 </html>

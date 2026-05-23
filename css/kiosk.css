@@ -1103,3 +1103,109 @@ html, body {
   .scene-card-inner .scene-title-home { font-size: 12px; }
 }
 
+
+/* ══════════════════════════════════════
+   EVENT NAME ON HOME SCREEN
+══════════════════════════════════════ */
+.home-event-name {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════
+   CAMERA SCREEN POLISH
+══════════════════════════════════════ */
+.face-guide {
+  position: absolute;
+  top: 7%;
+  left: 10%;
+  width: 80%;
+  height: 85%;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.face-guide-corners {
+  position: absolute;
+  inset: 0;
+}
+
+/* Four corner brackets */
+.face-guide-corners::before,
+.face-guide-corners::after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.85;
+}
+
+.face-guide-corners::before {
+  top: 0; left: 0;
+  border-width: 2px 0 0 2px;
+}
+
+.face-guide-corners::after {
+  top: 0; right: 0;
+  border-width: 2px 2px 0 0;
+}
+
+.face-guide::before,
+.face-guide::after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.85;
+}
+
+.face-guide::before {
+  bottom: 0; left: 0;
+  border-width: 0 0 2px 2px;
+}
+
+.face-guide::after {
+  bottom: 0; right: 0;
+  border-width: 0 2px 2px 0;
+}
+
+.face-guide-hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.7);
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* Camera instruction box - cleaner */
+.camera-instruction {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.camera-instruction p {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  line-height: 2;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
