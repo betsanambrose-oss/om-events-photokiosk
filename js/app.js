@@ -4,6 +4,7 @@ const App = {
   state: {
     selectedCategory: null,
     selectedScene: null,
+    personCount: 1,
     capturedImage: null,
     resultImageUrl: null,
     mode: 'soft',
@@ -129,12 +130,60 @@ const App = {
     const scene = cat?.scenes.find(s => s.id === sceneId);
     if (!scene) return;
     this.state.selectedScene = scene;
+    this.state.selectedCategory = cat;
 
+    // Show person count screen before camera
+    this.showCountScreen(scene);
+  },
+
+  showCountScreen(scene) {
+    // Update count screen preview pill
+    const pill = document.getElementById('count-scene-label');
+    const thumb = document.getElementById('count-scene-thumb');
+    if (pill) pill.textContent = scene.name;
+    if (thumb) {
+      thumb.style.background = scene.gradient;
+      // Try thumbnail
+      const img = new Image();
+      img.onload = () => { thumb.style.backgroundImage = `url(assets/thumbnails/${scene.id}.webp)`; };
+      img.src = `assets/thumbnails/${scene.id}.webp`;
+    }
+
+    // Reset selected count buttons
+    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+
+    this.showScreen('count');
+  },
+
+  async setPersonCount(count) {
+    this.state.personCount = count;
+
+    // Highlight selected button
+    document.querySelectorAll('.count-btn').forEach(b => {
+      b.classList.toggle('selected', parseInt(b.dataset.count) === count);
+    });
+
+    // Update camera instructions based on count
+    const instructionEl = document.getElementById('camera-instruction-text');
+    const hintEl = document.getElementById('face-guide-hint');
+
+    if (count === 1) {
+      if (instructionEl) instructionEl.innerHTML = 'Stand still<br>Face the camera<br>Look at the lens';
+      if (hintEl) hintEl.textContent = 'Position your face here';
+    } else {
+      if (instructionEl) instructionEl.innerHTML = `All ${count} people in frame<br>Stand close together<br>Everyone face the camera`;
+      if (hintEl) hintEl.textContent = `Fit all ${count} people in frame`;
+    }
+
+    // Update scene preview on camera screen
     const previewLabel = document.getElementById('selected-scene-name');
     const previewBg = document.getElementById('selected-scene-bg');
+    const scene = this.state.selectedScene;
     if (previewLabel) previewLabel.textContent = scene.name;
     if (previewBg) previewBg.style.background = scene.gradient;
 
+    // Short delay for visual feedback then go to camera
+    await new Promise(r => setTimeout(r, 200));
     this.showScreen('camera');
     this.setCameraStatus('Starting camera...');
 
@@ -219,20 +268,34 @@ const App = {
 
     let result;
 
-    // Build final prompt — replace [GENDER] placeholder
-    // Default to gender-neutral "person" until face-api detection is added
+    // Build final prompt
     const rawPrompt = this.state.selectedScene.prompt || '';
-    const finalPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
+    const personCount = this.state.personCount || 1;
 
-    // Add seamless integration instruction to every prompt
-    const seamlessPrefix = 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
+    // Replace [GENDER] placeholder
+    let finalPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
+
+    // For groups, update prompt to mention group size
+    if (personCount > 1) {
+      finalPrompt = finalPrompt
+        .replace(/^Using the person/, `Using the group of ${personCount} people`)
+        .replace(/their exact face, skin tone, hair/g, 'their exact faces, skin tones, hair')
+        .replace(/naturally integrated/g, 'all naturally integrated together');
+    }
+
+    // Add seamless integration instruction
+    const seamlessPrefix = personCount > 1
+      ? `Using the group of ${personCount} people in the reference image exactly as they appear, with all their exact faces and natural expressions naturally integrated together into this scene: `
+      : 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
+
     const enhancedPrompt = seamlessPrefix + finalPrompt;
 
     if (navigator.onLine) {
       result = await API.generatePhoto(
         enhancedPrompt,
         this.state.selectedScene.negative,
-        updateMessage
+        updateMessage,
+        personCount
       );
     } else {
       result = await API.generateOfflineFallback();
@@ -353,6 +416,7 @@ const App = {
     this.unlock();
     this.state.selectedCategory = null;
     this.state.selectedScene = null;
+    this.state.personCount = 1;
     this.state.capturedImage = null;
     this.state.resultImageUrl = null;
     API.capturedFaceBase64 = null;
@@ -392,11 +456,14 @@ const App = {
       Camera.stop();
       this.showScreen('home');
     });
+    document.getElementById('back-to-home-from-count')?.addEventListener('click', () => {
+      this.showScreen('home');
+    });
     document.getElementById('back-to-scenes')?.addEventListener('click', () => {
       this.unlock();
       Camera.cancelCountdown();
       Camera.stop();
-      this.showScreen('home');
+      this.showScreen('count'); // back to count screen
     });
     document.getElementById('capture-btn')?.addEventListener('click', () => {
       this.startCapture();

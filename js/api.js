@@ -48,15 +48,22 @@ const API = {
     throw new Error('Generation timed out after 3 minutes');
   },
 
-  async generatePhoto(prompt, negativePrompt, onProgress) {
+  async generatePhoto(prompt, negativePrompt, onProgress, personCount = 1) {
     if (this.isGenerating) {
       return { success: false, error: 'Already running — please wait' };
     }
     this.isGenerating = true;
 
     try {
-      // STEP 1 — Upload face
-      onProgress?.('Uploading your photo...');
+      const isGroup = personCount > 1;
+
+      // STEP 1 — Upload face image(s)
+      if (isGroup) {
+        onProgress?.('Uploading group photo...');
+      } else {
+        onProgress?.('Uploading your photo...');
+      }
+
       if (!this.capturedFaceBase64) throw new Error('No face image captured');
       const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
       if (!base64 || base64.length < 1000) throw new Error('Face image too small');
@@ -66,17 +73,23 @@ const API = {
       this.faceImageUrl = uploaded.fileUrl;
       console.log('✅ Face uploaded:', this.faceImageUrl);
 
-      // STEP 2 — Submit Kontext (face + prompt = full scene)
+      // STEP 2 — Submit Kontext
       onProgress?.('Creating your scene...');
-      const job = await this.callWorker({
+
+      // For group: send same image as array (multi endpoint uses image_urls)
+      // Kontext Multi sees all people in the single group photo
+      const jobPayload = {
         step: 'kontext_submit',
-        faceImageUrl: this.faceImageUrl,
-        prompt: prompt
-      });
+        prompt: prompt,
+        faceImageUrl: this.faceImageUrl
+      };
+
+      const job = await this.callWorker(jobPayload);
       if (!job.statusUrl) throw new Error('Kontext job not created');
-      console.log('✅ Kontext job submitted:', job.requestId);
+      console.log('✅ Kontext job submitted:', job.requestId, 'isGroup:', isGroup);
 
       // STEP 3 — Poll until done
+      onProgress?.(isGroup ? 'Placing your group in the scene...' : 'Creating your scene...');
       const resultUrl = await this.pollKontext(job.statusUrl, job.responseUrl, onProgress);
       if (!resultUrl) throw new Error('No result image returned');
       console.log('✅ Final result:', resultUrl);

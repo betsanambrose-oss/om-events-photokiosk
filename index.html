@@ -76,8 +76,74 @@
 
 
 <!-- ══════════════════════════════════════
-     SCREEN 3 — CAMERA
+     SCREEN 2.5 — PERSON COUNT
 ══════════════════════════════════════ -->
+<div id="screen-count" class="screen">
+
+  <button class="back-btn" id="back-to-home-from-count">
+    <svg viewBox="0 0 24 24" stroke-width="1.5"><polyline points="15,18 9,12 15,6"/></svg>
+    Back
+  </button>
+
+  <div class="count-content">
+
+    <div class="om-logo" style="font-size:11px; margin-bottom:8px;">OM Events</div>
+    <div class="gold-line wide"></div>
+
+    <h2 class="count-title">How Many <span>People?</span></h2>
+    <p class="count-subtitle">Stand together for group photos</p>
+
+    <!-- Selected scene preview pill -->
+    <div class="count-scene-pill" id="count-scene-pill">
+      <div id="count-scene-thumb" class="count-scene-thumb"></div>
+      <span id="count-scene-label">Scene Name</span>
+    </div>
+
+    <!-- Person count grid -->
+    <div class="count-grid">
+      <button class="count-btn" data-count="1" onclick="App.setPersonCount(1)">
+        <span class="count-num">1</span>
+        <span class="count-lbl">Solo</span>
+      </button>
+      <button class="count-btn" data-count="2" onclick="App.setPersonCount(2)">
+        <span class="count-num">2</span>
+        <span class="count-lbl">Duo</span>
+      </button>
+      <button class="count-btn" data-count="3" onclick="App.setPersonCount(3)">
+        <span class="count-num">3</span>
+        <span class="count-lbl">Trio</span>
+      </button>
+      <button class="count-btn" data-count="4" onclick="App.setPersonCount(4)">
+        <span class="count-num">4</span>
+        <span class="count-lbl">Group</span>
+      </button>
+      <button class="count-btn" data-count="5" onclick="App.setPersonCount(5)">
+        <span class="count-num">5</span>
+        <span class="count-lbl">Group</span>
+      </button>
+      <button class="count-btn" data-count="6" onclick="App.setPersonCount(6)">
+        <span class="count-num">6</span>
+        <span class="count-lbl">Group</span>
+      </button>
+      <button class="count-btn" data-count="7" onclick="App.setPersonCount(7)">
+        <span class="count-num">7</span>
+        <span class="count-lbl">Group</span>
+      </button>
+      <button class="count-btn" data-count="8" onclick="App.setPersonCount(8)">
+        <span class="count-num">8</span>
+        <span class="count-lbl">Group</span>
+      </button>
+    </div>
+
+    <p class="count-tip">
+      💡 For groups, everyone should stand together in frame
+    </p>
+
+  </div>
+
+</div>
+
+
 <div id="screen-camera" class="screen">
 
   <!-- Camera feed (left) -->
@@ -117,7 +183,7 @@
     <!-- Face guide -->
     <div class="face-guide">
       <div class="face-guide-corners"></div>
-      <div class="face-guide-hint">Position your face here</div>
+      <div class="face-guide-hint" id="face-guide-hint">Position your face here</div>
     </div>
 
     <!-- Countdown overlay -->
@@ -140,7 +206,7 @@
 
     <!-- Instructions -->
     <div class="camera-instruction">
-      <p>Stand still<br>Face the camera<br>Look at the lens</p>
+      <p id="camera-instruction-text">Stand still<br>Face the camera<br>Look at the lens</p>
     </div>
 
     <!-- Capture button -->

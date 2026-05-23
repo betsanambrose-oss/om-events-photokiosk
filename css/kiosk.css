@@ -1100,3 +1100,147 @@ html, body {
   .scene-card-inner .scene-cat-badge { font-size: 7px; }
   .scene-card-inner .scene-title-home { font-size: 12px; }
 }
+
+/* ══════════════════════════════════════
+   SCREEN 2.5 — PERSON COUNT
+══════════════════════════════════════ */
+
+#screen-count {
+  background: var(--black);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.count-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeUp 0.5s var(--transition) both;
+}
+
+.count-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 300;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.1;
+}
+.count-title span { color: var(--gold); font-style: italic; }
+
+.count-subtitle {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-top: -8px;
+}
+
+/* Scene pill */
+.count-scene-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid var(--black-border);
+  border-radius: 100px;
+  background: var(--black-card);
+}
+
+.count-scene-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.count-scene-pill span {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+}
+
+/* Count grid */
+.count-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.count-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 20px 12px;
+  border: 1px solid var(--black-border);
+  border-radius: 4px;
+  background: var(--black-card);
+  cursor: pointer;
+  transition: all 0.3s var(--transition);
+}
+
+.count-btn:hover {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.08);
+  transform: translateY(-2px);
+}
+
+.count-btn:active { transform: scale(0.95); }
+
+.count-btn.selected {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.15);
+}
+
+.count-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1;
+}
+
+.count-btn:hover .count-num,
+.count-btn.selected .count-num { color: var(--gold); }
+
+.count-lbl {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+}
+
+.count-tip {
+  font-size: 11px;
+  color: var(--white-dim);
+  letter-spacing: 1px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* Group badge on camera screen */
+.group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid var(--gold-dim);
+  border-radius: 100px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
