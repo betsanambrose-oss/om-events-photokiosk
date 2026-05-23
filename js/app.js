@@ -23,6 +23,17 @@ const App = {
     this.loadSettings();
     this.showScreen('home');
     console.log('OM Events Kiosk ready');
+
+    // Pre-load gender detection models in background (non-blocking)
+    // Try immediately, retry after delays if face-api not ready yet
+    const tryLoadGender = (attempt = 0) => {
+      if (typeof GenderDetector !== 'undefined' && typeof faceapi !== 'undefined') {
+        GenderDetector.loadModels().catch(() => {});
+      } else if (attempt < 5) {
+        setTimeout(() => tryLoadGender(attempt + 1), 1500 * (attempt + 1));
+      }
+    };
+    setTimeout(() => tryLoadGender(), 1000);
   },
 
   lock() {
@@ -268,27 +279,25 @@ const App = {
 
     let result;
 
-    // Build final prompt
+    // Build gender-aware prompt
     const rawPrompt = this.state.selectedScene.prompt || '';
     const personCount = this.state.personCount || 1;
 
-    // Replace [GENDER] placeholder
-    let finalPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
+    let enhancedPrompt;
 
-    // For groups, update prompt to mention group size
-    if (personCount > 1) {
-      finalPrompt = finalPrompt
-        .replace(/^Using the person/, `Using the group of ${personCount} people`)
-        .replace(/their exact face, skin tone, hair/g, 'their exact faces, skin tones, hair')
-        .replace(/naturally integrated/g, 'all naturally integrated together');
+    // Try gender detection — detect() handles all fallbacks internally
+    if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+      const detection = await GenderDetector.detect(API.capturedFaceBase64);
+      enhancedPrompt = GenderDetector.buildPrompt(rawPrompt, detection, personCount);
+      console.log('Gender result:', detection.description, '| detected:', detection.detected);
+    } else {
+      // GenderDetector not available — build neutral prompt
+      const neutralPrompt = rawPrompt.replace(/\[GENDER\]/g, personCount > 1 ? 'people' : 'person');
+      const prefix = personCount > 1
+        ? `Using the group of ${personCount} people in the reference image exactly as they appear, with all their exact faces and natural expressions naturally integrated together into this scene: `
+        : 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
+      enhancedPrompt = prefix + neutralPrompt;
     }
-
-    // Add seamless integration instruction
-    const seamlessPrefix = personCount > 1
-      ? `Using the group of ${personCount} people in the reference image exactly as they appear, with all their exact faces and natural expressions naturally integrated together into this scene: `
-      : 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
-
-    const enhancedPrompt = seamlessPrefix + finalPrompt;
 
     if (navigator.onLine) {
       result = await API.generatePhoto(
