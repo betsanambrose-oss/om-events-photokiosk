@@ -139,10 +139,10 @@ const GenderDetector = {
       count === 1 ? description : groupDescription
     );
 
-    // Build seamless integration prefix using subject (no double article)
+    // Build seamless integration prefix — ONLY keyword prevents extra people
     const prefix = count === 1
-      ? `Using ${subject} in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: `
-      : `Using ${subject} in the reference image exactly as they appear, with all their exact faces and natural expressions naturally integrated together into this scene: `;
+      ? `Using ONLY ${subject} visible in the reference image, with their exact face, skin tone, hair, body proportions and natural expression preserved — do not add any other people — place them naturally into this scene: `
+      : `Using ONLY the ${subject} visible in the reference image — exactly ${count} people, no more — with all their exact faces, skin tones, hair and proportions preserved, naturally integrated together into this scene: `;
 
     return prefix + prompt;
   },

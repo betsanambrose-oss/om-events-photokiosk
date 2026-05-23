@@ -178,12 +178,28 @@ const App = {
     const instructionEl = document.getElementById('camera-instruction-text');
     const hintEl = document.getElementById('face-guide-hint');
 
+    const faceGuide = document.querySelector('.face-guide');
     if (count === 1) {
-      if (instructionEl) instructionEl.innerHTML = 'Stand still<br>Face the camera<br>Look at the lens';
-      if (hintEl) hintEl.textContent = 'Position your face here';
+      if (instructionEl) instructionEl.innerHTML = 'Stand 2-3 feet from camera<br>Face forward, look at lens<br>Full body visible in frame';
+      if (hintEl) hintEl.textContent = 'Position yourself here';
+      // Solo: medium portrait frame
+      if (faceGuide) {
+        faceGuide.style.width = '55%';
+        faceGuide.style.height = '70%';
+        faceGuide.style.top = '15%';
+        faceGuide.style.left = '22.5%';
+      }
     } else {
-      if (instructionEl) instructionEl.innerHTML = `All ${count} people in frame<br>Stand close together<br>Everyone face the camera`;
+      if (instructionEl) instructionEl.innerHTML = `All ${count} people stand together<br>Everyone face the camera<br>Fit the whole group in frame`;
       if (hintEl) hintEl.textContent = `Fit all ${count} people in frame`;
+      // Group: wider frame
+      const guideWidth = Math.min(95, 55 + (count - 1) * 8);
+      if (faceGuide) {
+        faceGuide.style.width = guideWidth + '%';
+        faceGuide.style.height = '80%';
+        faceGuide.style.top = '10%';
+        faceGuide.style.left = ((100 - guideWidth) / 2) + '%';
+      }
     }
 
     // Update scene preview on camera screen
@@ -258,6 +274,27 @@ const App = {
       },
       async (imageData) => {
         if (overlay) overlay.classList.remove('active');
+
+        // Validate capture — check it's not null or blank
+        if (!imageData) {
+          console.error('Capture returned null — camera may not be ready');
+          this.unlock();
+          this.setCameraStatus('Camera capture failed.\nMake sure camera is connected and try again.');
+          if (captureBtn) captureBtn.style.display = 'flex';
+          return;
+        }
+
+        // Check image is not suspiciously small (black/blank frame)
+        const base64Part = imageData.split(',')[1] || '';
+        const sizeKB = (base64Part.length * 0.75) / 1024;
+        if (sizeKB < 10) {
+          console.error('Captured image is blank/black:', Math.round(sizeKB) + 'KB');
+          this.unlock();
+          this.setCameraStatus('Camera returned a blank image.\nCheck your camera connection and try again.');
+          if (captureBtn) captureBtn.style.display = 'flex';
+          return;
+        }
+
         this.state.capturedImage = imageData;
         API.setCapturedFace(imageData);
         Camera.stop();
@@ -294,8 +331,8 @@ const App = {
       // GenderDetector not available — build neutral prompt
       const neutralPrompt = rawPrompt.replace(/\[GENDER\]/g, personCount > 1 ? 'people' : 'person');
       const prefix = personCount > 1
-        ? `Using the group of ${personCount} people in the reference image exactly as they appear, with all their exact faces and natural expressions naturally integrated together into this scene: `
-        : 'Using the person in the reference image exactly as they appear, with their exact face, skin tone, hair, and natural expression naturally integrated into this scene: ';
+        ? `Using ONLY the group of exactly ${personCount} people visible in the reference image, with all their exact faces, skin tones, hair and proportions preserved — do not add or remove any people — naturally integrated into this scene: `
+        : 'Using ONLY the single person visible in the reference image, with their exact face, skin tone, hair, and all physical features precisely preserved — no other people should appear — naturally integrated into this scene: ';
       enhancedPrompt = prefix + neutralPrompt;
     }
 

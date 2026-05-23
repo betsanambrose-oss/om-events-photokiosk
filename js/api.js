@@ -10,7 +10,9 @@ const API = {
   setCapturedFace(dataUrl) {
     this.capturedFaceBase64 = dataUrl;
     this.faceImageUrl = null;
-    console.log('Face captured, size:', dataUrl?.length);
+    const base64Part = dataUrl?.split(',')[1] || '';
+    const sizeKB = Math.round((base64Part.length * 0.75) / 1024);
+    console.log('Face set, size:', sizeKB + 'KB');
   },
 
   async callWorker(payload) {
@@ -26,13 +28,12 @@ const API = {
     return data;
   },
 
-  // Poll Kontext status — max 3 minutes
   async pollKontext(statusUrl, responseUrl, onProgress) {
     const MAX = 60;
     for (let i = 0; i < MAX; i++) {
       await new Promise(r => setTimeout(r, 3000));
       const s = await this.callWorker({ step: 'kontext_status', statusUrl });
-      console.log(`Kontext poll ${i+1}/${MAX}: ${s.status}`);
+      console.log(`Kontext poll ${i + 1}/${MAX}: ${s.status}`);
 
       if (s.status === 'IN_QUEUE') {
         onProgress?.(`Creating your scene — queue (${s.queuePosition ?? i})...`);
@@ -55,41 +56,42 @@ const API = {
     this.isGenerating = true;
 
     try {
-      const isGroup = personCount > 1;
+      // STEP 1 — Validate and upload face image
+      onProgress?.(personCount > 1 ? 'Uploading group photo...' : 'Uploading your photo...');
 
-      // STEP 1 — Upload face image(s)
-      if (isGroup) {
-        onProgress?.('Uploading group photo...');
-      } else {
-        onProgress?.('Uploading your photo...');
+      if (!this.capturedFaceBase64) {
+        throw new Error('No photo captured. Please try again.');
       }
 
-      if (!this.capturedFaceBase64) throw new Error('No face image captured');
       const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
-      if (!base64 || base64.length < 1000) throw new Error('Face image too small');
+      if (!base64) {
+        throw new Error('Photo capture failed — empty image. Please try again.');
+      }
 
+      // Validate size — a proper photo should be at least 20KB
+      const estimatedKB = (base64.length * 0.75) / 1024;
+      if (estimatedKB < 20) {
+        throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera connection and try again.`);
+      }
+
+      console.log('Uploading photo:', Math.round(estimatedKB) + 'KB');
       const uploaded = await this.callWorker({ step: 'upload', base64 });
-      if (!uploaded.fileUrl) throw new Error('Upload returned no URL');
+      if (!uploaded.fileUrl) throw new Error('Upload failed — no URL returned');
       this.faceImageUrl = uploaded.fileUrl;
-      console.log('✅ Face uploaded:', this.faceImageUrl);
+      console.log('✅ Photo uploaded:', this.faceImageUrl);
 
       // STEP 2 — Submit Kontext
       onProgress?.('Creating your scene...');
-
-      // For group: send same image as array (multi endpoint uses image_urls)
-      // Kontext Multi sees all people in the single group photo
-      const jobPayload = {
+      const job = await this.callWorker({
         step: 'kontext_submit',
         prompt: prompt,
         faceImageUrl: this.faceImageUrl
-      };
-
-      const job = await this.callWorker(jobPayload);
-      if (!job.statusUrl) throw new Error('Kontext job not created');
-      console.log('✅ Kontext job submitted:', job.requestId, 'isGroup:', isGroup);
+      });
+      if (!job.statusUrl) throw new Error('Scene generation job not created');
+      console.log('✅ Kontext job submitted:', job.requestId);
 
       // STEP 3 — Poll until done
-      onProgress?.(isGroup ? 'Placing your group in the scene...' : 'Creating your scene...');
+      onProgress?.(personCount > 1 ? 'Placing your group in the scene...' : 'Creating your scene...');
       const resultUrl = await this.pollKontext(job.statusUrl, job.responseUrl, onProgress);
       if (!resultUrl) throw new Error('No result image returned');
       console.log('✅ Final result:', resultUrl);

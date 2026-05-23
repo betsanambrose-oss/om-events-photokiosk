@@ -1,4 +1,4 @@
-// js/camera.js — Camera handling, source switching, capture, countdown
+// js/camera.js — Camera handling with external camera support
 
 const Camera = {
   stream: null,
@@ -6,19 +6,108 @@ const Camera = {
   currentDeviceId: null,
   videoEl: null,
   countdownInterval: null,
+  isFrontFacing: true, // track whether current cam is front-facing (mirror) or external (no mirror)
 
   async init(videoElement) {
     this.videoEl = videoElement;
-    await this.refreshDevices();
-    await this.start();
+    const started = await this.start();
+    return started;
   },
 
-  // Get all available video input devices
+  async start(deviceId = null) {
+    this.stop();
+
+    const strategies = [];
+
+    if (deviceId) {
+      strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+      strategies.push({ video: { deviceId: { exact: deviceId } }, audio: false });
+      strategies.push({ video: { deviceId }, audio: false });
+    }
+
+    // Front camera strategies — high quality
+    strategies.push({
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    strategies.push({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    // Any camera with resolution
+    strategies.push({
+      video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    strategies.push({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    // Any camera, no constraints
+    strategies.push({ video: true, audio: false });
+
+    for (const constraints of strategies) {
+      try {
+        console.log('Trying camera constraints:', JSON.stringify(constraints));
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        if (this.videoEl) {
+          this.videoEl.srcObject = this.stream;
+          this.videoEl.setAttribute('playsinline', 'true');
+          this.videoEl.setAttribute('autoplay', 'true');
+          this.videoEl.muted = true;
+
+          await new Promise((resolve) => {
+            this.videoEl.onloadedmetadata = () => resolve();
+            setTimeout(resolve, 3000);
+          });
+
+          await this.videoEl.play().catch(() => {});
+        }
+
+        const track = this.stream.getVideoTracks()[0];
+        const settings = track?.getSettings?.() || {};
+        this.currentDeviceId = settings.deviceId || deviceId;
+
+        // Determine if this is a front-facing camera (should be mirrored in CSS only)
+        // External/USB cameras are NOT front-facing
+        const facingMode = settings.facingMode || '';
+        const label = (track?.label || '').toLowerCase();
+        const isExplicitlyFront = facingMode === 'user';
+        const isExplicitlyBack = facingMode === 'environment';
+        const labelSuggestsExternal = label.includes('usb') || label.includes('external') || label.includes('elgato') || label.includes('capture') || label.includes('hdmi') || label.includes('obs') || label.includes('droidcam') || label.includes('ivcam') || label.includes('camo') || label.includes('iriun');
+
+        if (isExplicitlyBack || labelSuggestsExternal) {
+          this.isFrontFacing = false;
+        } else {
+          this.isFrontFacing = true; // default assumption for unknown cameras
+        }
+
+        // Apply CSS mirror to video preview for front cameras only (natural selfie view)
+        if (this.videoEl) {
+          this.videoEl.style.transform = this.isFrontFacing ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+
+        console.log('Camera started:', track?.label || 'unknown', '| front-facing:', this.isFrontFacing, '| res:', settings.width + 'x' + settings.height);
+        await this.refreshDevices();
+        return true;
+
+      } catch (err) {
+        console.warn('Camera strategy failed:', err.name, err.message);
+        this.stop();
+        continue;
+      }
+    }
+
+    console.error('All camera strategies failed');
+    return false;
+  },
+
   async refreshDevices() {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       this.devices = devices.filter(d => d.kind === 'videoinput');
-      console.log('Available cameras:', this.devices.map(d => d.label));
+      console.log('Available cameras:', this.devices.map(d => d.label || d.deviceId));
       return this.devices;
     } catch (err) {
       console.error('Could not enumerate devices:', err);
@@ -26,60 +115,18 @@ const Camera = {
     }
   },
 
-  // Start camera stream
-  async start(deviceId = null) {
-    // Stop existing stream
-    this.stop();
-
-    const constraints = {
-      video: {
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        facingMode: deviceId ? undefined : 'user',
-        deviceId: deviceId ? { exact: deviceId } : undefined
-      },
-      audio: false
-    };
-
-    // Remove undefined keys
-    if (!deviceId) delete constraints.video.deviceId;
-    else delete constraints.video.facingMode;
-
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.currentDeviceId = deviceId;
-
-      if (this.videoEl) {
-        this.videoEl.srcObject = this.stream;
-        await this.videoEl.play();
-      }
-      return true;
-    } catch (err) {
-      console.error('Camera start error:', err);
-      // Try without device constraint as fallback
-      if (deviceId) {
-        return this.start(null);
-      }
-      return false;
-    }
-  },
-
-  // Switch to specific camera
   async switchTo(deviceId) {
     return this.start(deviceId);
   },
 
-  // Switch to next available camera
   async switchNext() {
     await this.refreshDevices();
-    if (this.devices.length <= 1) return;
-
+    if (this.devices.length <= 1) return false;
     const currentIndex = this.devices.findIndex(d => d.deviceId === this.currentDeviceId);
     const nextIndex = (currentIndex + 1) % this.devices.length;
     return this.start(this.devices[nextIndex].deviceId);
   },
 
-  // Stop stream
   stop() {
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop());
@@ -90,24 +137,59 @@ const Camera = {
     }
   },
 
-  // Capture current frame as base64
+  // Capture current frame — handles both front and external cameras correctly
   capture() {
-    if (!this.videoEl) return null;
+    if (!this.videoEl) {
+      console.error('Capture failed: no video element');
+      return null;
+    }
+
+    const w = this.videoEl.videoWidth;
+    const h = this.videoEl.videoHeight;
+
+    // Validate we have actual video frame
+    if (!w || !h || w < 10 || h < 10) {
+      console.error('Capture failed: video dimensions invalid', w, 'x', h);
+      return null;
+    }
+
+    // Check video is actually playing and has content
+    if (this.videoEl.readyState < 2) {
+      console.error('Capture failed: video not ready, readyState:', this.videoEl.readyState);
+      return null;
+    }
 
     const canvas = document.createElement('canvas');
-    canvas.width = this.videoEl.videoWidth || 1280;
-    canvas.height = this.videoEl.videoHeight || 720;
+    // Use full native resolution for maximum quality
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext('2d');
 
-    // Mirror horizontally (since we show mirrored preview)
-    ctx.scale(-1, 1);
-    ctx.translate(-canvas.width, 0);
-    ctx.drawImage(this.videoEl, 0, 0);
+    if (this.isFrontFacing) {
+      // Front camera: mirror the capture to match real world (undo the CSS mirror)
+      ctx.scale(-1, 1);
+      ctx.translate(-w, 0);
+    }
+    // External/USB camera: draw directly without mirroring
+    ctx.drawImage(this.videoEl, 0, 0, w, h);
 
-    return canvas.toDataURL('image/jpeg', 0.95);
+    // Export at maximum quality
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+    // Validate the output is not a black/empty frame
+    // A blank black image at 1280x720 would be ~50kb — if it's too small, something is wrong
+    const base64Part = dataUrl.split(',')[1] || '';
+    const estimatedKB = (base64Part.length * 0.75) / 1024;
+    console.log('Captured frame:', w + 'x' + h, '| ~' + Math.round(estimatedKB) + 'KB');
+
+    if (estimatedKB < 5) {
+      console.error('Capture warning: image suspiciously small (' + Math.round(estimatedKB) + 'KB) — may be blank');
+      // Return it anyway and let the validation in api.js handle it
+    }
+
+    return dataUrl;
   },
 
-  // Countdown then capture
   countdown(seconds, onTick, onCapture) {
     let count = seconds;
     onTick?.(count);
@@ -116,6 +198,7 @@ const Camera = {
       count--;
       if (count <= 0) {
         clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
         const imageData = this.capture();
         onCapture?.(imageData);
       } else {
