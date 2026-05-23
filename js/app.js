@@ -324,17 +324,19 @@ const App = {
       return;
     }
 
-    // Apply watermark + frame overlays
+    // Apply watermark + frame overlays for DISPLAY only
+    // Keep original fal.ai URL for QR and download
     this.updateMessage?.('Applying final touches...');
-    let finalImageUrl = result.imageUrl;
+    const originalUrl = result.imageUrl; // fal.ai URL — used for QR + download
+    let displayUrl = result.imageUrl;    // canvas version — used for on-screen display only
     try {
-      finalImageUrl = await Settings.applyOverlays(result.imageUrl);
+      displayUrl = await Settings.applyOverlays(result.imageUrl);
     } catch (e) {
       console.warn('Overlay failed, using original:', e);
     }
 
-    this.state.resultImageUrl = finalImageUrl;
-    this.showResultScreen(finalImageUrl);
+    this.state.resultImageUrl = originalUrl; // always store the short fal.ai URL
+    this.showResultScreen(displayUrl, originalUrl);
   },
 
   showError(errorMsg) {
@@ -361,19 +363,22 @@ const App = {
     }
   },
 
-  async showResultScreen(imageUrl) {
+  async showResultScreen(displayUrl, downloadUrl) {
+    // displayUrl = canvas with overlays (shown on screen, may be base64)
+    // downloadUrl = original fal.ai URL (used for QR and download — always short)
+    const qrUrl = downloadUrl || displayUrl;
+
     const resultImg = document.getElementById('result-image');
     if (resultImg) {
-      resultImg.src = imageUrl;
-      // Make image tappable to open download URL directly
+      resultImg.src = displayUrl;
       resultImg.style.cursor = 'pointer';
-      resultImg.onclick = () => window.open(imageUrl, '_blank');
+      resultImg.onclick = () => window.open(qrUrl, '_blank');
     }
     this.showScreen('result');
 
     const qrCanvas = document.getElementById('qr-canvas');
     if (qrCanvas) {
-      try { await QRManager.generate(qrCanvas, imageUrl); }
+      try { await QRManager.generate(qrCanvas, qrUrl); }
       catch (err) { console.error('QR failed:', err); }
     }
 
@@ -381,7 +386,7 @@ const App = {
 
     if (mode === 'print') {
       document.getElementById('qr-section')?.style.setProperty('display', 'none');
-      setTimeout(() => this.triggerPrint(imageUrl), 1500);
+      setTimeout(() => this.triggerPrint(qrUrl), 1500);
       setTimeout(() => this.showThankYou(), 5000);
       return;
     }
@@ -400,7 +405,7 @@ const App = {
           if (timerCount) timerCount.textContent = remaining;
         },
         () => {
-          if (mode === 'both') this.triggerPrint(imageUrl);
+          if (mode === 'both') this.triggerPrint(qrUrl);
           this.showThankYou();
         }
       );
