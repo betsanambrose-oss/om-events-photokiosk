@@ -2,7 +2,7 @@
 // Caches all app files for offline use
 // Never caches API calls
 
-const CACHE_NAME = 'om-kiosk-v5';
+const CACHE_NAME = 'om-kiosk-v6';
 
 const CACHE_ASSETS = [
   '/om-events-photokiosk/',
@@ -14,6 +14,7 @@ const CACHE_ASSETS = [
   '/om-events-photokiosk/js/camera.js',
   '/om-events-photokiosk/js/qr.js',
   '/om-events-photokiosk/js/settings.js',
+  '/om-events-photokiosk/js/network.js',
   '/om-events-photokiosk/js/tracker.js',
   '/om-events-photokiosk/js/gender.js',
   '/om-events-photokiosk/templates/templates.js'

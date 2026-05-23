@@ -1,4 +1,4 @@
-// js/api.js — Flux Kontext: upload face + one AI call = done
+// js/api.js — Flux Kontext with 2G network optimization
 
 const WORKER_URL = 'https://om-events-proxy.betsanambrose.workers.dev';
 
@@ -28,17 +28,58 @@ const API = {
     return data;
   },
 
+  // Compress image based on network quality
+  // On 2G: JPEG 50% quality (~80-120KB) — fast upload
+  // On slow: JPEG 70% quality (~150-200KB)
+  // On fast: PNG (lossless, full quality)
+  compressForUpload(dataUrl) {
+    return new Promise((resolve) => {
+      const quality = typeof Network !== 'undefined' ? Network.getUploadQuality() : 0.85;
+      const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
+
+      // If already JPEG or slow network — re-encode at appropriate quality
+      if (isSlow || dataUrl.startsWith('data:image/jpeg')) {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const compressed = canvas.toDataURL('image/jpeg', quality);
+          const origKB = Math.round((dataUrl.length * 0.75) / 1024);
+          const compKB = Math.round((compressed.length * 0.75) / 1024);
+          console.log(`Compressed: ${origKB}KB → ${compKB}KB (quality: ${quality})`);
+          resolve(compressed);
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      } else {
+        // Fast network — use original PNG
+        resolve(dataUrl);
+      }
+    });
+  },
+
   async pollKontext(statusUrl, responseUrl, onProgress) {
-    const MAX = 60;
-    for (let i = 0; i < MAX; i++) {
-      await new Promise(r => setTimeout(r, 3000));
+    const pollInterval = typeof Network !== 'undefined' ? Network.getPollInterval() : 3000;
+    const maxPolls = typeof Network !== 'undefined' ? Network.getMaxPolls() : 60;
+    const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
+
+    for (let i = 0; i < maxPolls; i++) {
+      await new Promise(r => setTimeout(r, pollInterval));
+
       const s = await this.callWorker({ step: 'kontext_status', statusUrl });
-      console.log(`Kontext poll ${i + 1}/${MAX}: ${s.status}`);
+      console.log(`Kontext poll ${i + 1}/${maxPolls}: ${s.status}`);
 
       if (s.status === 'IN_QUEUE') {
-        onProgress?.(`Creating your scene — queue (${s.queuePosition ?? i})...`);
+        const msg = isSlow
+          ? `Creating your scene — queue (${s.queuePosition ?? i})... Slow connection, please wait`
+          : `Creating your scene — queue (${s.queuePosition ?? i})...`;
+        onProgress?.(msg);
       } else if (s.status === 'IN_PROGRESS') {
-        onProgress?.('Creating your scene...');
+        const msg = isSlow ? 'Creating your scene... Slow connection, almost there' : 'Creating your scene...';
+        onProgress?.(msg);
       } else if (s.status === 'COMPLETED') {
         const result = await this.callWorker({ step: 'kontext_result', responseUrl });
         return result.resultUrl;
@@ -46,7 +87,8 @@ const API = {
         throw new Error('Generation failed with status: ' + s.status);
       }
     }
-    throw new Error('Generation timed out after 3 minutes');
+    const minutes = Math.round((pollInterval * maxPolls) / 60000);
+    throw new Error(`Generation timed out after ${minutes} minutes. Please check your connection and try again.`);
   },
 
   async generatePhoto(prompt, negativePrompt, onProgress) {
@@ -56,35 +98,53 @@ const API = {
     this.isGenerating = true;
 
     try {
-      // STEP 1 — Validate and upload face image
-      onProgress?.('Uploading your photo...');
+      // Detect network quality first
+      if (typeof Network !== 'undefined') {
+        await Network.detect();
+        console.log('Network quality for generation:', Network.quality);
+      }
 
+      const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
+      const is2G = typeof Network !== 'undefined' ? Network.is2G() : false;
+
+      // STEP 1 — Validate capture
       if (!this.capturedFaceBase64) {
         throw new Error('No photo captured. Please try again.');
       }
 
-      const dataUrl = this.capturedFaceBase64;
-      const isPng = dataUrl.startsWith('data:image/png');
-      const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, '');
-      if (!base64) {
-        throw new Error('Photo capture failed — empty image. Please try again.');
+      // Network-aware upload message
+      if (is2G) {
+        onProgress?.('Weak signal detected — compressing photo for upload...');
+      } else if (isSlow) {
+        onProgress?.('Uploading your photo... (slow connection)');
+      } else {
+        onProgress?.('Uploading your photo...');
       }
 
-      // PNG is larger than JPEG — min 50KB for PNG, 20KB for JPEG
+      // Compress based on network
+      const uploadDataUrl = await this.compressForUpload(this.capturedFaceBase64);
+      const isPng = uploadDataUrl.startsWith('data:image/png');
+      const base64 = uploadDataUrl.replace(/^data:image\/\w+;base64,/, '');
+
+      if (!base64) throw new Error('Photo capture failed — empty image. Please try again.');
+
       const estimatedKB = (base64.length * 0.75) / 1024;
-      const minKB = isPng ? 30 : 20;
+      const minKB = isPng ? 30 : 15;
       if (estimatedKB < minKB) {
         throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera connection and try again.`);
       }
 
-      console.log('Uploading photo:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG)' : '(JPEG)');
+      console.log('Uploading:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG)' : '(JPEG)', '| Network:', typeof Network !== 'undefined' ? Network.quality : 'unknown');
+
       const uploaded = await this.callWorker({ step: 'upload', base64, isPng });
       if (!uploaded.fileUrl) throw new Error('Upload failed — no URL returned');
       this.faceImageUrl = uploaded.fileUrl;
       console.log('✅ Photo uploaded:', this.faceImageUrl);
 
       // STEP 2 — Submit Kontext
-      onProgress?.('Creating your scene...');
+      const submitMsg = isSlow ? 'Sending to AI... (slow connection, please wait)' : 'Creating your scene...';
+      onProgress?.(submitMsg);
+
       const job = await this.callWorker({
         step: 'kontext_submit',
         prompt: prompt,
@@ -94,7 +154,8 @@ const API = {
       console.log('✅ Kontext job submitted:', job.requestId);
 
       // STEP 3 — Poll until done
-      onProgress?.('Creating your scene...');
+      const pollMsg = isSlow ? 'AI is working... Slow connection — this may take a few minutes' : 'Creating your scene...';
+      onProgress?.(pollMsg);
       const resultUrl = await this.pollKontext(job.statusUrl, job.responseUrl, onProgress);
       if (!resultUrl) throw new Error('No result image returned');
       console.log('✅ Final result:', resultUrl);

@@ -540,16 +540,44 @@ const App = {
   },
 
   checkOnlineStatus() {
-    const update = () => {
+    const update = async () => {
       const indicator = document.getElementById('online-indicator');
-      if (indicator) {
-        indicator.textContent = navigator.onLine ? '● Online' : '○ Offline Mode';
-        indicator.style.color = navigator.onLine ? '#4CAF50' : '#C9A84C';
+      if (!indicator) return;
+
+      if (!navigator.onLine) {
+        indicator.textContent = '○ Offline';
+        indicator.style.color = '#ff6b6b';
+        return;
+      }
+
+      // Use Network module for quality detection if available
+      if (typeof Network !== 'undefined') {
+        const status = Network.getStatusLabel();
+        indicator.textContent = status.text;
+        indicator.style.color = status.color;
+      } else {
+        indicator.textContent = '● Online';
+        indicator.style.color = '#4CAF50';
       }
     };
-    window.addEventListener('online', update);
-    window.addEventListener('offline', update);
-    update();
+
+    // Monitor connection changes via Network module
+    if (typeof Network !== 'undefined') {
+      Network.startMonitoring(async () => {
+        const status = Network.getStatusLabel();
+        const indicator = document.getElementById('online-indicator');
+        if (indicator) {
+          indicator.textContent = status.text;
+          indicator.style.color = status.color;
+        }
+      });
+      // Initial detect
+      Network.detect().then(update);
+    } else {
+      window.addEventListener('online', update);
+      window.addEventListener('offline', update);
+      update();
+    }
   },
 
   loadSettings() {
