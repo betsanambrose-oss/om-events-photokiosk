@@ -63,19 +63,22 @@ const API = {
         throw new Error('No photo captured. Please try again.');
       }
 
-      const base64 = this.capturedFaceBase64.replace(/^data:image\/\w+;base64,/, '');
+      const dataUrl = this.capturedFaceBase64;
+      const isPng = dataUrl.startsWith('data:image/png');
+      const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, '');
       if (!base64) {
         throw new Error('Photo capture failed — empty image. Please try again.');
       }
 
-      // Validate size — a proper photo should be at least 20KB
+      // PNG is larger than JPEG — min 50KB for PNG, 20KB for JPEG
       const estimatedKB = (base64.length * 0.75) / 1024;
-      if (estimatedKB < 20) {
+      const minKB = isPng ? 30 : 20;
+      if (estimatedKB < minKB) {
         throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera connection and try again.`);
       }
 
-      console.log('Uploading photo:', Math.round(estimatedKB) + 'KB');
-      const uploaded = await this.callWorker({ step: 'upload', base64 });
+      console.log('Uploading photo:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG)' : '(JPEG)');
+      const uploaded = await this.callWorker({ step: 'upload', base64, isPng });
       if (!uploaded.fileUrl) throw new Error('Upload failed — no URL returned');
       this.faceImageUrl = uploaded.fileUrl;
       console.log('✅ Photo uploaded:', this.faceImageUrl);

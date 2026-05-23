@@ -173,8 +173,9 @@ const Camera = {
     // External/USB camera: draw directly without mirroring
     ctx.drawImage(this.videoEl, 0, 0, w, h);
 
-    // Export at maximum quality
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    // Export as PNG for lossless quality upload to Kontext
+    // PNG preserves all facial detail with no compression artifacts
+    const dataUrl = canvas.toDataURL('image/png');
 
     // Validate the output is not a black/empty frame
     // A blank black image at 1280x720 would be ~50kb — if it's too small, something is wrong

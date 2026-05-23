@@ -129,7 +129,17 @@ const App = {
     document.querySelectorAll('.scene-thumb[data-thumb]').forEach(el => {
       const src = el.dataset.thumb;
       const img = new Image();
-      img.onload = () => { el.style.backgroundImage = `url(${src})`; };
+      img.onload = () => {
+        // Override the gradient with the actual thumbnail image
+        // Keep background-size:cover and background-position:center
+        el.style.backgroundImage = `url(${src})`;
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+      };
+      img.onerror = () => {
+        // Gradient fallback already set — do nothing
+      };
+      // Add cache-busting only for development
       img.src = src;
     });
   },
@@ -202,12 +212,25 @@ const App = {
       }
     }
 
-    // Update scene preview on camera screen
+    // Update scene preview on camera screen — show thumbnail if available
     const previewLabel = document.getElementById('selected-scene-name');
     const previewBg = document.getElementById('selected-scene-bg');
     const scene = this.state.selectedScene;
     if (previewLabel) previewLabel.textContent = scene.name;
-    if (previewBg) previewBg.style.background = scene.gradient;
+    if (previewBg) {
+      // Set gradient as fallback first
+      previewBg.style.background = scene.gradient;
+      previewBg.style.backgroundSize = 'cover';
+      previewBg.style.backgroundPosition = 'center';
+      // Try loading the actual thumbnail
+      const thumbImg = new Image();
+      thumbImg.onload = () => {
+        previewBg.style.backgroundImage = `url(assets/thumbnails/${scene.id}.webp)`;
+        previewBg.style.backgroundSize = 'cover';
+        previewBg.style.backgroundPosition = 'center';
+      };
+      thumbImg.src = `assets/thumbnails/${scene.id}.webp`;
+    }
 
     // Short delay for visual feedback then go to camera
     await new Promise(r => setTimeout(r, 200));
