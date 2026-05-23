@@ -29,6 +29,12 @@ const App = {
     // Show event name on home screen
     this.updateHomeEventName();
 
+    // Show reminder if no active event
+    const reminder = document.getElementById('event-reminder');
+    if (reminder && typeof Tracker !== 'undefined' && !Tracker.isEventActive()) {
+      reminder.style.display = 'block';
+    }
+
     // Pre-load gender detection models in background (non-blocking)
     const tryLoadGender = (attempt = 0) => {
       if (typeof GenderDetector !== 'undefined' && typeof faceapi !== 'undefined') {
@@ -42,6 +48,12 @@ const App = {
 
   updateHomeEventName() {
     const eventNameEl = document.getElementById('home-event-name');
+    const reminder = document.getElementById('event-reminder');
+
+    if (reminder && typeof Tracker !== 'undefined') {
+      reminder.style.display = Tracker.isEventActive() ? 'none' : 'block';
+    }
+
     if (!eventNameEl) return;
     const info = typeof Settings !== 'undefined' ? Settings.getEventInfo() : null;
     const active = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
@@ -500,6 +512,7 @@ const App = {
     const overlay = document.getElementById('countdown-overlay');
     if (overlay) overlay.classList.remove('active');
 
+    this.updateHomeEventName();
     this.showScreen('home');
   },
 

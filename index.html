@@ -41,6 +41,19 @@
 ══════════════════════════════════════ -->
 <div id="screen-home" class="screen active">
 
+  <!-- Event not started reminder -->
+  <div id="event-reminder" style="display:none; position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(201,168,76,0.12); border-bottom:1px solid rgba(201,168,76,0.3);
+    padding:10px 24px; text-align:center; backdrop-filter:blur(4px);">
+    <span style="font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold);">
+      ⚠ No active event — 
+    </span>
+    <a href="admin/index.html" style="font-size:10px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--gold); text-decoration:underline; cursor:pointer;">
+      Go to Admin → Start Event
+    </a>
+  </div>
+
   <!-- Header -->
   <div class="home-header">
     <div class="om-logo">OM Events</div>
