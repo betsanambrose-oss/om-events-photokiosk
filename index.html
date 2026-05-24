@@ -235,10 +235,7 @@
         <div class="qr-corner bl"></div>
         <div class="qr-corner br"></div>
       </div>
-
       <p class="qr-hint">Scan with your phone camera</p>
-
-      <!-- Timer bar -->
       <div class="timer-bar-wrap">
         <div class="timer-label">
           <span>Download window</span>
@@ -248,6 +245,33 @@
           <div id="timer-fill" class="timer-bar-fill" style="width:100%"></div>
         </div>
       </div>
+    </div>
+
+    <!-- Print Section -->
+    <div id="print-section" class="print-section">
+
+      <!-- Print button — always visible -->
+      <button id="print-btn" class="print-btn" onclick="App.handlePrint()">
+        <span class="print-btn-icon">🖨</span>
+        <span class="print-btn-label">Print Photo</span>
+      </button>
+
+      <!-- Confirmation buttons — appear after print tapped -->
+      <div id="print-confirm" class="print-confirm" style="display:none;">
+        <p class="print-confirm-label">Did it print?</p>
+        <div class="print-confirm-btns">
+          <button class="btn-print-ok" onclick="App.confirmPrint('success')">
+            ✓ Printed
+          </button>
+          <button class="btn-print-fail" onclick="App.confirmPrint('failed')">
+            ✗ Failed
+          </button>
+        </div>
+      </div>
+
+      <!-- Print status badge — shown after confirmation -->
+      <div id="print-status-badge" class="print-status-badge" style="display:none;"></div>
+
     </div>
 
     <!-- OM Branding -->

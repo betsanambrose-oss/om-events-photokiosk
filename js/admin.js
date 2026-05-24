@@ -93,6 +93,22 @@ const Admin = {
     // Force offline
     document.getElementById('toggle-force-offline').checked = !!s.forceOffline;
 
+    // Print settings
+    if (s.printPaperSize) {
+      const el = document.getElementById('print-paper-size');
+      if (el) el.value = s.printPaperSize;
+    }
+    if (s.printOrientation) {
+      const el = document.getElementById('print-orientation');
+      if (el) el.value = s.printOrientation;
+    }
+    if (s.printColor) {
+      const el = document.getElementById('print-color');
+      if (el) el.value = s.printColor;
+    }
+    const borderlessEl = document.getElementById('print-borderless');
+    if (borderlessEl) borderlessEl.checked = s.printBorderless !== false;
+
     // Update event control UI
     this.updateEventControlUI();
   },
@@ -595,6 +611,12 @@ const Admin = {
     this.settings.eventDate = document.getElementById('event-date')?.value || '';
     this.settings.omWatermark = document.getElementById('toggle-om-watermark')?.checked !== false;
     this.settings.forceOffline = document.getElementById('toggle-force-offline')?.checked || false;
+
+    // Print settings
+    this.settings.printPaperSize = document.getElementById('print-paper-size')?.value || '4x6';
+    this.settings.printOrientation = document.getElementById('print-orientation')?.value || 'portrait';
+    this.settings.printColor = document.getElementById('print-color')?.value || 'color';
+    this.settings.printBorderless = document.getElementById('print-borderless')?.checked !== false;
 
     // Ensure all valid categories are included if none saved
     if (!this.settings.activeCategories || this.settings.activeCategories.length === 0) {

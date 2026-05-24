@@ -78,6 +78,16 @@ const Settings = {
     return { name: s.eventName || 'OM Events', organizer: s.eventOrganizer || '', date: s.eventDate || '' };
   },
 
+  getPrintSettings() {
+    const s = this.load();
+    return {
+      paperSize: s.printPaperSize || '4x6',
+      orientation: s.printOrientation || 'portrait',
+      colorMode: s.printColor || 'color',
+      borderless: s.printBorderless !== false
+    };
+  },
+
   async applyOverlays(imageUrl) {
     const wm = this.getWatermark();
     return new Promise((resolve) => {
@@ -140,16 +150,59 @@ const Settings = {
   },
 
   printImage(imageUrl) {
+    const ps = this.getPrintSettings();
+
+    // Build paper dimensions
+    const paperMap = {
+      '4x6': { w: '4in', h: '6in' },
+      '6x4': { w: '6in', h: '4in' },
+      '5x7': { w: '5in', h: '7in' },
+      'a4':  { w: '210mm', h: '297mm' }
+    };
+    const paper = paperMap[ps.paperSize] || paperMap['4x6'];
+
+    // Portrait vs landscape swaps dimensions
+    const pw = ps.orientation === 'landscape' ? paper.h : paper.w;
+    const ph = ps.orientation === 'landscape' ? paper.w : paper.h;
+
+    const margin = ps.borderless ? '0' : '5mm';
+    const colorFilter = ps.colorMode === 'grayscale' ? 'filter:grayscale(100%);' : '';
+
     const w = window.open('', '_blank');
     if (!w) { alert('Please allow popups to print'); return; }
-    w.document.write(`<!DOCTYPE html><html><head><title>OM Events Photo</title>
-    <style>*{margin:0;padding:0;box-sizing:border-box;}
-    html,body{width:6in;height:4in;overflow:hidden;background:#000;}
-    .wrap{width:6in;height:4in;display:flex;align-items:center;justify-content:center;background:#000;}
-    img{max-width:6in;max-height:4in;width:auto;height:auto;object-fit:contain;display:block;}
-    @media print{@page{size:6in 4in;margin:0;}html,body{width:6in;height:4in;}}
-    </style></head><body><div class="wrap">
-    <img src="${imageUrl}" onload="window.print();setTimeout(()=>window.close(),1500);"/>
+    w.document.write(`<!DOCTYPE html><html><head>
+    <title>OM Events Photo</title>
+    <style>
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body {
+        width:${pw}; height:${ph};
+        overflow:hidden; background:#000;
+      }
+      .wrap {
+        width:${pw}; height:${ph};
+        display:flex; align-items:center; justify-content:center;
+        background:#000;
+      }
+      img {
+        max-width:100%; max-height:100%;
+        width:auto; height:auto;
+        object-fit:contain; display:block;
+        ${colorFilter}
+      }
+      @media print {
+        @page {
+          size: ${pw} ${ph};
+          margin: ${margin};
+        }
+        html, body { width:${pw}; height:${ph}; }
+        img { width:100%; height:100%; object-fit:cover; }
+      }
+    </style></head><body>
+    <div class="wrap">
+      <img src="${imageUrl}"
+        onload="setTimeout(()=>{window.print();},300);"
+        onerror="document.body.innerHTML='<p style=color:white;padding:20px>Image failed to load</p>';"
+      />
     </div></body></html>`);
     w.document.close();
   }

@@ -1209,3 +1209,123 @@ html, body {
   line-height: 2;
   text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
+
+/* ══════════════════════════════════════
+   PRINT SECTION — Result Screen
+══════════════════════════════════════ */
+
+.print-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Main print button */
+.print-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: all 0.3s var(--transition);
+}
+.print-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.print-btn:active { transform: scale(0.97); }
+.print-btn.loading { opacity: 0.7; cursor: not-allowed; }
+
+.print-btn-icon { font-size: 16px; }
+.print-btn-label { letter-spacing: 3px; }
+
+/* Confirmation buttons — appear after print tapped */
+.print-confirm {
+  width: 100%;
+  animation: fadeUp 0.3s var(--transition) both;
+}
+
+.print-confirm-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.print-confirm-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-print-ok {
+  padding: 11px 8px;
+  background: rgba(76,175,80,0.12);
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+.btn-print-ok:hover { background: rgba(76,175,80,0.25); }
+.btn-print-ok:active { transform: scale(0.96); }
+
+.btn-print-fail {
+  padding: 11px 8px;
+  background: rgba(255,107,107,0.12);
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+.btn-print-fail:hover { background: rgba(255,107,107,0.25); }
+.btn-print-fail:active { transform: scale(0.96); }
+
+/* Status badge after confirmation */
+.print-status-badge {
+  width: 100%;
+  padding: 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  animation: fadeUp 0.3s var(--transition) both;
+}
+.print-status-badge.success {
+  background: rgba(76,175,80,0.12);
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+}
+.print-status-badge.failed {
+  background: rgba(255,107,107,0.12);
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+/* Hide print section when output mode is soft-only */
+.print-section.hidden { display: none; }

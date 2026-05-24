@@ -423,11 +423,24 @@ const App = {
 
     const mode = this.state.mode;
 
+    // Show/hide print button based on output mode
+    const printSection = document.getElementById('print-section');
+    const qrSection = document.getElementById('qr-section');
+    if (printSection) {
+      printSection.style.display = (mode === 'soft') ? 'none' : 'flex';
+    }
+
+    // Reset print UI state
+    const printBtn = document.getElementById('print-btn');
+    const printConfirm = document.getElementById('print-confirm');
+    const printBadge = document.getElementById('print-status-badge');
+    if (printBtn) { printBtn.style.display = 'flex'; printBtn.disabled = false; printBtn.classList.remove('loading'); }
+    if (printConfirm) printConfirm.style.display = 'none';
+    if (printBadge) { printBadge.style.display = 'none'; printBadge.className = 'print-status-badge'; }
+
     if (mode === 'print') {
-      document.getElementById('qr-section')?.style.setProperty('display', 'none');
-      setTimeout(() => this.triggerPrint(qrUrl), 1500);
-      setTimeout(() => this.showThankYou(), 5000);
-      return;
+      if (qrSection) qrSection.style.display = 'none';
+      return; // Staff taps print manually
     }
 
     const timerFill = document.getElementById('timer-fill');
@@ -451,18 +464,70 @@ const App = {
     }, 500);
   },
 
-  triggerPrint(imageUrl) {
-    // Track print as sent
+  handlePrint() {
+    const imageUrl = this.state.resultImageUrl;
+    if (!imageUrl) return;
+
+    const printBtn = document.getElementById('print-btn');
+    const printConfirm = document.getElementById('print-confirm');
+    const printBadge = document.getElementById('print-status-badge');
+
+    // Update tracker — mark as sent
     if (typeof Tracker !== 'undefined' && this.state.currentPhotoId) {
       Tracker.updatePrintStatus(this.state.currentPhotoId, 'sent');
     }
+
+    // Disable print button while dialog is open
+    if (printBtn) { printBtn.disabled = true; printBtn.classList.add('loading'); }
+
+    // Open print dialog
     Settings.printImage(imageUrl);
-    // Mark as success after a delay (browser print dialog accepted)
+
+    // Show confirmation buttons after short delay
+    // (gives time for print dialog to open and staff to interact)
     setTimeout(() => {
-      if (typeof Tracker !== 'undefined' && this.state.currentPhotoId) {
-        Tracker.updatePrintStatus(this.state.currentPhotoId, 'success');
-      }
-    }, 3000);
+      if (printBtn) printBtn.style.display = 'none';
+      if (printBadge) printBadge.style.display = 'none';
+      if (printConfirm) printConfirm.style.display = 'block';
+    }, 1500);
+  },
+
+  confirmPrint(status) {
+    // status: 'success' | 'failed'
+    const printConfirm = document.getElementById('print-confirm');
+    const printBadge = document.getElementById('print-status-badge');
+    const printBtn = document.getElementById('print-btn');
+
+    // Update tracker
+    if (typeof Tracker !== 'undefined' && this.state.currentPhotoId) {
+      Tracker.updatePrintStatus(this.state.currentPhotoId, status);
+    }
+
+    // Hide confirmation buttons
+    if (printConfirm) printConfirm.style.display = 'none';
+
+    // Show status badge
+    if (printBadge) {
+      printBadge.style.display = 'block';
+      printBadge.className = 'print-status-badge ' + status;
+      printBadge.textContent = status === 'success' ? '✓ Printed Successfully' : '✗ Print Failed — Retry?';
+    }
+
+    // If failed — show print button again for retry
+    if (status === 'failed' && printBtn) {
+      setTimeout(() => {
+        printBtn.style.display = 'flex';
+        printBtn.disabled = false;
+        printBtn.classList.remove('loading');
+        if (printBadge) printBadge.style.display = 'none';
+        if (printConfirm) printConfirm.style.display = 'none';
+      }, 2000);
+    }
+  },
+
+  triggerPrint(imageUrl) {
+    // Legacy — used by auto-print in 'both' mode timer
+    this.handlePrint();
   },
 
   showThankYou() {

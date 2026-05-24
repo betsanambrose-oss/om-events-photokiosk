@@ -287,22 +287,43 @@
       </div>
       <div class="card">
         <div class="card-title">Print Settings</div>
-        <div class="status-row">
-          <div class="status-dot gold"></div>
-          <span class="status-label">Paper Size</span>
-          <span class="status-value">6 × 4 inches</span>
+        <div class="form-group">
+          <label class="form-label">Paper Size</label>
+          <select id="print-paper-size" class="form-select" onchange="Admin.saveSettings()">
+            <option value="4x6">4 × 6 inches (Photo)</option>
+            <option value="6x4">6 × 4 inches (Landscape)</option>
+            <option value="5x7">5 × 7 inches</option>
+            <option value="a4">A4</option>
+          </select>
         </div>
-        <div class="status-row">
-          <div class="status-dot" id="printer-status-dot" style="background:var(--white-dim)"></div>
-          <span class="status-label">Printer Status</span>
-          <span class="status-value" id="printer-status-text">Not tested</span>
+        <div class="form-group">
+          <label class="form-label">Orientation</label>
+          <select id="print-orientation" class="form-select" onchange="Admin.saveSettings()">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
         </div>
-        <div class="status-row">
-          <div class="status-dot gold"></div>
-          <span class="status-label">Print Method</span>
-          <span class="status-value">WiFi / System Dialog</span>
+        <div class="form-group">
+          <label class="form-label">Color Mode</label>
+          <select id="print-color" class="form-select" onchange="Admin.saveSettings()">
+            <option value="color">Color</option>
+            <option value="grayscale">Grayscale / B&W</option>
+          </select>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Borderless Print</div>
+            <div class="toggle-desc">Remove all margins — image fills paper edge to edge</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="print-borderless" checked onchange="Admin.saveSettings()"/>
+            <span class="toggle-slider"></span>
+          </label>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-title">Print Status</div>
       <div class="card">
         <div class="card-title">Test Print</div>
         <div class="btn-row">
