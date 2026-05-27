@@ -5,6 +5,22 @@
 const TEMPLATES = {
   categories: [
     {
+      id: 'tamilnadu',
+      name: 'Tamil Nadu',
+      icon: '🌟',
+      gradient: 'linear-gradient(135deg, #2d1b00, #5c3317, #8B0000)',
+      scenes: [
+        {
+          id: 'tn-withcm',
+          name: 'Photo with CM',
+          gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
+          prompt: `Place every person visible in this booth photo standing beside Tamil Nadu Chief Minister Vijay at his official CMO desk. Preserve each person's exact face, facial structure, skin tone, skin texture, hair color, hair style, eye color, body shape, height and proportions with absolute fidelity — do not alter, smooth, beautify or modify any feature. The booth subject stands naturally beside CM Vijay, who wears a crisp white shirt and smiles warmly. Both subjects hold or exchange a bouquet of pink roses and a box of sweets between them.
+Elegant dark wood-paneled CMO interior, Tamil Nadu government emblem mounted on the wall behind, Indian tricolor flag to the right, framed portrait on the wall. Soft warm overhead office lighting with subtle fill light on faces. Natural shadows fall beneath each subject onto the floor — no floating, no halo, no edge artifacts. Subjects are grounded and physically present in the space.
+Canon 85mm f/1.4, shallow DOF, cinematic bokeh, slight film grain, ultra photorealistic, 8K.`
+        },
+      ]
+    },
+	{
       id: 'hollywood',
       name: 'Hollywood',
       icon: '🎬',
