@@ -325,16 +325,35 @@ const App = {
 
     // Build gender-aware prompt
     const rawPrompt = this.state.selectedScene.prompt || '';
+    const scene = this.state.selectedScene;
+
+    // Resolve scene reference image URL if present
+    let sceneReferenceUrl = null;
+    if (scene.referenceImage) {
+      // Build absolute URL from relative path
+      const base = window.location.href.replace(/[^/]*$/, '');
+      sceneReferenceUrl = base + scene.referenceImage;
+      console.log('Scene reference image:', sceneReferenceUrl);
+    }
 
     let enhancedPrompt;
 
-    // Try gender detection — detect() handles all fallbacks internally
-    if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+    if (sceneReferenceUrl) {
+      // Reference image mode — simpler prompt focused on face placement
+      // Kontext sees both images; image_1 = face, image_2 = scene
+      // Don't add the usual prefix — the prompt already describes what to do
+      const genderWord = (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64)
+        ? (await GenderDetector.detect(API.capturedFaceBase64)).description
+        : 'person';
+      enhancedPrompt = rawPrompt.replace(/\[GENDER\]/g, genderWord);
+      console.log('Using reference image mode — prompt only, no prefix');
+    } else if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+      // Standard mode — gender-aware prompt with prefix
       const detection = await GenderDetector.detect(API.capturedFaceBase64);
       enhancedPrompt = GenderDetector.buildPrompt(rawPrompt, detection, 1);
       console.log('Gender result:', detection.description, '| detected:', detection.detected);
     } else {
-      // GenderDetector not available — build neutral prompt
+      // Fallback — neutral prompt with prefix
       const neutralPrompt = rawPrompt.replace(/\[GENDER\]/g, 'person');
       enhancedPrompt = 'Using ONLY the exact people visible in the reference image — preserve every face, skin tone, hair and physical feature precisely, do not add or remove any people — place them naturally into this scene: ' + neutralPrompt;
     }
@@ -342,8 +361,9 @@ const App = {
     if (navigator.onLine) {
       result = await API.generatePhoto(
         enhancedPrompt,
-        this.state.selectedScene.negative,
-        updateMessage
+        scene.negative,
+        updateMessage,
+        sceneReferenceUrl
       );
     } else {
       result = await API.generateOfflineFallback();

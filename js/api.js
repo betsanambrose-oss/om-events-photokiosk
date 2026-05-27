@@ -91,7 +91,7 @@ const API = {
     throw new Error(`Generation timed out after ${minutes} minutes. Please check your connection and try again.`);
   },
 
-  async generatePhoto(prompt, negativePrompt, onProgress) {
+  async generatePhoto(prompt, negativePrompt, onProgress, sceneReferenceUrl = null) {
     if (this.isGenerating) {
       return { success: false, error: 'Already running — please wait' };
     }
@@ -148,8 +148,12 @@ const API = {
       const job = await this.callWorker({
         step: 'kontext_submit',
         prompt: prompt,
-        faceImageUrl: this.faceImageUrl
+        faceImageUrl: this.faceImageUrl,
+        sceneReferenceUrl: sceneReferenceUrl || null
       });
+      if (sceneReferenceUrl) {
+        console.log('Using scene reference:', sceneReferenceUrl);
+      }
       if (!job.statusUrl) throw new Error('Scene generation job not created');
       console.log('✅ Kontext job submitted:', job.requestId);
 
