@@ -34,30 +34,36 @@ const API = {
   // On fast: PNG (lossless, full quality)
   compressForUpload(dataUrl) {
     return new Promise((resolve) => {
-      const quality = typeof Network !== 'undefined' ? Network.getUploadQuality() : 0.85;
-      const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
+      const is2G = typeof Network !== 'undefined' ? Network.is2G() : false;
 
-      // If already JPEG or slow network — re-encode at appropriate quality
-      if (isSlow || dataUrl.startsWith('data:image/jpeg')) {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          const compressed = canvas.toDataURL('image/jpeg', quality);
-          const origKB = Math.round((dataUrl.length * 0.75) / 1024);
-          const compKB = Math.round((compressed.length * 0.75) / 1024);
-          console.log(`Compressed: ${origKB}KB → ${compKB}KB (quality: ${quality})`);
-          resolve(compressed);
-        };
-        img.onerror = () => resolve(dataUrl);
-        img.src = dataUrl;
-      } else {
-        // Fast network — use original PNG
-        resolve(dataUrl);
-      }
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0);
+
+        let result;
+        if (is2G) {
+          // 2G only — JPEG 80% quality (~200-300KB) — still good enough for faces
+          result = canvas.toDataURL('image/jpeg', 0.80);
+          console.log('2G mode — JPEG 80% upload');
+        } else {
+          // Fast/slow — PNG lossless — full facial detail preserved
+          result = canvas.toDataURL('image/png');
+          console.log('PNG lossless upload');
+        }
+
+        const origKB = Math.round((dataUrl.length * 0.75) / 1024);
+        const resultKB = Math.round((result.length * 0.75) / 1024);
+        console.log(`Upload: ${origKB}KB → ${resultKB}KB`);
+        resolve(result);
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
     });
   },
 
@@ -121,7 +127,7 @@ const API = {
         onProgress?.('Uploading your photo...');
       }
 
-      // Compress based on network
+      // Compress/prepare for upload based on network
       const uploadDataUrl = await this.compressForUpload(this.capturedFaceBase64);
       const isPng = uploadDataUrl.startsWith('data:image/png');
       const base64 = uploadDataUrl.replace(/^data:image\/\w+;base64,/, '');
@@ -129,12 +135,11 @@ const API = {
       if (!base64) throw new Error('Photo capture failed — empty image. Please try again.');
 
       const estimatedKB = (base64.length * 0.75) / 1024;
-      const minKB = isPng ? 30 : 15;
-      if (estimatedKB < minKB) {
+      if (estimatedKB < 15) {
         throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera connection and try again.`);
       }
 
-      console.log('Uploading:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG)' : '(JPEG)', '| Network:', typeof Network !== 'undefined' ? Network.quality : 'unknown');
+      console.log('Uploading:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG lossless)' : '(JPEG)', '| Network:', typeof Network !== 'undefined' ? Network.quality : 'unknown');
 
       const uploaded = await this.callWorker({ step: 'upload', base64, isPng });
       if (!uploaded.fileUrl) throw new Error('Upload failed — no URL returned');
