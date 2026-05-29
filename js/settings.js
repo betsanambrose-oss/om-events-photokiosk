@@ -81,8 +81,8 @@ const Settings = {
   getPrintSettings() {
     const s = this.load();
     return {
-      paperSize: s.printPaperSize || '4x6',
-      orientation: s.printOrientation || 'portrait',
+      paperSize: s.printPaperSize || '6x4',        // landscape default matches AI output
+      orientation: s.printOrientation || 'landscape', // landscape to match 4:3 AI output
       colorMode: s.printColor || 'color',
       borderless: s.printBorderless !== false
     };

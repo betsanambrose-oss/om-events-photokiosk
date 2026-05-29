@@ -443,14 +443,10 @@ const App = {
 
     const mode = this.state.mode;
 
-    // Show/hide print button based on output mode
     const printSection = document.getElementById('print-section');
     const qrSection = document.getElementById('qr-section');
-    if (printSection) {
-      printSection.style.display = (mode === 'soft') ? 'none' : 'flex';
-    }
 
-    // Reset print UI state
+    // Reset print UI state every time result screen shows
     const printBtn = document.getElementById('print-btn');
     const printConfirm = document.getElementById('print-confirm');
     const printBadge = document.getElementById('print-status-badge');
@@ -458,10 +454,20 @@ const App = {
     if (printConfirm) printConfirm.style.display = 'none';
     if (printBadge) { printBadge.style.display = 'none'; printBadge.className = 'print-status-badge'; }
 
+    // Mode logic:
+    // soft  → QR + timer only, no print button
+    // print → print button only, no QR, no timer, staff taps manually
+    // both  → QR + timer + print button
     if (mode === 'print') {
       if (qrSection) qrSection.style.display = 'none';
-      return; // Staff taps print manually
+      if (printSection) printSection.style.display = 'flex';
+      // No timer — stays on result screen until staff confirms print
+      return;
     }
+
+    // soft or both — show QR and run timer
+    if (qrSection) qrSection.style.display = 'block';
+    if (printSection) printSection.style.display = (mode === 'both') ? 'flex' : 'none';
 
     const timerFill = document.getElementById('timer-fill');
     const timerCount = document.getElementById('timer-count');
@@ -476,10 +482,7 @@ const App = {
           if (timerFill) timerFill.style.width = `${(remaining / total) * 100}%`;
           if (timerCount) timerCount.textContent = remaining;
         },
-        () => {
-          if (mode === 'both') this.triggerPrint(qrUrl);
-          this.showThankYou();
-        }
+        () => { this.showThankYou(); }
       );
     }, 500);
   },
@@ -526,22 +529,31 @@ const App = {
     // Hide confirmation buttons
     if (printConfirm) printConfirm.style.display = 'none';
 
-    // Show status badge
-    if (printBadge) {
-      printBadge.style.display = 'block';
-      printBadge.className = 'print-status-badge ' + status;
-      printBadge.textContent = status === 'success' ? '✓ Printed Successfully' : '✗ Print Failed — Retry?';
-    }
+    if (status === 'success') {
+      // Show success badge briefly then auto-advance to thank you
+      if (printBadge) {
+        printBadge.style.display = 'block';
+        printBadge.className = 'print-status-badge success';
+        printBadge.textContent = '✓ Printed Successfully';
+      }
+      setTimeout(() => { this.showThankYou(); }, 1500);
 
-    // If failed — show print button again for retry
-    if (status === 'failed' && printBtn) {
-      setTimeout(() => {
-        printBtn.style.display = 'flex';
-        printBtn.disabled = false;
-        printBtn.classList.remove('loading');
-        if (printBadge) printBadge.style.display = 'none';
-        if (printConfirm) printConfirm.style.display = 'none';
-      }, 2000);
+    } else {
+      // Failed — show badge and retry button
+      if (printBadge) {
+        printBadge.style.display = 'block';
+        printBadge.className = 'print-status-badge failed';
+        printBadge.textContent = '✗ Print Failed — Tap to Retry';
+        printBadge.style.cursor = 'pointer';
+        printBadge.onclick = () => {
+          printBadge.style.display = 'none';
+          if (printBtn) {
+            printBtn.style.display = 'flex';
+            printBtn.disabled = false;
+            printBtn.classList.remove('loading');
+          }
+        };
+      }
     }
   },
 

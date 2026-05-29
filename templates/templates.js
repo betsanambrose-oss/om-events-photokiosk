@@ -591,10 +591,10 @@ Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photo
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
           referenceImage: 'assets/references/tn-withcm.jpg',
-          prompt: `image_1 is the captured person to insert. image_2 is the exact reference scene.
-Replace ONLY the person standing on the RIGHT side of image_2 with the person from image_1. Preserve the captured person's exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
-Keep EVERYTHING else in image_2 completely unchanged — the person on the LEFT (CM Vijay in white shirt) must remain exactly as-is, the Chief Minister nameplate on desk, Tamil Nadu government emblem on wall, Indian tricolor flag, framed portrait, dark wood-paneled office interior, pink rose bouquet and sweet box — do not change anything in the background or the left-side person.
-The inserted person stands naturally on the right side holding the bouquet. Soft warm overhead office lighting. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
+          prompt: `image_1 is the captured guest to place in the scene. image_2 is the reference showing CM Vijay alone in his official CMO office.
+Use image_2 as the exact background and scene. Place the person from image_1 naturally BESIDE CM Vijay — standing to his right side, both facing the camera together. Preserve the guest's exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
+Keep CM Vijay exactly as he appears in image_2 — his face, white shirt, expression, pose — unchanged. Keep the entire CMO office background exactly as-is — Tamil Nadu government emblem, Indian tricolor flag, dark wood-paneled walls, desk, nameplate, framed portrait — nothing changes.
+Both people stand together naturally, holding or exchanging a bouquet of pink roses and a box of sweets. Soft warm overhead office lighting on both faces. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
         },
         {
           id: 'tn-secretariat',
