@@ -26,17 +26,18 @@ const Camera = {
     }
 
     // Front camera strategies — high quality
+    // 16:9 landscape — matches AI output aspect ratio
     strategies.push({
-      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: { ideal: 1.7778 } },
       audio: false
     });
     strategies.push({
       video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
     });
-    // Any camera with resolution
+    // Any camera with 16:9 resolution
     strategies.push({
-      video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+      video: { width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: { ideal: 1.7778 } },
       audio: false
     });
     strategies.push({

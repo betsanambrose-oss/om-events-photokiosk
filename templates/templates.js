@@ -591,10 +591,15 @@ Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photo
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
           referenceImage: 'assets/references/tn-withcm.jpg',
-          prompt: `image_1 is the captured guest to place in the scene. image_2 is the reference showing CM Vijay alone in his official CMO office.
-Use image_2 as the exact background and scene. Place the person from image_1 naturally BESIDE CM Vijay — standing to his right side, both facing the camera together. Preserve the guest's exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
-Keep CM Vijay exactly as he appears in image_2 — his face, white shirt, expression, pose — unchanged. Keep the entire CMO office background exactly as-is — Tamil Nadu government emblem, Indian tricolor flag, dark wood-paneled walls, desk, nameplate, framed portrait — nothing changes.
-Both people stand together naturally, holding or exchanging a bouquet of pink roses and a box of sweets. Soft warm overhead office lighting on both faces. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
+          prompt: `image_1 is the captured guest. image_2 is CM Vijay alone in his official CMO office — use this as the exact scene.
+
+PRESERVE CM VIJAY EXACTLY: The person in image_2 is CM Vijay. His face, skin tone, skin texture, hair, beard, white shirt, body — every detail must be pixel-perfect identical to image_2. Do not change, reinterpret or alter CM Vijay in any way whatsoever.
+
+PLACE GUEST FROM image_1: Insert the captured person naturally standing to the RIGHT of CM Vijay. Preserve their exact face, skin tone, hair, body proportions — do not alter any feature.
+
+PRESERVE BACKGROUND EXACTLY FROM image_2: Tamil Nadu government emblem on wall, Indian tricolor flag, dark wood-paneled walls, Chief Minister nameplate on desk, framed portrait — keep everything identical.
+
+Both stand together facing camera, holding pink roses bouquet and sweet box. Warm office lighting, no halo, no artifacts. Ultra photorealistic.`
         },
         {
           id: 'tn-secretariat',

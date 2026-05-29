@@ -151,22 +151,14 @@ const Settings = {
 
   printImage(imageUrl) {
     const ps = this.getPrintSettings();
-
-    // Build paper dimensions
-    const paperMap = {
-      '4x6': { w: '4in', h: '6in' },
-      '6x4': { w: '6in', h: '4in' },
-      '5x7': { w: '5in', h: '7in' },
-      'a4':  { w: '210mm', h: '297mm' }
-    };
-    const paper = paperMap[ps.paperSize] || paperMap['4x6'];
-
-    // Portrait vs landscape swaps dimensions
-    const pw = ps.orientation === 'landscape' ? paper.h : paper.w;
-    const ph = ps.orientation === 'landscape' ? paper.w : paper.h;
-
-    const margin = ps.borderless ? '0' : '5mm';
     const colorFilter = ps.colorMode === 'grayscale' ? 'filter:grayscale(100%);' : '';
+
+    // AI output is always 16:9 landscape
+    // Force landscape print regardless of admin settings
+    // Standard photo print: 6x4 landscape = 6in wide, 4in tall
+    const pw = '6in';
+    const ph = '4in';
+    const margin = ps.borderless !== false ? '0' : '3mm';
 
     const w = window.open('', '_blank');
     if (!w) { alert('Please allow popups to print'); return; }
@@ -184,14 +176,13 @@ const Settings = {
         background:#000;
       }
       img {
-        max-width:100%; max-height:100%;
-        width:auto; height:auto;
-        object-fit:contain; display:block;
+        width:100%; height:100%;
+        object-fit:cover; display:block;
         ${colorFilter}
       }
       @media print {
         @page {
-          size: ${pw} ${ph};
+          size: ${pw} ${ph} landscape;
           margin: ${margin};
         }
         html, body { width:${pw}; height:${ph}; }
