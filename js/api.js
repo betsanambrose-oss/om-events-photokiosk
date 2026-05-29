@@ -38,28 +38,34 @@ const API = {
 
       const img = new Image();
       img.onload = () => {
+        // Cap at 1280px max dimension — Kontext processes at 1024px internally
+        // Sending 1920px PNG wastes upload bandwidth with zero quality benefit
+        // and hits Cloudflare Worker body size limits
+        const MAX_DIM = 1280;
+        let w = img.width;
+        let h = img.height;
+        if (w > MAX_DIM || h > MAX_DIM) {
+          const scale = MAX_DIM / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, w, h);
 
-        let result;
-        if (is2G) {
-          // 2G only — JPEG 80% quality (~200-300KB) — still good enough for faces
-          result = canvas.toDataURL('image/jpeg', 0.80);
-          console.log('2G mode — JPEG 80% upload');
-        } else {
-          // Fast/slow — PNG lossless — full facial detail preserved
-          result = canvas.toDataURL('image/png');
-          console.log('PNG lossless upload');
-        }
+        // JPEG 92% at 1280px = ~150-300KB — optimal for Kontext face reading
+        // 2G: lower quality for faster upload
+        const quality = is2G ? 0.78 : 0.92;
+        const result = canvas.toDataURL('image/jpeg', quality);
 
         const origKB = Math.round((dataUrl.length * 0.75) / 1024);
         const resultKB = Math.round((result.length * 0.75) / 1024);
-        console.log(`Upload: ${origKB}KB → ${resultKB}KB`);
+        console.log(`Upload: ${origKB}KB → ${resultKB}KB (${w}×${h} JPEG ${quality})`);
         resolve(result);
       };
       img.onerror = () => resolve(dataUrl);
