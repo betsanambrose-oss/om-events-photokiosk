@@ -5,42 +5,6 @@
 const TEMPLATES = {
   categories: [
     {
-  id: 'tamilnadu',
-  name: 'Tamil Nadu',
-  icon: '🌟',
-  gradient: 'linear-gradient(135deg, #4d1a00, #8B0000, #FF9933)',
-  scenes: [
-    {
-      id: 'tn-withcm',
-      name: 'Photo with CM',
-      gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
-      referenceImage: 'assets/references/tn-withcm.jpg',
-      prompt: `image_1 is the person to place into the scene. image_2 is the exact reference scene to use.
-Place the person from image_1 naturally into image_2 — standing on the LEFT side of the frame, in the position of the person already there. Preserve their exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
-Keep everything in image_2 exactly as-is — the person on the right side, the desk, Tamil Nadu government emblem on wall, Indian tricolor flag, framed portrait, dark wood-paneled office interior, pink rose bouquet and sweet box — do not change the background or the other person in any way.
-The placed person should hold or exchange the bouquet naturally. Soft warm overhead office lighting. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
-    },
-    {
-      id: 'tn-secretariat',
-      name: 'TN Secretariat',
-      gradient: 'linear-gradient(135deg, #1a3300, #004d00)',
-      prompt: `Place every person visible in this photo at the Tamil Nadu State Secretariat in Chennai. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], replace outfit with formal Indian attire — a crisp shirt or saree for official setting. Subjects stand confidently in front of the grand Tamil Nadu Secretariat building facade, Indian tricolor flag hoisted above, Tamil Nadu government signage visible. Bright Chennai daylight, clear blue sky. Ultra photorealistic, 8K.`
-    },
-    {
-      id: 'tn-marina',
-      name: 'Marina Beach',
-      gradient: 'linear-gradient(135deg, #001a33, #003366)',
-      prompt: `Place every person visible in this photo at Marina Beach Chennai during golden hour. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], casual elegant beach attire. Subjects stand on the wide sandy beach, Bay of Bengal stretching to the horizon, golden sunset sky, lighthouse visible in the distance, waves gently breaking on shore. Warm golden hour light. Ultra photorealistic, 8K.`
-    },
-    {
-      id: 'tn-temple',
-      name: 'Brihadeeswarar Temple',
-      gradient: 'linear-gradient(135deg, #4d2600, #8B4500)',
-      prompt: `Place every person visible in this photo at the Brihadeeswarar Temple in Thanjavur, a UNESCO World Heritage Site. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], traditional Tamil attire — veshti and shirt for men, silk saree for women. Subjects stand before the magnificent 1000-year-old Dravidian gopuram tower, intricate stone carvings visible, clear blue sky. Warm golden daylight. Ultra photorealistic, 8K.`
-    }
-  ]
-},
-	{
       id: 'hollywood',
       name: 'Hollywood',
       icon: '🎬',
@@ -627,10 +591,10 @@ Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photo
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
           referenceImage: 'assets/references/tn-withcm.jpg',
-          prompt: `image_1 is the person to place into the scene. image_2 is the exact reference scene to use.
-Place the person from image_1 naturally into image_2 — standing on the LEFT side of the frame, in the position of the person already there. Preserve their exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
-Keep everything in image_2 exactly as-is — the person on the right side, the desk, Tamil Nadu government emblem on wall, Indian tricolor flag, framed portrait, dark wood-paneled office interior, pink rose bouquet and sweet box — do not change the background or the other person in any way.
-The placed person should hold or exchange the bouquet naturally. Soft warm overhead office lighting. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
+          prompt: `image_1 is the captured person to insert. image_2 is the exact reference scene.
+Replace ONLY the person standing on the RIGHT side of image_2 with the person from image_1. Preserve the captured person's exact face, skin tone, hair, body proportions with absolute fidelity — do not alter any feature.
+Keep EVERYTHING else in image_2 completely unchanged — the person on the LEFT (CM Vijay in white shirt) must remain exactly as-is, the Chief Minister nameplate on desk, Tamil Nadu government emblem on wall, Indian tricolor flag, framed portrait, dark wood-paneled office interior, pink rose bouquet and sweet box — do not change anything in the background or the left-side person.
+The inserted person stands naturally on the right side holding the bouquet. Soft warm overhead office lighting. No halo, no floating, no edge artifacts. Ultra photorealistic, 8K.`
         },
         {
           id: 'tn-secretariat',
