@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OM Events — Admin Panel</title>
   <link rel="stylesheet" href="../css/kiosk.css"/>
+  <link rel="icon" href="../assets/icon-192.png" type="image/png"/>
   <link rel="stylesheet" href="../css/admin.css"/>
   <!-- Override kiosk overflow hidden for admin -->
   <style>
@@ -267,8 +268,9 @@
             <option value="">Loading cameras...</option>
           </select>
         </div>
+        <p id="camera-switch-status" style="font-size:10px;color:var(--gold);letter-spacing:1px;margin:4px 0 12px;min-height:16px;"></p>
         <div class="btn-row">
-          <button class="btn btn-outline" onclick="Admin.refreshCameras()">🔄 Refresh</button>
+          <button class="btn btn-outline" onclick="Admin.refreshCameras()">↻ Refresh List</button>
           <button class="btn btn-gold" onclick="Admin.startCameraPreview()">▶ Start Preview</button>
           <button class="btn btn-outline" onclick="Admin.stopCameraPreview()">⏹ Stop</button>
         </div>
@@ -324,6 +326,10 @@
 
       <div class="card">
         <div class="card-title">Print Status</div>
+        <p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">
+          Print jobs tracked automatically via print confirmation buttons on the result screen.
+        </p>
+      </div>
       <div class="card">
         <div class="card-title">Test Print</div>
         <div class="btn-row">

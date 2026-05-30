@@ -590,10 +590,13 @@ Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photo
           id: 'tn-withcm',
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
-          referenceImage: 'assets/references/tn-withcm.png',
-          prompt: `image_1 is the captured guest. image_2 is CM Vijay alone in his official CMO office — use this as the exact scene.
+          referenceImages: [
+  'assets/references/tn-withcm.png',
+  'assets/references/tn-cm-face.png'
+],
+          prompt: `image_1 is the captured guest. image_2 is the CM Vijay office scene — use this as the exact background and setting. image_3 is a close-up reference of CM Vijay's face — use this to preserve his identity with absolute accuracy.
 
-PRESERVE CM VIJAY EXACTLY: The person in image_2 is CM Vijay. His face, skin tone, skin texture, hair, beard, white shirt, body — every detail must be pixel-perfect identical to image_2. Do not change, reinterpret or alter CM Vijay in any way whatsoever.
+PRESERVE CM VIJAY EXACTLY: His face must match image_3 precisely — skin tone, skin texture, eyes, nose, lips, beard stubble, hair — pixel-perfect. His white shirt, body, posture from image_2 — keep identical. Do not change, reinterpret or alter CM Vijay in any way whatsoever.
 
 PLACE GUEST FROM image_1: Insert the captured person naturally standing to the RIGHT of CM Vijay. Preserve their exact face, skin tone, hair, body proportions — do not alter any feature.
 

@@ -38,12 +38,12 @@ const Admin = {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('admin-app').classList.add('active');
       this.populateUI();
+      this.showSection('event'); // ensure first section is always visible
       error.textContent = '';
     } else {
       error.textContent = 'Incorrect password';
       input.value = '';
       input.focus();
-      // Shake animation
       input.style.borderColor = 'var(--red)';
       setTimeout(() => input.style.borderColor = '', 1000);
     }
@@ -64,7 +64,7 @@ const Admin = {
     // Scene manager dropdown
     const catSelect = document.getElementById('active-category');
     if (catSelect) {
-      catSelect.innerHTML = TEMPLATES.categories.map(c =>
+      catSelect.innerHTML = TEMPLATES.categories.filter(c => c && c.id).map(c =>
         `<option value="${c.id}">${c.name}</option>`
       ).join('');
       this.renderSceneToggles();
@@ -122,7 +122,7 @@ const Admin = {
     const activeCategories = this.settings.activeCategories ||
       TEMPLATES.categories.map(c => c.id); // all active by default
 
-    grid.innerHTML = TEMPLATES.categories.map(cat => `
+    grid.innerHTML = TEMPLATES.categories.filter(cat => cat && cat.id).map(cat => `
       <div class="toggle-row">
         <div>
           <div class="toggle-label">${cat.icon} ${cat.name}</div>
@@ -425,42 +425,116 @@ const Admin = {
 
   // ── CAMERA (override to fix section switching) ──
   async refreshCameras() {
-    try {
-      // Request permission first
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      stream.getTracks().forEach(t => t.stop());
+    const select = document.getElementById('camera-select');
+    const statusEl = document.getElementById('camera-switch-status');
+    if (!select) return;
 
+    try {
+      // Must open a stream first — this triggers permission AND populates device labels
+      // Use environment (back) camera on mobile as default for better kiosk results
+      let initialStream;
+      try {
+        initialStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } }, audio: false
+        });
+      } catch (e) {
+        initialStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
+      initialStream.getTracks().forEach(t => t.stop());
+
+      // Now enumerate — labels will be populated after permission granted
       const devices = await navigator.mediaDevices.enumerateDevices();
       const cameras = devices.filter(d => d.kind === 'videoinput');
 
-      const select = document.getElementById('camera-select');
-      select.innerHTML = cameras.map((cam, i) =>
-        `<option value="${cam.deviceId}">${cam.label || 'Camera ' + (i + 1)}</option>`
-      ).join('');
-
-      if (this.settings.cameraDeviceId) {
-        select.value = this.settings.cameraDeviceId;
+      if (!cameras.length) {
+        select.innerHTML = '<option value="">No cameras found</option>';
+        return;
       }
+
+      // Build options with meaningful labels
+      select.innerHTML = cameras.map((cam, i) => {
+        let label = cam.label || `Camera ${i + 1}`;
+        // Add facing hint for mobile cameras
+        if (!cam.label) {
+          if (i === 0) label = 'Front Camera';
+          else if (i === 1) label = 'Back Camera';
+          else label = `Camera ${i + 1}`;
+        }
+        // Detect facing from label
+        const lowerLabel = label.toLowerCase();
+        if (lowerLabel.includes('front') || lowerLabel.includes('user')) label = '📱 ' + label;
+        else if (lowerLabel.includes('back') || lowerLabel.includes('rear') || lowerLabel.includes('environment')) label = '📷 ' + label;
+        else if (lowerLabel.includes('usb') || lowerLabel.includes('external')) label = '🎥 ' + label;
+        return `<option value="${cam.deviceId}">${label}</option>`;
+      }).join('');
+
+      // Restore saved camera or default to back camera (index 1 on Android)
+      if (this.settings.cameraDeviceId) {
+        const saved = cameras.find(c => c.deviceId === this.settings.cameraDeviceId);
+        if (saved) select.value = this.settings.cameraDeviceId;
+      } else if (cameras.length > 1) {
+        // Default to second camera (usually back camera on Android)
+        select.value = cameras[1].deviceId;
+      }
+
+      if (statusEl) statusEl.textContent = `${cameras.length} camera${cameras.length > 1 ? 's' : ''} found`;
     } catch (err) {
-      document.getElementById('camera-select').innerHTML =
-        '<option value="">Camera permission denied</option>';
+      select.innerHTML = '<option value="">Camera permission denied</option>';
+      if (statusEl) statusEl.textContent = 'Permission denied';
+      console.error('Camera refresh error:', err);
     }
   },
 
   async startCameraPreview() {
     this.stopCameraPreview();
-    const deviceId = document.getElementById('camera-select').value;
+    const select = document.getElementById('camera-select');
+    const deviceId = select?.value;
+    const statusEl = document.getElementById('camera-switch-status');
+
+    if (!deviceId) {
+      if (statusEl) statusEl.textContent = 'No camera selected';
+      return;
+    }
+
     try {
-      const constraints = deviceId
-        ? { video: { deviceId: { exact: deviceId } }, audio: false }
-        : { video: true, audio: false };
+      if (statusEl) statusEl.textContent = 'Starting camera...';
+
+      // Always use exact deviceId — this is the key fix for switching cameras
+      const constraints = {
+        video: {
+          deviceId: { exact: deviceId },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        },
+        audio: false
+      };
+
       this.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
       const video = document.getElementById('admin-camera-preview');
       video.srcObject = this.cameraStream;
+      video.setAttribute('playsinline', 'true');
+      video.muted = true;
+      await video.play().catch(() => {});
+
+      // Detect if front-facing and apply mirror accordingly
+      const track = this.cameraStream.getVideoTracks()[0];
+      const settings = track?.getSettings?.() || {};
+      const label = (track?.label || '').toLowerCase();
+      const isFront = settings.facingMode === 'user' ||
+                      label.includes('front') || label.includes('user');
+      video.style.transform = isFront ? 'scaleX(-1)' : 'scaleX(1)';
+
+      // Save selected camera
       this.settings.cameraDeviceId = deviceId;
       this.saveSettings();
+
+      const res = settings.width ? `${settings.width}×${settings.height}` : '';
+      if (statusEl) statusEl.textContent = `✓ Active${res ? ' — ' + res : ''}`;
     } catch (err) {
-      alert('Could not start camera: ' + err.message);
+      console.error('Camera start error:', err.name, err.message);
+      if (statusEl) statusEl.textContent = '✗ ' + (err.name === 'OverconstrainedError'
+        ? 'Camera busy or unavailable'
+        : err.message);
     }
   },
 
@@ -470,11 +544,11 @@ const Admin = {
       this.cameraStream = null;
     }
     const video = document.getElementById('admin-camera-preview');
-    video.srcObject = null;
+    if (video) video.srcObject = null;
   },
 
   switchCamera() {
-    if (this.cameraStream) this.startCameraPreview();
+    this.startCameraPreview();
   },
 
   // ── PRINTER ──

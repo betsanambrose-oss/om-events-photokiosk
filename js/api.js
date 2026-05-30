@@ -157,14 +157,15 @@ const API = {
       onProgress?.(submitMsg);
 
       const job = await this.callWorker({
-        step: 'kontext_submit',
-        prompt: prompt,
-        faceImageUrl: this.faceImageUrl,
-        sceneReferenceUrl: sceneReferenceUrl || null
-      });
-      if (sceneReferenceUrl) {
-        console.log('Using scene reference:', sceneReferenceUrl);
-      }
+  step: 'kontext_submit',
+  prompt: prompt,
+  faceImageUrl: this.faceImageUrl,
+  sceneReferenceUrl: Array.isArray(sceneReferenceUrl) ? null : (sceneReferenceUrl || null),
+  sceneReferenceUrls: Array.isArray(sceneReferenceUrl) ? sceneReferenceUrl : null
+}); 
+if (sceneReferenceUrl) {
+  console.log('Using scene reference(s):', sceneReferenceUrl);
+}
       if (!job.statusUrl) throw new Error('Scene generation job not created');
       console.log('✅ Kontext job submitted:', job.requestId);
 

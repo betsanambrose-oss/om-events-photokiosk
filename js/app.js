@@ -329,12 +329,17 @@ const App = {
 
     // Resolve scene reference image URL if present
     let sceneReferenceUrl = null;
-    if (scene.referenceImage) {
-      // Build absolute URL from relative path
-      const base = window.location.href.replace(/[^/]*$/, '');
-      sceneReferenceUrl = base + scene.referenceImage;
-      console.log('Scene reference image:', sceneReferenceUrl);
-    }
+if (scene.referenceImages && scene.referenceImages.length > 0) {
+  // Multiple reference images — resolve all to absolute URLs
+  const base = window.location.href.replace(/[^/]*$/, '');
+  sceneReferenceUrl = scene.referenceImages.map(p => base + p);
+  console.log('Scene reference images:', sceneReferenceUrl);
+} else if (scene.referenceImage) {
+  // Single reference image (legacy)
+  const base = window.location.href.replace(/[^/]*$/, '');
+  sceneReferenceUrl = base + scene.referenceImage;
+  console.log('Scene reference image:', sceneReferenceUrl);
+}
 
     let enhancedPrompt;
 
