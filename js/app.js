@@ -226,8 +226,9 @@ const App = {
       return;
     }
 
-    const videoEl = document.getElementById('camera-feed');
-    const started = await Camera.init(videoEl);
+const videoEl = document.getElementById('camera-feed');
+const savedDeviceId = Settings.load().cameraDeviceId || null;
+const started = await Camera.init(videoEl, savedDeviceId);
 
     setTimeout(() => {
       if (videoEl.readyState >= 2 || videoEl.srcObject) {

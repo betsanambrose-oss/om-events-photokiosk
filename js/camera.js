@@ -8,11 +8,11 @@ const Camera = {
   countdownInterval: null,
   isFrontFacing: true, // track whether current cam is front-facing (mirror) or external (no mirror)
 
-  async init(videoElement) {
-    this.videoEl = videoElement;
-    const started = await this.start();
-    return started;
-  },
+async init(videoElement, deviceId = null) {
+  this.videoEl = videoElement;
+  const started = await this.start(deviceId);
+  return started;
+},
 
   async start(deviceId = null) {
     this.stop();
