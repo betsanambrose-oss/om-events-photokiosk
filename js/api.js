@@ -179,28 +179,34 @@ const API = {
 
       // STEP 4 — Save to R2 for permanent storage (7 days)
       // Non-blocking — if R2 save fails, guest still gets their photo
+      // Only saves if an event is active — no event = no cloud storage
       let finalImageUrl = resultUrl;
+      this._lastR2Url = null;
       try {
-        onProgress?.('Saving your photo...');
         const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
-        const r2Result = await this.callWorker({
-          step: 'save_to_r2',
-          falUrl: resultUrl,
-          eventId: eventInfo?.id || 'unknown',
-          eventName: eventInfo?.name || 'OM Events',
-          photoId: 'ph_' + Date.now(),
-          sceneName: this._currentSceneName || '',
-          categoryName: this._currentCategoryName || ''
-        });
-        if (r2Result.r2Url) {
-          finalImageUrl = r2Result.r2Url;
-          this._lastR2Url = r2Result.r2Url;
-          console.log('✅ Saved to R2:', r2Result.r2Url);
+
+        if (!eventInfo) {
+          console.log('⚠️ No active event — skipping R2 save');
+        } else {
+          onProgress?.('Saving your photo...');
+          const r2Result = await this.callWorker({
+            step: 'save_to_r2',
+            falUrl: resultUrl,
+            eventId: eventInfo.id,
+            eventName: eventInfo.name,
+            photoId: 'ph_' + Date.now(),
+            sceneName: this._currentSceneName || '',
+            categoryName: this._currentCategoryName || ''
+          });
+          if (r2Result.r2Url) {
+            finalImageUrl = r2Result.r2Url;
+            this._lastR2Url = r2Result.r2Url;
+            console.log('✅ Saved to R2:', r2Result.r2Url);
+          }
         }
       } catch (r2Err) {
         // R2 save failed — use fal.ai URL as fallback, photo still works
         console.warn('⚠️ R2 save failed (non-critical):', r2Err.message);
-        this._lastR2Url = null;
       }
 
       return { success: true, imageUrl: finalImageUrl, falUrl: resultUrl };
