@@ -103,11 +103,13 @@ const API = {
     throw new Error(`Generation timed out after ${minutes} minutes. Please check your connection and try again.`);
   },
 
-  async generatePhoto(prompt, negativePrompt, onProgress, sceneReferenceUrl = null) {
+  async generatePhoto(prompt, negativePrompt, onProgress, sceneReferenceUrl = null, sceneMeta = {}) {
     if (this.isGenerating) {
       return { success: false, error: 'Already running — please wait' };
     }
     this.isGenerating = true;
+    this._currentSceneName = sceneMeta.sceneName || '';
+    this._currentCategoryName = sceneMeta.categoryName || '';
 
     try {
       // Detect network quality first
@@ -157,15 +159,14 @@ const API = {
       onProgress?.(submitMsg);
 
       const job = await this.callWorker({
-  step: 'kontext_submit',
-  prompt: prompt,
-  faceImageUrl: this.faceImageUrl,
-  sceneReferenceUrl: Array.isArray(sceneReferenceUrl) ? null : (sceneReferenceUrl || null),
-  sceneReferenceUrls: Array.isArray(sceneReferenceUrl) ? sceneReferenceUrl : null
-}); 
-if (sceneReferenceUrl) {
-  console.log('Using scene reference(s):', sceneReferenceUrl);
-}
+        step: 'kontext_submit',
+        prompt: prompt,
+        faceImageUrl: this.faceImageUrl,
+        sceneReferenceUrl: sceneReferenceUrl || null
+      });
+      if (sceneReferenceUrl) {
+        console.log('Using scene reference:', sceneReferenceUrl);
+      }
       if (!job.statusUrl) throw new Error('Scene generation job not created');
       console.log('✅ Kontext job submitted:', job.requestId);
 
@@ -176,7 +177,33 @@ if (sceneReferenceUrl) {
       if (!resultUrl) throw new Error('No result image returned');
       console.log('✅ Final result:', resultUrl);
 
-      return { success: true, imageUrl: resultUrl };
+      // STEP 4 — Save to R2 for permanent storage (7 days)
+      // Non-blocking — if R2 save fails, guest still gets their photo
+      let finalImageUrl = resultUrl;
+      try {
+        onProgress?.('Saving your photo...');
+        const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
+        const r2Result = await this.callWorker({
+          step: 'save_to_r2',
+          falUrl: resultUrl,
+          eventId: eventInfo?.id || 'unknown',
+          eventName: eventInfo?.name || 'OM Events',
+          photoId: 'ph_' + Date.now(),
+          sceneName: this._currentSceneName || '',
+          categoryName: this._currentCategoryName || ''
+        });
+        if (r2Result.r2Url) {
+          finalImageUrl = r2Result.r2Url;
+          this._lastR2Url = r2Result.r2Url;
+          console.log('✅ Saved to R2:', r2Result.r2Url);
+        }
+      } catch (r2Err) {
+        // R2 save failed — use fal.ai URL as fallback, photo still works
+        console.warn('⚠️ R2 save failed (non-critical):', r2Err.message);
+        this._lastR2Url = null;
+      }
+
+      return { success: true, imageUrl: finalImageUrl, falUrl: resultUrl };
 
     } catch (err) {
       console.error('❌ FAILED:', err.message);

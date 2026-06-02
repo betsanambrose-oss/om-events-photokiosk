@@ -364,7 +364,10 @@ const Admin = {
         </div>
         <div class="btn-row">
           <button class="btn btn-gold" onclick="Tracker.exportToExcel()">⬇ Export CSV</button>
+          <button class="btn btn-outline" onclick="Admin.showEventPhotos('active')">🖼 View Photos</button>
+          <button class="btn btn-outline" onclick="Admin.downloadPhotosZip('active')">⬇ Download ZIP</button>
         </div>
+        <div id="photo-links-container" style="margin-top:16px;"></div>
       `;
     } else if (activeEl) {
       activeEl.innerHTML = '<p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No active event. Start an event from Event Setup.</p>';
@@ -413,7 +416,9 @@ const Admin = {
                   </span>
                 </td>
                 <td style="padding:10px 8px;text-align:center;">
-                  <button onclick="Tracker.exportToExcel('${evt.id}')" style="padding:5px 12px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;">CSV</button>
+                  <button onclick="Tracker.exportToExcel('${evt.id}')" style="padding:5px 12px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-right:4px;">CSV</button>
+                  <button onclick="Admin.showEventPhotos('${evt.id}')" style="padding:5px 12px;background:transparent;border:1px solid var(--black-border);color:var(--white-dim);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-right:4px;">Photos</button>
+                  <button onclick="Admin.downloadPhotosZip('${evt.id}')" style="padding:5px 12px;background:transparent;border:1px solid var(--black-border);color:var(--white-dim);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;">ZIP</button>
                 </td>
               </tr>`;
             }).join('')}
@@ -421,6 +426,174 @@ const Admin = {
         </table>
       </div>
     `;
+  },
+
+  // ── PHOTO STORAGE — R2 ──
+
+  WORKER_URL: 'https://om-events-proxy.betsanambrose.workers.dev',
+
+  async _callWorker(payload) {
+    const res = await fetch(this.WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  // Show all photo links for an event
+  async showEventPhotos(eventId) {
+    const container = document.getElementById('photo-links-container');
+    if (!container) return;
+
+    const resolvedId = eventId === 'active'
+      ? (typeof Tracker !== 'undefined' ? Tracker.getActiveEvent()?.id : null)
+      : eventId;
+
+    if (!resolvedId) {
+      container.innerHTML = '<p style="font-size:11px;color:var(--red);letter-spacing:1px;">No active event found.</p>';
+      return;
+    }
+
+    container.innerHTML = '<p style="font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;">Loading photos...</p>';
+
+    try {
+      const data = await this._callWorker({ step: 'list_event_photos', eventId: resolvedId });
+
+      if (!data.photos || data.photos.length === 0) {
+        container.innerHTML = '<p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">No photos stored yet for this event.</p>';
+        return;
+      }
+
+      const rows = data.photos.map((p, i) => `
+        <tr style="border-bottom:1px solid var(--black-border);">
+          <td style="padding:8px;color:var(--white-dim);font-size:11px;">${i + 1}</td>
+          <td style="padding:8px;">
+            <img src="${p.url}" style="width:80px;height:45px;object-fit:cover;border-radius:2px;border:1px solid var(--black-border);" loading="lazy"/>
+          </td>
+          <td style="padding:8px;color:var(--white);font-size:11px;">${p.sceneName || '—'}</td>
+          <td style="padding:8px;color:var(--white-dim);font-size:11px;">${p.categoryName || '—'}</td>
+          <td style="padding:8px;color:var(--white-dim);font-size:10px;">${p.createdAt ? new Date(p.createdAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+          <td style="padding:8px;">
+            <a href="${p.url}" target="_blank" download
+               style="padding:4px 10px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;text-decoration:none;">
+              ⬇
+            </a>
+          </td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <div style="margin-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);">
+              ${data.count} Photos Stored
+            </span>
+            <button onclick="Admin.downloadPhotosZip('${resolvedId}')"
+              style="padding:6px 14px;background:var(--gold);color:var(--black);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;border:none;font-weight:600;">
+              ⬇ Download All as ZIP
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--black-border);">
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">#</th>
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Preview</th>
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Scene</th>
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Category</th>
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Time</th>
+                  <th style="text-align:left;padding:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:500;">Save</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<p style="font-size:11px;color:var(--red);letter-spacing:1px;">Error loading photos: ${err.message}</p>`;
+    }
+  },
+
+  // Download all event photos as ZIP using JSZip
+  async downloadPhotosZip(eventId) {
+    const resolvedId = eventId === 'active'
+      ? (typeof Tracker !== 'undefined' ? Tracker.getActiveEvent()?.id : null)
+      : eventId;
+
+    if (!resolvedId) { alert('No event found'); return; }
+
+    // Load JSZip dynamically
+    if (typeof JSZip === 'undefined') {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    const statusEl = document.getElementById('photo-links-container');
+    const showStatus = (msg) => {
+      if (statusEl) statusEl.innerHTML = `<p style="font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;">${msg}</p>`;
+    };
+
+    try {
+      showStatus('Preparing ZIP...');
+
+      const data = await this._callWorker({ step: 'get_zip_links', eventId: resolvedId });
+      if (!data.urls || data.urls.length === 0) {
+        showStatus('No photos found for this event.');
+        return;
+      }
+
+      showStatus(`Downloading ${data.count} photos — please wait...`);
+
+      const zip = new JSZip();
+      const folder = zip.folder('om-events-photos');
+
+      // Fetch all photos and add to ZIP
+      let done = 0;
+      await Promise.all(data.urls.map(async ({ url, filename }) => {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const blob = await res.blob();
+          folder.file(filename, blob);
+          done++;
+          showStatus(`Downloading... ${done}/${data.count}`);
+        } catch (e) {
+          console.warn('Failed to fetch photo:', url, e.message);
+        }
+      }));
+
+      showStatus('Creating ZIP file...');
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' }); // STORE = no recompression for jpegs
+
+      // Trigger download
+      const events = typeof Tracker !== 'undefined' ? Tracker.getAllEvents() : [];
+      const evt = events.find(e => e.id === resolvedId);
+      const evtName = (evt?.name || 'event').replace(/\s+/g, '-');
+      const evtDate = evt?.date || new Date().toISOString().split('T')[0];
+      const filename = `om-events-${evtName}-${evtDate}-photos.zip`;
+
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+      showStatus(`✓ ZIP downloaded — ${data.count} photos`);
+      setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
+
+    } catch (err) {
+      showStatus(`Error: ${err.message}`);
+    }
   },
 
   // ── CAMERA (override to fix section switching) ──
