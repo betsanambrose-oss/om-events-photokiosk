@@ -206,11 +206,17 @@ Nikon D850 200mm f/2.8, ultra photorealistic, National Geographic wildlife photo
           id: 'wn-alps',
           name: 'Swiss Alps',
           gradient: 'linear-gradient(135deg, #1a3a6b, #0a1628)',
-          prompt: `Place every person visible in this booth photo as mountain adventurers triumphantly standing on a Swiss Alpine summit. Preserve each person's exact face, facial structure, skin tone, skin texture, hair color, hair style, eye color, body shape, height and proportions with absolute fidelity — do not alter, smooth, beautify or modify any feature. For [GENDER], replace booth outfit with premium ski or mountaineering wear — insulated ski jacket and trousers, goggles on forehead, insulated gloves and ski boots. Visible cold-weather breath vapor from mouths. Full body visible.
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The person or people in the provided photo are real individuals. You must preserve their exact facial identity with absolute fidelity. Keep each person's face IDENTICAL to the photo — same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, skin texture, and hairstyle. This must look like the SAME REAL PERSON from the photo. Do NOT generate a new or different face. Do NOT beautify, slim, smooth, change age, or alter any feature. Match each person's gender and natural body build exactly as they appear in the photo.
 
-Dramatic Swiss Alpine summit in winter — snow-capped peak with 360-degree panorama of snow-covered Alps in all directions, crisp deep blue high-altitude sky with wispy cirrus clouds, tiny Swiss village with chalet rooftops visible in the valley far below. Brilliant high-altitude direct sunlight creates sharp crisp shadows extending from subjects across the snow — snow shadows have distinctive cold blue tint from sky fill. Sunlight catches on jacket materials as realistic fabric specularity.
+TASK: Place this exact person into the scene below, wearing the described outfit. Their face and identity stay completely locked — only clothing, pose, and environment change.
 
-Canon R5 35mm f/5.6, ultra photorealistic, alpine adventure photography, 8K.`
+OUTFIT: Replace booth clothing with premium mountaineering wear for [GENDER] — insulated ski jacket and trousers, goggles resting up on the forehead with eyes and full face clearly visible and unobstructed, insulated gloves, ski boots. Visible cold-weather breath vapor. Full body visible.
+
+SCENE: Dramatic Swiss Alpine summit in winter — snow-capped peak with a 360-degree panorama of snow-covered Alps in all directions, crisp deep blue high-altitude sky with wispy cirrus clouds, tiny Swiss village with chalet rooftops in the valley far below. Brilliant high-altitude direct sunlight casting sharp crisp shadows across the snow, with a cold blue tint in the shadows. Sunlight catching realistically on jacket fabric.
+
+STYLE: Canon R5, 35mm, f/5.6, ultra photorealistic alpine adventure photography, razor-sharp facial detail, natural skin texture, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be unmistakably the same person from the photo.`
         },
         {
           id: 'wn-aurora',
