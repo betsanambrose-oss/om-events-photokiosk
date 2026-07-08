@@ -185,17 +185,36 @@
 
     <div class="gold-line wide"></div>
 
-    <div class="gold-spinner">
-      <div class="gold-spinner-inner"></div>
+    <!-- Stepped progress tracker -->
+    <div class="progress-steps" id="progress-steps">
+      <div class="progress-step" data-step="0">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">1</span></div>
+        <div class="step-label">Uploaded</div>
+      </div>
+      <div class="progress-step" data-step="1">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">2</span></div>
+        <div class="step-label">Visualizing</div>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">3</span></div>
+        <div class="step-label">Generating</div>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">4</span></div>
+        <div class="step-label">Created</div>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">5</span></div>
+        <div class="step-label">Previewing</div>
+      </div>
+      <div class="progress-step" data-step="5">
+        <div class="step-dot"><span class="step-check">✓</span><span class="step-num">6</span></div>
+        <div class="step-label">Done</div>
+      </div>
     </div>
 
     <div>
-      <p id="processing-message" class="processing-message">Creating your moment...</p>
-      <div style="display:flex; justify-content:center; margin-top:12px;">
-        <div class="processing-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
+      <p id="processing-message" class="processing-message">Getting ready...</p>
     </div>
 
     <p class="processing-tagline">Crafting your perfect scene</p>

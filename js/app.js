@@ -313,13 +313,42 @@ const App = {
 
   async startGeneration() {
     const messageEl = document.getElementById('processing-message');
+
+    // Stepped progress tracker driver
+    // Steps: 0 Uploaded, 1 Visualizing, 2 Generating, 3 Created, 4 Previewing, 5 Done
+    const Steps = {
+      msgs: ['Uploading your photo...', 'Visualizing your scene...', 'Generating the magic...', 'Almost there...', 'Preparing your preview...', 'Done!'],
+      els: () => Array.from(document.querySelectorAll('#progress-steps .progress-step')),
+      set(index) {
+        const steps = this.els();
+        steps.forEach((el, i) => {
+          el.classList.remove('active', 'done');
+          if (i < index) el.classList.add('done');
+          else if (i === index) el.classList.add('active');
+        });
+        if (messageEl && this.msgs[index]) messageEl.textContent = this.msgs[index];
+      },
+      reset() { this.set(0); }
+    };
+    this.Steps = Steps;
+    Steps.reset();
+
     const updateMessage = (msg) => {
       if (messageEl) messageEl.textContent = msg;
       console.log('Status:', msg);
+      // Advance steps based on message keywords from the API layer
+      const m = (msg || '').toLowerCase();
+      if (m.includes('upload') || m.includes('compress') || m.includes('preparing your photo')) Steps.set(0);
+      else if (m.includes('visuali')) Steps.set(1);
+      else if (m.includes('creating') || m.includes('generat') || m.includes('working') || m.includes('scene')) Steps.set(2);
+      else if (m.includes('saving') || m.includes('final touches')) Steps.set(3);
+      else if (m.includes('preview')) Steps.set(4);
     };
     this.updateMessage = updateMessage;
 
-    updateMessage('Starting...');
+    // Kick off the visual sequence so early steps feel responsive
+    Steps.set(0);
+    setTimeout(() => { if (document.getElementById('screen-processing').classList.contains('active')) Steps.set(1); }, 900);
 
     let result;
 
@@ -361,8 +390,12 @@ const App = {
     // identity anchor alongside the full shot. This is the biggest lever for
     // face accuracy: the AI locks the face from a large sharp crop instead of
     // a small face in a wide full-body capture.
+    // IMPORTANT: Skip the face crop for reference-image scenes (like the CM
+    // photo). Those prompts hand-reference exact image positions ("image_1 is
+    // the guest, image_2 is the scene") — adding a crop shifts the ordering and
+    // breaks them, causing a random face to be generated.
     let faceCropBase64 = null;
-    if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+    if (!sceneReferenceUrl && typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
       try {
         const crop = await GenderDetector.cropFaces(API.capturedFaceBase64);
         if (crop) {
@@ -392,10 +425,13 @@ const App = {
       return;
     }
 
+    // Step 3 — Created (image is back from AI)
+    this.Steps?.set(3);
+
     // Apply watermark + frame overlays for DISPLAY only
     // shareUrl = permanent R2 URL for QR + download (null if not cloud-saved)
     // imageUrl = the image itself (R2 URL, or base64 if no event active)
-    this.updateMessage?.('Applying final touches...');
+    this.Steps?.set(4); // Previewing
     const shareUrl = result.shareUrl || null;      // R2 URL for QR — never base64
     const displaySource = result.imageUrl;          // R2 URL or base64 — for on-screen display
     let displayUrl = displaySource;                 // canvas version — used for on-screen display only
@@ -413,6 +449,11 @@ const App = {
       const cat = this.state.selectedCategory;
       this.state.currentPhotoId = Tracker.recordPhoto(scene, cat, shareUrl || '');
     }
+
+    // Step 5 — Done (mark all complete before showing result)
+    this.Steps?.set(5);
+    const doneSteps = document.querySelectorAll('#progress-steps .progress-step');
+    doneSteps.forEach(el => { el.classList.remove('active'); el.classList.add('done'); });
 
     this.showResultScreen(displayUrl, shareUrl);
   },
