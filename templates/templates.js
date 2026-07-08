@@ -831,17 +831,19 @@ ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything 
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
           referenceImage: 'assets/references/tn-withcm.png',
-          prompt: `You are given TWO photos. PHOTO A shows a real ordinary person (the guest) captured just now at a photo booth. PHOTO B shows Tamil Nadu Chief Minister Vijay standing alone in his official government office.
+          prompt: `You are given TWO photos. PHOTO A shows the real guest(s) captured just now at a photo booth — this may be one person or several people. PHOTO B shows Tamil Nadu Chief Minister Vijay standing in his official government office.
 
-YOUR TASK: Create one realistic photo where the REAL PERSON from PHOTO A is standing to the RIGHT of the Chief Minister inside the same office from PHOTO B.
+SCENE TO CREATE: A warm, natural greeting moment where the guest(s) from PHOTO A are meeting and being greeted by the Chief Minister inside his office from PHOTO B — as if they have come to see him and are sharing a friendly, respectful moment together. It should look like a genuine candid photograph taken during that meeting, not a stiff line-up.
 
-USE THE GUEST'S REAL FACE — CRITICAL: The person you add MUST be the exact same real human from PHOTO A. Copy their real face precisely — same facial structure, eyes, nose, mouth, jaw, skin tone, skin texture, hair, glasses if any, gender and body build. Do NOT invent, replace, beautify or substitute a different person. This must be recognisably the SAME person from PHOTO A — a real photograph of THEM, not a lookalike.
+USE THE GUEST'S REAL FACE — CRITICAL: Every guest you place MUST be the exact same real human(s) from PHOTO A. Copy each of their real faces precisely — same facial structure, eyes, nose, mouth, jaw, skin tone, skin texture, hair, glasses if any, gender and body build. Do NOT invent, replace, beautify or substitute a different person. Keep the same number of guests as in PHOTO A. Each must be recognisably the SAME person — a real photograph of THEM.
+
+THE GREETING: Show a natural interaction — the guest(s) and the Chief Minister warmly greeting each other. This can be a handshake, the CM offering a welcoming gesture, or the guest(s) presenting a pink rose bouquet and a sweet box to him. Everyone looks happy and at ease, mostly facing the camera as if posing together during the meeting.
 
 PRESERVE THE CHIEF MINISTER EXACTLY: Keep Vijay's face, skin tone, hair, beard, white shirt and body pixel-identical to PHOTO B. Do not alter him.
 
 PRESERVE THE OFFICE EXACTLY from PHOTO B: Tamil Nadu government emblem on the wall, Indian tricolour flag, dark wood-panelled walls, Chief Minister nameplate on the desk, framed portrait — keep everything identical.
 
-Both people stand together facing the camera, the guest holding a pink rose bouquet and a sweet box. Warm office lighting, natural blending, no halo, no cut-out edges, ultra photorealistic. The guest's real face is the single most important element — preserve it above all.`
+Warm office lighting, natural blending, believable shadows and contact, no halo, no cut-out edges, ultra photorealistic. The guests' real faces are the single most important element — preserve them above all.`
         },
       ]
     }
