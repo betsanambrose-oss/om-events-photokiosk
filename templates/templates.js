@@ -831,15 +831,17 @@ ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything 
           name: 'Photo with CM',
           gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
           referenceImage: 'assets/references/tn-withcm.png',
-          prompt: `image_1 is the captured guest. image_2 is CM Vijay alone in his official CMO office — use this as the exact scene.
+          prompt: `You are given TWO photos. PHOTO A shows a real ordinary person (the guest) captured just now at a photo booth. PHOTO B shows Tamil Nadu Chief Minister Vijay standing alone in his official government office.
 
-PRESERVE CM VIJAY EXACTLY: The person in image_2 is CM Vijay. His face, skin tone, skin texture, hair, beard, white shirt, body — every detail must be pixel-perfect identical to image_2. Do not change, reinterpret or alter CM Vijay in any way whatsoever.
+YOUR TASK: Create one realistic photo where the REAL PERSON from PHOTO A is standing to the RIGHT of the Chief Minister inside the same office from PHOTO B.
 
-PLACE GUEST FROM image_1: Insert the captured person naturally standing to the RIGHT of CM Vijay. Preserve their exact face, skin tone, hair, body proportions — do not alter any feature.
+USE THE GUEST'S REAL FACE — CRITICAL: The person you add MUST be the exact same real human from PHOTO A. Copy their real face precisely — same facial structure, eyes, nose, mouth, jaw, skin tone, skin texture, hair, glasses if any, gender and body build. Do NOT invent, replace, beautify or substitute a different person. This must be recognisably the SAME person from PHOTO A — a real photograph of THEM, not a lookalike.
 
-PRESERVE BACKGROUND EXACTLY FROM image_2: Tamil Nadu government emblem on wall, Indian tricolor flag, dark wood-paneled walls, Chief Minister nameplate on desk, framed portrait — keep everything identical.
+PRESERVE THE CHIEF MINISTER EXACTLY: Keep Vijay's face, skin tone, hair, beard, white shirt and body pixel-identical to PHOTO B. Do not alter him.
 
-Both stand together facing camera, holding pink roses bouquet and sweet box. Warm office lighting, no halo, no artifacts. Ultra photorealistic.`
+PRESERVE THE OFFICE EXACTLY from PHOTO B: Tamil Nadu government emblem on the wall, Indian tricolour flag, dark wood-panelled walls, Chief Minister nameplate on the desk, framed portrait — keep everything identical.
+
+Both people stand together facing the camera, the guest holding a pink rose bouquet and a sweet box. Warm office lighting, natural blending, no halo, no cut-out edges, ultra photorealistic. The guest's real face is the single most important element — preserve it above all.`
         },
       ]
     }

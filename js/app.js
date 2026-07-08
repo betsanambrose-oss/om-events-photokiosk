@@ -318,8 +318,13 @@ const App = {
     // Steps: 0 Uploaded, 1 Visualizing, 2 Generating, 3 Created, 4 Previewing, 5 Done
     const Steps = {
       msgs: ['Uploading your photo...', 'Visualizing your scene...', 'Generating the magic...', 'Almost there...', 'Preparing your preview...', 'Done!'],
+      current: 0,
+      autoTimer: null,
       els: () => Array.from(document.querySelectorAll('#progress-steps .progress-step')),
       set(index) {
+        // Never move backwards — only advance
+        if (index < this.current) return;
+        this.current = index;
         const steps = this.els();
         steps.forEach((el, i) => {
           el.classList.remove('active', 'done');
@@ -328,27 +333,47 @@ const App = {
         });
         if (messageEl && this.msgs[index]) messageEl.textContent = this.msgs[index];
       },
-      reset() { this.set(0); }
+      // Gently auto-advance through steps 1→4 so the bar keeps moving during
+      // the AI wait, building curiosity. Capped at step 4 (Previewing) — the
+      // real completion (step 5 Done) only fires when the image is actually ready.
+      startAuto() {
+        this.stopAuto();
+        // Pace: visualizing ~1s, generating ~sits longest, then creep toward previewing
+        const schedule = [
+          { at: 800,  step: 1 },
+          { at: 2200, step: 2 },
+          { at: 7000, step: 3 },
+          { at: 12000, step: 4 }
+        ];
+        const start = Date.now();
+        this.autoTimer = setInterval(() => {
+          const elapsed = Date.now() - start;
+          for (const s of schedule) {
+            if (elapsed >= s.at) this.set(s.step);
+          }
+          if (this.current >= 4) this.stopAuto();
+        }, 400);
+      },
+      stopAuto() {
+        if (this.autoTimer) { clearInterval(this.autoTimer); this.autoTimer = null; }
+      },
+      reset() { this.current = 0; this.set(0); }
     };
     this.Steps = Steps;
     Steps.reset();
 
     const updateMessage = (msg) => {
-      if (messageEl) messageEl.textContent = msg;
       console.log('Status:', msg);
-      // Advance steps based on message keywords from the API layer
+      // Real backend milestones can still nudge steps forward (never backward)
       const m = (msg || '').toLowerCase();
       if (m.includes('upload') || m.includes('compress') || m.includes('preparing your photo')) Steps.set(0);
-      else if (m.includes('visuali')) Steps.set(1);
       else if (m.includes('creating') || m.includes('generat') || m.includes('working') || m.includes('scene')) Steps.set(2);
-      else if (m.includes('saving') || m.includes('final touches')) Steps.set(3);
-      else if (m.includes('preview')) Steps.set(4);
     };
     this.updateMessage = updateMessage;
 
-    // Kick off the visual sequence so early steps feel responsive
+    // Start the continuous auto-advance so the bar always feels alive
     Steps.set(0);
-    setTimeout(() => { if (document.getElementById('screen-processing').classList.contains('active')) Steps.set(1); }, 900);
+    Steps.startAuto();
 
     let result;
 
@@ -421,11 +446,13 @@ const App = {
 
     if (!result || !result.success) {
       console.error('Generation failed:', result?.error);
+      this.Steps?.stopAuto();
       this.showError(result?.error || 'Unknown error');
       return;
     }
 
-    // Step 3 — Created (image is back from AI)
+    // Step 3 — Created (image is back from AI). Stop the auto-advance.
+    this.Steps?.stopAuto();
     this.Steps?.set(3);
 
     // Apply watermark + frame overlays for DISPLAY only
