@@ -140,9 +140,11 @@ const API = {
 
       // Result is either R2 URL (saved) or base64 (no event / R2 failed)
       let imageUrl;
+      let shareUrl = null;  // R2 URL for QR — null if not saved to cloud
       this._lastR2Url = null;
       if (result.resultUrl) {
         imageUrl = result.resultUrl;
+        shareUrl = result.resultUrl;
         this._lastR2Url = result.resultUrl;
         console.log('✅ Result (R2):', result.resultUrl);
       } else if (result.resultB64) {
@@ -152,7 +154,7 @@ const API = {
         throw new Error('No result image returned');
       }
 
-      return { success: true, imageUrl };
+      return { success: true, imageUrl, shareUrl };
 
     } catch (err) {
       console.error('❌ FAILED:', err.message);

@@ -226,9 +226,8 @@ const App = {
       return;
     }
 
-const videoEl = document.getElementById('camera-feed');
-const savedDeviceId = Settings.load().cameraDeviceId || null;
-const started = await Camera.init(videoEl, savedDeviceId);
+    const videoEl = document.getElementById('camera-feed');
+    const started = await Camera.init(videoEl);
 
     setTimeout(() => {
       if (videoEl.readyState >= 2 || videoEl.srcObject) {
@@ -330,17 +329,12 @@ const started = await Camera.init(videoEl, savedDeviceId);
 
     // Resolve scene reference image URL if present
     let sceneReferenceUrl = null;
-if (scene.referenceImages && scene.referenceImages.length > 0) {
-  // Multiple reference images — resolve all to absolute URLs
-  const base = window.location.href.replace(/[^/]*$/, '');
-  sceneReferenceUrl = scene.referenceImages.map(p => base + p);
-  console.log('Scene reference images:', sceneReferenceUrl);
-} else if (scene.referenceImage) {
-  // Single reference image (legacy)
-  const base = window.location.href.replace(/[^/]*$/, '');
-  sceneReferenceUrl = base + scene.referenceImage;
-  console.log('Scene reference image:', sceneReferenceUrl);
-}
+    if (scene.referenceImage) {
+      // Build absolute URL from relative path
+      const base = window.location.href.replace(/[^/]*$/, '');
+      sceneReferenceUrl = base + scene.referenceImage;
+      console.log('Scene reference image:', sceneReferenceUrl);
+    }
 
     let enhancedPrompt;
 
@@ -369,7 +363,8 @@ if (scene.referenceImages && scene.referenceImages.length > 0) {
         enhancedPrompt,
         scene.negative,
         updateMessage,
-        sceneReferenceUrl
+        sceneReferenceUrl,
+        { sceneName: scene.name || '', categoryName: scene.categoryName || '' }
       );
     } else {
       result = await API.generateOfflineFallback();
@@ -382,26 +377,28 @@ if (scene.referenceImages && scene.referenceImages.length > 0) {
     }
 
     // Apply watermark + frame overlays for DISPLAY only
-    // Keep original fal.ai URL for QR and download
+    // shareUrl = permanent R2 URL for QR + download (null if not cloud-saved)
+    // imageUrl = the image itself (R2 URL, or base64 if no event active)
     this.updateMessage?.('Applying final touches...');
-    const originalUrl = result.imageUrl; // fal.ai URL — used for QR + download
-    let displayUrl = result.imageUrl;    // canvas version — used for on-screen display only
+    const shareUrl = result.shareUrl || null;      // R2 URL for QR — never base64
+    const displaySource = result.imageUrl;          // R2 URL or base64 — for on-screen display
+    let displayUrl = displaySource;                 // canvas version — used for on-screen display only
     try {
-      displayUrl = await Settings.applyOverlays(result.imageUrl);
+      displayUrl = await Settings.applyOverlays(displaySource);
     } catch (e) {
       console.warn('Overlay failed, using original:', e);
     }
 
-    this.state.resultImageUrl = originalUrl;
+    this.state.resultImageUrl = shareUrl || displaySource;
 
-    // Track photo in event log
+    // Track photo in event log (store shareable R2 URL if available)
     if (typeof Tracker !== 'undefined' && Tracker.isEventActive()) {
       const scene = this.state.selectedScene;
       const cat = this.state.selectedCategory;
-      this.state.currentPhotoId = Tracker.recordPhoto(scene, cat, originalUrl);
+      this.state.currentPhotoId = Tracker.recordPhoto(scene, cat, shareUrl || '');
     }
 
-    this.showResultScreen(displayUrl, originalUrl);
+    this.showResultScreen(displayUrl, shareUrl);
   },
 
   showError(errorMsg) {
@@ -428,23 +425,41 @@ if (scene.referenceImages && scene.referenceImages.length > 0) {
     }
   },
 
-  async showResultScreen(displayUrl, downloadUrl) {
+  async showResultScreen(displayUrl, shareUrl) {
     // displayUrl = canvas with overlays (shown on screen, may be base64)
-    // downloadUrl = original fal.ai URL (used for QR and download — always short)
-    const qrUrl = downloadUrl || displayUrl;
+    // shareUrl = permanent R2 URL for QR + download (null if photo not cloud-saved)
+    // QR must NEVER receive base64 — it can't encode that much data
 
     const resultImg = document.getElementById('result-image');
     if (resultImg) {
       resultImg.src = displayUrl;
-      resultImg.style.cursor = 'pointer';
-      resultImg.onclick = () => window.open(qrUrl, '_blank');
+      resultImg.style.cursor = shareUrl ? 'pointer' : 'default';
+      resultImg.onclick = shareUrl ? () => window.open(shareUrl, '_blank') : null;
     }
     this.showScreen('result');
 
     const qrCanvas = document.getElementById('qr-canvas');
+    const qrHint = document.querySelector('.qr-hint');
     if (qrCanvas) {
-      try { await QRManager.generate(qrCanvas, qrUrl); }
-      catch (err) { console.error('QR failed:', err); }
+      if (shareUrl) {
+        // Valid R2 URL — generate scannable QR
+        try {
+          await QRManager.generate(qrCanvas, shareUrl);
+          if (qrHint) qrHint.textContent = 'Scan with your phone camera';
+        } catch (err) {
+          console.error('QR failed:', err);
+        }
+      } else {
+        // No cloud URL (no active event) — show friendly message instead of broken QR
+        console.warn('No shareUrl — photo not cloud-saved, skipping QR');
+        const ctx = qrCanvas.getContext('2d');
+        qrCanvas.width = 200; qrCanvas.height = 200;
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 200, 200);
+        ctx.fillStyle = '#888'; ctx.font = '12px Arial'; ctx.textAlign = 'center';
+        ctx.fillText('No active event', 100, 92);
+        ctx.fillText('Photo not saved', 100, 112);
+        if (qrHint) qrHint.textContent = 'Start an event to enable sharing';
+      }
     }
 
     const mode = this.state.mode;
