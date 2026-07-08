@@ -156,48 +156,68 @@ const Settings = {
     const ps = this.getPrintSettings();
     const colorFilter = ps.colorMode === 'grayscale' ? 'filter:grayscale(100%);' : '';
 
-    // AI output is always 16:9 landscape
-    // Force landscape print regardless of admin settings
-    // Standard photo print: 6x4 landscape = 6in wide, 4in tall
+    // 6x4 landscape photo paper — fixed for the booth
     const pw = '6in';
     const ph = '4in';
     const margin = ps.borderless !== false ? '0' : '3mm';
 
-    const w = window.open('', '_blank');
-    if (!w) { alert('Please allow popups to print'); return; }
-    w.document.write(`<!DOCTYPE html><html><head>
+    // SILENT KIOSK PRINTING via hidden iframe (no new tab, no redirect).
+    // When Chrome is launched with --kiosk-printing, iframe.print() sends
+    // directly to the Windows DEFAULT printer using its saved settings —
+    // no print dialog appears. The page stays on the result screen.
+    // (Without the flag, this still works but Chrome shows the normal dialog.)
+
+    // Remove any previous print iframe
+    const existing = document.getElementById('kiosk-print-frame');
+    if (existing) existing.remove();
+
+    const iframe = document.createElement('iframe');
+    iframe.id = 'kiosk-print-frame';
+    // Keep it in the layout flow but invisible (display:none can suppress printing in some engines)
+    iframe.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; opacity:0; pointer-events:none;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head>
     <title>GAME ON Photo</title>
     <style>
       * { margin:0; padding:0; box-sizing:border-box; }
-      html, body {
-        width:${pw}; height:${ph};
-        overflow:hidden; background:#000;
-      }
-      .wrap {
-        width:${pw}; height:${ph};
-        display:flex; align-items:center; justify-content:center;
-        background:#000;
-      }
-      img {
-        width:100%; height:100%;
-        object-fit:cover; display:block;
-        ${colorFilter}
-      }
+      html, body { width:${pw}; height:${ph}; overflow:hidden; background:#000; }
+      .wrap { width:${pw}; height:${ph}; display:flex; align-items:center; justify-content:center; background:#000; }
+      img { width:100%; height:100%; object-fit:cover; display:block; ${colorFilter} }
       @media print {
-        @page {
-          size: ${pw} ${ph} landscape;
-          margin: ${margin};
-        }
+        @page { size: ${pw} ${ph} landscape; margin: ${margin}; }
         html, body { width:${pw}; height:${ph}; }
         img { width:100%; height:100%; object-fit:cover; }
       }
     </style></head><body>
-    <div class="wrap">
-      <img src="${imageUrl}"
-        onload="setTimeout(()=>{window.print();},300);"
-        onerror="document.body.innerHTML='<p style=color:white;padding:20px>Image failed to load</p>';"
-      />
-    </div></body></html>`);
-    w.document.close();
+    <div class="wrap"><img id="pimg" src="${imageUrl}" /></div>
+    </body></html>`);
+    doc.close();
+
+    // Wait for the image to load inside the iframe, then print
+    const img = doc.getElementById('pimg');
+    const doPrint = () => {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (e) {
+        console.error('Print failed:', e);
+      }
+      // Clean up the iframe after the print job is handed off
+      setTimeout(() => { iframe.remove(); }, 2000);
+    };
+
+    if (img) {
+      if (img.complete) {
+        setTimeout(doPrint, 200);
+      } else {
+        img.onload = () => setTimeout(doPrint, 200);
+        img.onerror = () => { console.error('Print image failed to load'); iframe.remove(); };
+      }
+    } else {
+      setTimeout(doPrint, 400);
+    }
   }
 };

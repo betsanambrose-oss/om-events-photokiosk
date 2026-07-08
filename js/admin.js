@@ -754,14 +754,19 @@ const Admin = {
     const dot = document.getElementById('printer-status-dot');
     const text = document.getElementById('printer-status-text');
 
-    const w = window.open('', '_blank');
-    if (!w) {
-      dot.style.background = 'var(--red)';
-      text.textContent = 'Popup blocked — allow popups';
-      return;
-    }
+    // Silent print via hidden iframe (same method as the kiosk result screen).
+    // With Chrome --kiosk-printing, this prints with no dialog.
+    const existing = document.getElementById('admin-print-frame');
+    if (existing) existing.remove();
 
-    w.document.write(`
+    const iframe = document.createElement('iframe');
+    iframe.id = 'admin-print-frame';
+    iframe.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; opacity:0; pointer-events:none;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
       <html><head><title>GAME ON Test Print</title>
       <style>
         * { margin:0; padding:0; }
@@ -772,20 +777,29 @@ const Admin = {
                align-items:center; justify-content:center; color:#F6020C; }
         h1 { font-family:Georgia; font-size:36px; font-weight:300; letter-spacing:8px; }
         p { font-family:Arial; font-size:12px; letter-spacing:3px; margin-top:8px; opacity:0.6; }
-        @media print { @page { size:6in 4in; margin:0; } }
+        @media print { @page { size:6in 4in landscape; margin:0; } }
       </style></head>
       <body>
         <div class="box">
           <h1>GAME ON</h1>
-          <p>TEST PRINT — ${new Date().toLocaleDateString()}</p>
+          <p>TEST PRINT</p>
         </div>
-        <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 1000); }<\/script>
       </body></html>
     `);
-    w.document.close();
+    doc.close();
 
-    dot.style.background = 'var(--green)';
-    text.textContent = 'Test print sent';
+    setTimeout(() => {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        if (dot) dot.style.background = 'var(--green)';
+        if (text) text.textContent = 'Test print sent';
+      } catch (e) {
+        if (dot) dot.style.background = 'var(--red)';
+        if (text) text.textContent = 'Print failed: ' + e.message;
+      }
+      setTimeout(() => iframe.remove(), 2000);
+    }, 400);
   },
 
   // ── SYSTEM ──

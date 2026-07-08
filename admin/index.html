@@ -326,8 +326,10 @@
 
       <div class="card">
         <div class="card-title">Print Status</div>
-        <p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;">
-          Print jobs tracked automatically via print confirmation buttons on the result screen.
+        <p style="font-size:11px;color:var(--white-dim);letter-spacing:1px;line-height:1.8;">
+          Silent printing is active when this kiosk is launched with Chrome kiosk-printing mode.
+          The print button sends the photo directly to the Windows default printer — no dialog,
+          no popup. Jobs are tracked via the confirm buttons on the result screen.
         </p>
       </div>
       <div class="card">
@@ -335,14 +337,24 @@
         <div class="btn-row">
           <button class="btn btn-gold" onclick="Admin.testPrint()">🖨️ Send Test Print</button>
         </div>
+        <p style="font-size:10px;color:var(--white-dim);letter-spacing:1px;margin-top:12px;line-height:1.7;">
+          Run this after setup. If a page prints with no dialog appearing, silent printing is working.
+          If the print dialog appears, Chrome was not launched in kiosk-printing mode (see setup below).
+        </p>
       </div>
       <div class="card">
-        <div class="card-title">Print Notes</div>
-        <div style="font-size:11px;color:var(--white-dim);line-height:2.2;letter-spacing:1px;">
-          • Connect printer to same WiFi hotspot as this device<br/>
-          • Canon PIXMA and HP Smart series recommended<br/>
-          • Use 6×4 glossy photo paper for best results<br/>
-          • Always test print before each event starts
+        <div class="card-title">One-Time Windows Setup (Silent Printing)</div>
+        <div style="font-size:11px;color:var(--white-dim);line-height:2;letter-spacing:0.5px;">
+          <b style="color:var(--gold);">1. Set the printer as default</b><br/>
+          Windows Settings → Bluetooth &amp; devices → Printers &amp; scanners → select your printer → Set as default.<br/><br/>
+          <b style="color:var(--gold);">2. Set paper &amp; quality in Windows</b><br/>
+          Same screen → Printing preferences → set paper to <b>6×4 (4″×6″) photo</b>, orientation <b>Landscape</b>, <b>Borderless</b>, color <b>Color</b>. Save.<br/><br/>
+          <b style="color:var(--gold);">3. Launch Chrome in kiosk-printing mode</b><br/>
+          Create a desktop shortcut, then set its Target to:<br/>
+          <code style="display:block;background:var(--black-soft);padding:8px 10px;border-radius:4px;margin:6px 0;color:var(--gold);font-size:10px;word-break:break-all;">"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --kiosk-printing --kiosk https://betsanambrose-oss.github.io/om-events-photokiosk/</code>
+          Launch the kiosk from this shortcut. The <code style="color:var(--gold);">--kiosk-printing</code> flag is what removes the print dialog.<br/><br/>
+          <b style="color:var(--gold);">4. Test</b><br/>
+          Run “Send Test Print” above. No dialog + a printed page = ready.
         </div>
       </div>
     </div>

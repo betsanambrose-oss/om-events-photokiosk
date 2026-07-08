@@ -625,13 +625,12 @@ const App = {
     // Open print dialog
     Settings.printImage(imageUrl);
 
-    // Show confirmation buttons after short delay
-    // (gives time for print dialog to open and staff to interact)
+    // Show confirmation buttons quickly — silent kiosk print fires immediately
     setTimeout(() => {
       if (printBtn) printBtn.style.display = 'none';
       if (printBadge) printBadge.style.display = 'none';
       if (printConfirm) printConfirm.style.display = 'block';
-    }, 1500);
+    }, 800);
   },
 
   confirmPrint(status) {
