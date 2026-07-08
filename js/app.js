@@ -21,7 +21,7 @@ const App = {
     this.checkOnlineStatus();
     this.loadSettings();
     this.showScreen('home');
-    console.log('OM Events Kiosk ready');
+    console.log('GAME ON Kiosk ready');
 
     // Init tracker — restore active event if any
     if (typeof Tracker !== 'undefined') Tracker.init();
@@ -58,7 +58,7 @@ const App = {
     const info = typeof Settings !== 'undefined' ? Settings.getEventInfo() : null;
     const active = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
     const name = active?.name || info?.name || '';
-    if (name && name !== 'OM Events') {
+    if (name && name !== 'GAME ON') {
       eventNameEl.textContent = name;
       eventNameEl.style.display = 'block';
     } else {
@@ -432,7 +432,7 @@ const App = {
         <span style="color:#ff6b6b;font-size:16px;">Something went wrong</span><br><br>
         <span style="font-size:11px;opacity:0.6;line-height:1.6;">${errorMsg.substring(0, 150)}</span><br><br>
         <button onclick="App.resetAndGoHome()" style="
-          background:#C9A84C;color:#000;border:none;padding:12px 32px;
+          background:#F6020C;color:#fff;border:none;padding:12px 32px;
           font-size:12px;letter-spacing:3px;text-transform:uppercase;
           border-radius:2px;cursor:pointer;margin-top:8px;">
           TRY AGAIN

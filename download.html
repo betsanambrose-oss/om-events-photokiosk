@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OM Events — Download Your Photo</title>
+  <title>GAME ON — Download Your Photo</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -15,13 +15,13 @@
       padding:20px; text-align:center;
     }
     .logo { font-size:18px; letter-spacing:6px; text-transform:uppercase; color:#fff; margin-bottom:4px; }
-    .logo span { color:#C9A84C; }
-    .divider { width:60px; height:1px; background:linear-gradient(90deg, transparent, #C9A84C, transparent); margin:12px auto 24px; }
+    .logo span { color:#F6020C; }
+    .divider { width:60px; height:1px; background:linear-gradient(90deg, transparent, #F6020C, transparent); margin:12px auto 24px; }
     #photo { max-width:100%; max-height:60vh; border-radius:2px; box-shadow:0 0 40px rgba(201,168,76,0.2); display:none; }
     .btn {
       display:inline-block; margin-top:20px;
       padding:14px 36px;
-      background:#C9A84C; color:#000;
+      background:#F6020C; color:#000;
       font-size:11px; font-weight:600;
       letter-spacing:3px; text-transform:uppercase;
       border-radius:2px; text-decoration:none;
@@ -30,20 +30,20 @@
     .btn:disabled { opacity:0.5; cursor:not-allowed; }
     .tagline { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:24px; }
     .error { color:#ff6b6b; font-size:12px; letter-spacing:2px; }
-    #loading { font-size:11px; letter-spacing:3px; color:#C9A84C; text-transform:uppercase; }
+    #loading { font-size:11px; letter-spacing:3px; color:#F6020C; text-transform:uppercase; }
     #status { font-size:11px; color:rgba(255,255,255,0.4); margin-top:12px; letter-spacing:1px; min-height:18px; }
   </style>
 </head>
 <body>
-  <div class="logo">OM <span>Events</span></div>
+  <img src="logo.png" alt="GAME ON" style="height:70px;width:auto;object-fit:contain;margin-bottom:8px;" />
   <div class="divider"></div>
 
   <div id="loading">Loading your photo...</div>
-  <img id="photo" alt="Your OM Events photo"/>
+  <img id="photo" alt="Your GAME ON photo"/>
   <div id="error" class="error" style="display:none;"></div>
   <button class="btn" id="download-btn" style="display:none;" onclick="downloadPhoto()">⬇ Download Photo</button>
   <div id="status"></div>
-  <p class="tagline">Powered by OM Events</p>
+  <p class="tagline">Powered by GAME ON</p>
 
   <script>
     const params = new URLSearchParams(window.location.search);

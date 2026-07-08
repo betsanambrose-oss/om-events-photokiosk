@@ -135,7 +135,7 @@ const API = {
         prompt,
         provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini'),
         eventId: eventInfo?.id || 'unknown',
-        eventName: eventInfo?.name || 'OM Events',
+        eventName: eventInfo?.name || 'GAME ON',
         photoId: 'ph_' + Date.now(),
         sceneName: sceneMeta.sceneName || '',
         categoryName: sceneMeta.categoryName || ''
@@ -185,9 +185,9 @@ const API = {
       const finalize = () => {
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
-        ctx.fillStyle = '#C9A84C'; ctx.font = 'bold 24px Georgia';
+        ctx.fillStyle = '#F6020C'; ctx.font = 'bold 24px Georgia';
         ctx.textAlign = 'center';
-        ctx.fillText('OM EVENTS — Offline Mode', canvas.width / 2, canvas.height - 35);
+        ctx.fillText('GAME ON — Offline Mode', canvas.width / 2, canvas.height - 35);
         resolve({ success: true, imageUrl: canvas.toDataURL('image/jpeg', 0.9) });
       };
       if (API.capturedFaceBase64) {

@@ -78,7 +78,7 @@ const Settings = {
 
   getEventInfo() {
     const s = this.load();
-    return { name: s.eventName || 'OM Events', organizer: s.eventOrganizer || '', date: s.eventDate || '' };
+    return { name: s.eventName || 'GAME ON', organizer: s.eventOrganizer || '', date: s.eventDate || '' };
   },
 
   getPrintSettings() {
@@ -126,7 +126,7 @@ const Settings = {
           else if (pos === 'bottom-right') { x = canvas.width - pad; y = canvas.height - pad; ctx.textAlign = 'right'; }
           else if (pos === 'top-left') { x = pad; y = fs + pad; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; }
           else { x = canvas.width - pad; y = fs + pad; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; }
-          ctx.fillText('OM EVENTS', x, y);
+          ctx.fillText('GAME ON', x, y);
           ctx.restore();
         }
         if (wm.clientLogo) {
@@ -166,7 +166,7 @@ const Settings = {
     const w = window.open('', '_blank');
     if (!w) { alert('Please allow popups to print'); return; }
     w.document.write(`<!DOCTYPE html><html><head>
-    <title>OM Events Photo</title>
+    <title>GAME ON Photo</title>
     <style>
       * { margin:0; padding:0; box-sizing:border-box; }
       html, body {

@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
 :root {
-  --gold: #C9A84C;
-  --gold-light: #E8C97A;
-  --gold-dim: #8B6914;
+  --gold: #F6020C;
+  --gold-light: #FF3B44;
+  --gold-dim: #8B0006;
   --black: #080808;
   --black-soft: #111111;
   --black-card: #161616;
@@ -67,7 +67,7 @@ html, body {
   width: 600px;
   height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(246,2,12,0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -97,6 +97,28 @@ html, body {
   color: var(--gold);
   opacity: 0.8;
 }
+
+/* GAME ON brand logo image — used across screens */
+.brand-logo {
+  display: inline-block;
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.brand-logo.small { height: 32px; }
+.brand-logo.medium { height: 48px; }
+.brand-logo.large { height: 96px; }
+.brand-logo.xlarge { height: 140px; }
+/* Text wordmark fallback for tiny inline spots */
+.brand-wordmark {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.brand-wordmark span { color: var(--gold); }
 
 /* ══════════════════════════════════════
    SCREEN 1 — HOME
@@ -706,7 +728,7 @@ html, body {
 .result-shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(201,168,76,0.1) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(246,2,12,0.1) 0%, transparent 50%);
   pointer-events: none;
   animation: shineMove 3s infinite;
 }
@@ -1186,7 +1208,7 @@ html, body {
   font-size: 10px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.7);
+  color: rgba(246, 2, 12, 0.7);
   white-space: nowrap;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }

@@ -754,21 +754,21 @@ const Admin = {
     }
 
     w.document.write(`
-      <html><head><title>OM Events Test Print</title>
+      <html><head><title>GAME ON Test Print</title>
       <style>
         * { margin:0; padding:0; }
         body { display:flex; align-items:center; justify-content:center;
                background:#000; width:6in; height:4in; }
-        .box { border:3px solid #C9A84C; width:5.5in; height:3.5in;
+        .box { border:3px solid #F6020C; width:5.5in; height:3.5in;
                display:flex; flex-direction:column;
-               align-items:center; justify-content:center; color:#C9A84C; }
+               align-items:center; justify-content:center; color:#F6020C; }
         h1 { font-family:Georgia; font-size:36px; font-weight:300; letter-spacing:8px; }
         p { font-family:Arial; font-size:12px; letter-spacing:3px; margin-top:8px; opacity:0.6; }
         @media print { @page { size:6in 4in; margin:0; } }
       </style></head>
       <body>
         <div class="box">
-          <h1>OM EVENTS</h1>
+          <h1>GAME ON</h1>
           <p>TEST PRINT — ${new Date().toLocaleDateString()}</p>
         </div>
         <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 1000); }<\/script>
