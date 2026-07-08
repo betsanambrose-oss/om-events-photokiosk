@@ -8,25 +8,33 @@ const Camera = {
   countdownInterval: null,
   isFrontFacing: true, // track whether current cam is front-facing (mirror) or external (no mirror)
 
-async init(videoElement, deviceId = null) {
-  this.videoEl = videoElement;
-  const started = await this.start(deviceId);
-  return started;
-},
+  async init(videoElement) {
+    this.videoEl = videoElement;
+    const started = await this.start();
+    return started;
+  },
 
   async start(deviceId = null) {
     this.stop();
 
     const strategies = [];
 
+    // Request highest resolution first (eMeet S800 supports 4K / 8.3MP)
+    // More capture pixels = more real face detail for AI identity preservation
+    // Falls back gracefully to lower res if 4K unsupported
     if (deviceId) {
+      strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } }, audio: false });
       strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
       strategies.push({ video: { deviceId: { exact: deviceId } }, audio: false });
       strategies.push({ video: { deviceId }, audio: false });
     }
 
-    // Front camera strategies — high quality
+    // Front camera strategies — 4K first, then fall back
     // 16:9 landscape — matches AI output aspect ratio
+    strategies.push({
+      video: { facingMode: 'user', width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } },
+      audio: false
+    });
     strategies.push({
       video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: { ideal: 1.7778 } },
       audio: false
@@ -35,7 +43,11 @@ async init(videoElement, deviceId = null) {
       video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
     });
-    // Any camera with 16:9 resolution
+    // Any camera — 4K first, then 16:9 fallbacks
+    strategies.push({
+      video: { width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } },
+      audio: false
+    });
     strategies.push({
       video: { width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: { ideal: 1.7778 } },
       audio: false

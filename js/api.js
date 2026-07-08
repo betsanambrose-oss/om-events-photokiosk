@@ -36,10 +36,11 @@ const API = {
 
       const img = new Image();
       img.onload = () => {
-        // Cap at 1280px max dimension — keeps upload small and fast
-        // GPT Image 2 processes inputs at high fidelity regardless
-        // and this avoids Cloudflare Worker body size limits
-        const MAX_DIM = 1280;
+        // Preserve face detail — send at 2048px so the AI has enough real
+        // facial pixels to lock identity. Downscaling to 1280 was destroying
+        // face detail (full-body shots left faces ~100px → AI painted a new face).
+        // On very weak 2G, drop to 1600px to keep upload manageable.
+        const MAX_DIM = is2G ? 1600 : 2048;
         let w = img.width;
         let h = img.height;
         if (w > MAX_DIM || h > MAX_DIM) {
@@ -56,9 +57,9 @@ const API = {
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
 
-        // JPEG 92% at 1280px = ~150-300KB — optimal for face reading
-        // 2G: lower quality for faster upload
-        const quality = is2G ? 0.78 : 0.92;
+        // JPEG 94% at 2048px = ~400-800KB — preserves face detail for identity
+        // 2G: slightly lower quality for faster upload
+        const quality = is2G ? 0.82 : 0.94;
         const result = canvas.toDataURL('image/jpeg', quality);
 
         const origKB = Math.round((dataUrl.length * 0.75) / 1024);
