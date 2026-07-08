@@ -145,7 +145,7 @@ const Settings = {
             li.src = wm.clientLogo;
           });
         }
-        resolve(canvas.toDataURL('image/jpeg', 0.92)); // JPEG for display only — original PNG URL used for download
+        resolve(canvas.toDataURL('image/jpeg', 0.95)); // branded image — used for display, QR download, and print
       };
       img.onerror = () => resolve(imageUrl);
       img.src = imageUrl;

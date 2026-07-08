@@ -77,6 +77,10 @@ const API = {
       return { success: false, error: 'Already running — please wait' };
     }
     this.isGenerating = true;
+    // Store meta for the branded upload that happens after overlays
+    this._currentPhotoId = 'ph_' + Date.now();
+    this._currentSceneName = sceneMeta.sceneName || '';
+    this._currentCategoryName = sceneMeta.categoryName || '';
 
     try {
       // Detect network quality for adaptive compression
@@ -133,43 +137,64 @@ const API = {
         faceCropBase64: sceneMeta.faceCropBase64 || null,
         sceneUrls,
         prompt,
-        provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini'),
-        eventId: eventInfo?.id || 'unknown',
-        eventName: eventInfo?.name || 'GAME ON',
-        photoId: 'ph_' + Date.now(),
-        sceneName: sceneMeta.sceneName || '',
-        categoryName: sceneMeta.categoryName || ''
+        provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini')
       });
 
-      // Display uses base64 (already downloaded — instant, no network wait for large 2K image)
-      // Share/QR/download uses R2 URL (permanent, scannable)
-      let imageUrl;    // for on-screen display — prefer instant base64
-      let shareUrl = null;  // R2 URL for QR — null if not saved to cloud
-      this._lastR2Url = null;
+      // Worker returns the raw AI image as base64 (no R2 save yet).
+      // app.js will apply frame/logo/watermark overlays, then call
+      // API.uploadBranded() to store the FINAL branded image in R2 for the QR.
+      if (!result.resultB64) throw new Error('No result image returned');
 
-      if (result.resultB64) {
-        // Instant display — base64 is already in hand, no waiting for R2 to serve the 2K file
-        imageUrl = 'data:image/jpeg;base64,' + result.resultB64;
-      }
-      if (result.resultUrl) {
-        shareUrl = result.resultUrl;
-        this._lastR2Url = result.resultUrl;
-        // If somehow no base64, fall back to R2 URL for display
-        if (!imageUrl) imageUrl = result.resultUrl;
-        console.log('✅ Result — display:base64, share:R2', result.resultUrl);
-      } else if (imageUrl) {
-        console.log('✅ Result (base64 only, not cloud-saved)');
-      } else {
-        throw new Error('No result image returned');
-      }
+      const imageUrl = 'data:image/jpeg;base64,' + result.resultB64;
+      this._lastProvider = result.provider || 'gemini';
+      console.log('✅ Raw image received — provider:', result.provider);
 
-      return { success: true, imageUrl, shareUrl };
+      // Return raw base64 for display + branding. shareUrl comes after branded upload.
+      return { success: true, imageUrl, rawB64: result.resultB64 };
 
     } catch (err) {
       console.error('❌ FAILED:', err.message);
       return { success: false, error: err.message };
     } finally {
       this.isGenerating = false;
+    }
+  },
+
+  // Upload the FINAL branded image (frame + logo + watermark already applied) to R2.
+  // Called by app.js after overlays are applied. Returns the permanent R2 URL for the QR.
+  // brandedDataUrl: a 'data:image/jpeg;base64,...' string of the branded image.
+  async uploadBranded(brandedDataUrl, sceneMeta = {}) {
+    try {
+      const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
+      if (!eventInfo) {
+        console.log('⚠️ No active event — branded image not stored');
+        return null;
+      }
+
+      const brandedB64 = brandedDataUrl.replace(/^data:image\/\w+;base64,/, '');
+      if (!brandedB64) return null;
+
+      const res = await this.callWorker({
+        step: 'upload_branded',
+        brandedB64,
+        eventId: eventInfo.id,
+        eventName: eventInfo.name,
+        photoId: this._currentPhotoId || ('ph_' + Date.now()),
+        sceneName: sceneMeta.sceneName || this._currentSceneName || '',
+        categoryName: sceneMeta.categoryName || this._currentCategoryName || '',
+        provider: this._lastProvider || ''
+      });
+
+      if (res.resultUrl) {
+        this._lastR2Url = res.resultUrl;
+        console.log('✅ Branded image stored:', res.resultUrl);
+        return res.resultUrl;
+      }
+      console.warn('Branded upload returned no URL:', res.warning || '');
+      return null;
+    } catch (err) {
+      console.warn('uploadBranded failed (non-critical):', err.message);
+      return null;
     }
   },
 

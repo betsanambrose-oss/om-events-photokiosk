@@ -562,30 +562,38 @@ const Admin = {
 
     try {
       showStatus('Preparing ZIP...');
-      const data = await this._callWorker({ step: 'get_zip_links', eventId: resolvedId });
-      if (!data.urls || data.urls.length === 0) {
+
+      const zip = new JSZip();
+      const folder = zip.folder('game-on-photos');
+
+      // Fetch images from the worker as base64 (server-side R2 read = no CORS issues).
+      // The old method fetched R2 URLs directly from the browser, which failed on
+      // CORS and produced an empty ZIP. Paginated to handle large events.
+      let cursor = null;
+      let total = 0;
+      let safety = 0;
+      do {
+        const batch = await this._callWorker({ step: 'get_zip_batch', eventId: resolvedId, startAfter: cursor });
+        if (batch.error) throw new Error(batch.error);
+        if (batch.images && batch.images.length) {
+          batch.images.forEach((img, idx) => {
+            const bin = atob(img.b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            const name = `photo_${String(total + idx + 1).padStart(3, '0')}.jpg`;
+            folder.file(name, bytes);
+          });
+          total += batch.images.length;
+          showStatus(`Downloading... ${total} photos`);
+        }
+        cursor = batch.nextCursor;
+        safety++;
+      } while (cursor && safety < 100);
+
+      if (total === 0) {
         showStatus('No photos found for this event.');
         return;
       }
-
-      showStatus(`Downloading ${data.count} photos \u2014 please wait...`);
-
-      const zip = new JSZip();
-      const folder = zip.folder('om-events-photos');
-
-      let done = 0;
-      await Promise.all(data.urls.map(async ({ url, filename }) => {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const blob = await res.blob();
-          folder.file(filename, blob);
-          done++;
-          showStatus(`Downloading... ${done}/${data.count}`);
-        } catch (e) {
-          console.warn('Failed to fetch photo:', url, e.message);
-        }
-      }));
 
       showStatus('Creating ZIP file...');
       const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
@@ -594,7 +602,7 @@ const Admin = {
       const evt = events.find(e => e.id === resolvedId);
       const evtName = (evt?.name || 'event').replace(/\s+/g, '-');
       const evtDate = evt?.date || new Date().toISOString().split('T')[0];
-      const filename = `om-events-${evtName}-${evtDate}-photos.zip`;
+      const filename = `game-on-${evtName}-${evtDate}-photos.zip`;
 
       const url = URL.createObjectURL(zipBlob);
       const a = document.createElement('a');

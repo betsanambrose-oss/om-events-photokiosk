@@ -227,7 +227,8 @@ const App = {
     }
 
     const videoEl = document.getElementById('camera-feed');
-    const started = await Camera.init(videoEl);
+    const savedDeviceId = (typeof Settings !== 'undefined' ? Settings.load().cameraDeviceId : null) || null;
+    const started = await Camera.init(videoEl, savedDeviceId);
 
     setTimeout(() => {
       if (videoEl.readyState >= 2 || videoEl.srcObject) {
@@ -455,20 +456,33 @@ const App = {
     this.Steps?.stopAuto();
     this.Steps?.set(3);
 
-    // Apply watermark + frame overlays for DISPLAY only
-    // shareUrl = permanent R2 URL for QR + download (null if not cloud-saved)
-    // imageUrl = the image itself (R2 URL, or base64 if no event active)
+    // Apply watermark + frame + logo overlays to the raw AI image.
+    // The BRANDED result is what we display AND upload to R2, so the QR/download
+    // and print all carry the frame and client logo.
     this.Steps?.set(4); // Previewing
-    const shareUrl = result.shareUrl || null;      // R2 URL for QR — never base64
-    const displaySource = result.imageUrl;          // R2 URL or base64 — for on-screen display
-    let displayUrl = displaySource;                 // canvas version — used for on-screen display only
+    const displaySource = result.imageUrl;   // raw AI base64
+    let brandedUrl = displaySource;          // will become the branded version
     try {
-      displayUrl = await Settings.applyOverlays(displaySource);
+      brandedUrl = await Settings.applyOverlays(displaySource);
     } catch (e) {
       console.warn('Overlay failed, using original:', e);
     }
 
-    this.state.resultImageUrl = shareUrl || displaySource;
+    // Upload the BRANDED image to R2 → this URL is what the QR points to,
+    // so the downloaded/printed photo includes the frame + logo branding.
+    let shareUrl = null;
+    try {
+      shareUrl = await API.uploadBranded(brandedUrl, {
+        sceneName: this.state.selectedScene?.name || '',
+        categoryName: this.state.selectedCategory?.name || ''
+      });
+    } catch (e) {
+      console.warn('Branded upload failed:', e);
+    }
+
+    // Display + print use the branded image; QR/download use the branded R2 URL
+    const displayUrl = brandedUrl;
+    this.state.resultImageUrl = shareUrl || brandedUrl;
 
     // Track photo in event log (store shareable R2 URL if available)
     if (typeof Tracker !== 'undefined' && Tracker.isEventActive()) {
