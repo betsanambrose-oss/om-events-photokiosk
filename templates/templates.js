@@ -43,22 +43,6 @@ Sony A7R IV 50mm f/2.8, ultra photorealistic, cinematic award lighting, 8K.
 ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
         },
         {
-          id: 'hw-billboard',
-          name: 'Times Square Star',
-          gradient: 'linear-gradient(135deg, #001a4d, #003399)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as world-famous celebrities featured on a massive illuminated Times Square billboard at night. For [GENDER], they appear in stylish contemporary fashion as a large-scale portrait filling the giant billboard, full body visible.
-
-Dense neon signs, LED advertisements, yellow NYC taxis on the wet reflective street below, crowds of tourists on the sidewalk. The billboard's LED panels are the dominant light source — bright illumination spilling onto the building facade and street below. The portrait on the billboard is sharp and vivid. Neon and LED colors from surrounding signs create colored reflections on nearby surfaces. No halo around the billboard image, no edge artifacts.
-
-Sony A7R IV 24mm f/4.0, ultra photorealistic, night urban photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
           id: 'hw-director',
           name: 'Hollywood Director',
           gradient: 'linear-gradient(135deg, #1a1a1a, #3d3d3d)',
@@ -155,22 +139,6 @@ ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything 
       gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
       scenes: [
         {
-          id: 'ad-stage',
-          name: 'Grand Stage',
-          gradient: 'linear-gradient(135deg, #0f3460, #16213e)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo on a grand corporate annual day event stage as award winners. For [GENDER], replace booth outfit with smart professional corporate formal attire — a well-fitted suit and tie or formal dress. Each subject holds a gleaming award trophy on stage. Full body visible.
-
-Sleek modern curved LED video wall backdrop showing company branding, professional truss lighting rigs with moving head spotlights overhead, reflective stage floor, large corporate audience of hundreds applauding in the auditorium behind. Multiple sharp theatrical spotlights — warm key from 45 degrees and cooler fill from the other side create professional stage portrait lighting. Contact shadows beneath each subject's feet reflect slightly on the stage floor. LED backdrop glow adds a soft colored rim to subjects' shoulders.
-
-Canon 1DX Mark III 135mm f/2.0, ultra photorealistic, professional corporate event photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
           id: 'ad-award',
           name: 'Award Winner',
           gradient: 'linear-gradient(135deg, #C9A84C, #4d3d00)',
@@ -183,22 +151,6 @@ Place every person visible in this booth photo as prestigious award recipients r
 Elegant stage with warm gold and champagne color palette, tasteful floral arrangements, branded event backdrop with golden metallic confetti raining down, audience in foreground seats mid-applause, warm ambient lighting throughout. Dominant warm golden spotlight from directly above creates glamorous downward shadows on faces and bodies. Confetti catches light midair. Subjects cast sharp shadows onto the stage floor. Confetti pieces land on shoulders and hair — physically present within the scene. No halo, no edge artifacts.
 
 Sony A1 85mm f/1.8, ultra photorealistic, luxury event photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'ad-ceo',
-          name: 'CEO Keynote',
-          gradient: 'linear-gradient(135deg, #1a2a1a, #0d3d1a)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as powerful CEOs delivering a keynote speech at a major corporate conference stage. For [GENDER], replace booth outfit with premium executive business attire — a sharp tailored suit or executive dress. Subjects stand at a sleek glass podium confidently addressing the audience. Full body visible.
-
-Massive curved LED display wall showing company name and dynamic data visualizations, modern minimalist dark navy and white stage design, large corporate audience shot slightly from below stage level giving subjects a powerful commanding perspective. Cool blue-white LED backdrop light hits subjects' backs and sides as rim light. Warm white theatrical spotlights illuminate the front — dual-source creates defined facial modeling with cool rim on shoulders and warm front key. Shadows fall behind and beneath subjects. No halo, no edge artifacts.
-
-Canon R3 70mm f/2.8, ultra photorealistic, corporate conference photography, 8K.
 
 ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
         },
@@ -889,24 +841,6 @@ PRESERVE BACKGROUND EXACTLY FROM image_2: Tamil Nadu government emblem on wall, 
 
 Both stand together facing camera, holding pink roses bouquet and sweet box. Warm office lighting, no halo, no artifacts. Ultra photorealistic.`
         },
-        {
-          id: 'tn-secretariat',
-          name: 'TN Secretariat',
-          gradient: 'linear-gradient(135deg, #1a3300, #004d00)',
-          prompt: `Place every person visible in this photo at the Tamil Nadu State Secretariat in Chennai. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], replace outfit with formal Indian attire — a crisp shirt or saree for official setting. Subjects stand confidently in front of the grand Tamil Nadu Secretariat building facade, Indian tricolor flag hoisted above, Tamil Nadu government signage visible. Bright Chennai daylight, clear blue sky. Ultra photorealistic, 8K.`
-        },
-        {
-          id: 'tn-marina',
-          name: 'Marina Beach',
-          gradient: 'linear-gradient(135deg, #001a33, #003366)',
-          prompt: `Place every person visible in this photo at Marina Beach Chennai during golden hour. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], casual elegant beach attire. Subjects stand on the wide sandy beach, Bay of Bengal stretching to the horizon, golden sunset sky, lighthouse visible in the distance, waves gently breaking on shore. Warm golden hour light. Ultra photorealistic, 8K.`
-        },
-        {
-          id: 'tn-temple',
-          name: 'Brihadeeswarar Temple',
-          gradient: 'linear-gradient(135deg, #4d2600, #8B4500)',
-          prompt: `Place every person visible in this photo at the Brihadeeswarar Temple in Thanjavur, a UNESCO World Heritage Site. Preserve each person's exact face, skin tone, hair and features with absolute fidelity — do not alter any feature. For [GENDER], traditional Tamil attire — veshti and shirt for men, silk saree for women. Subjects stand before the magnificent 1000-year-old Dravidian gopuram tower, intricate stone carvings visible, clear blue sky. Warm golden daylight. Ultra photorealistic, 8K.`
-        }
       ]
     }
   ]
