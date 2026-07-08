@@ -53,6 +53,9 @@ const Admin = {
   populateUI() {
     const s = this.settings;
 
+    // AI provider selector
+    this.refreshProviderUI();
+
     // Event info
     if (s.eventName) document.getElementById('event-name').value = s.eventName;
     if (s.eventOrganizer) document.getElementById('event-organizer').value = s.eventOrganizer;
@@ -426,6 +429,26 @@ const Admin = {
         </table>
       </div>
     `;
+  },
+
+  // ── AI PROVIDER SELECTOR ──
+
+  setProvider(provider) {
+    // 'gemini' (Nano Banana 2) or 'openai' (GPT Image 2)
+    this.settings.aiProvider = provider;
+    Settings.save(this.settings);
+    this.refreshProviderUI();
+    this.showToast(provider === 'gemini' ? 'Switched to Nano Banana 2' : 'Switched to GPT Image 2');
+  },
+
+  refreshProviderUI() {
+    const provider = this.settings.aiProvider || 'gemini';
+    const gCard = document.getElementById('provider-gemini');
+    const oCard = document.getElementById('provider-openai');
+    const label = document.getElementById('sys-provider-text');
+    if (gCard) gCard.classList.toggle('active', provider === 'gemini');
+    if (oCard) oCard.classList.toggle('active', provider === 'openai');
+    if (label) label.textContent = provider === 'gemini' ? 'Nano Banana 2' : 'GPT Image 2';
   },
 
   // ── PHOTO STORAGE — R2 ──

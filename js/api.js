@@ -131,6 +131,7 @@ const API = {
         guestBase64,
         sceneUrls,
         prompt,
+        provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini'),
         eventId: eventInfo?.id || 'unknown',
         eventName: eventInfo?.name || 'OM Events',
         photoId: 'ph_' + Date.now(),

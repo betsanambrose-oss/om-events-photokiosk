@@ -353,6 +353,26 @@
         <h1 class="section-title">System <span>Status</span></h1>
         <p class="section-subtitle">Monitor and manage system</p>
       </div>
+
+      <div class="card">
+        <div class="card-title">AI Provider</div>
+        <p style="font-size:11px;color:var(--white-dim);letter-spacing:0.5px;line-height:1.6;margin-bottom:16px;">
+          Choose which AI engine generates photos for this event. Switch to backup if the primary is slow or low on balance. Change applies to the next photo — photos already processing are unaffected.
+        </p>
+        <div class="mode-grid" style="grid-template-columns:repeat(2,1fr);">
+          <div class="mode-card" id="provider-gemini" onclick="Admin.setProvider('gemini')">
+            <div class="mode-icon">⚡</div>
+            <div class="mode-name">Nano Banana 2</div>
+            <div style="font-size:9px;color:var(--white-dim);margin-top:4px;letter-spacing:1px;">Fast · ~5 sec</div>
+          </div>
+          <div class="mode-card" id="provider-openai" onclick="Admin.setProvider('openai')">
+            <div class="mode-icon">🎨</div>
+            <div class="mode-name">GPT Image 2</div>
+            <div style="font-size:9px;color:var(--white-dim);margin-top:4px;letter-spacing:1px;">Backup · slower</div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">System Status</div>
         <div class="status-row">
@@ -362,8 +382,8 @@
         </div>
         <div class="status-row">
           <div class="status-dot gold"></div>
-          <span class="status-label">AI Provider</span>
-          <span class="status-value">OpenAI — GPT Image 2</span>
+          <span class="status-label">Active AI Provider</span>
+          <span class="status-value" id="sys-provider-text">Nano Banana 2</span>
         </div>
         <div class="status-row">
           <div class="status-dot gold"></div>

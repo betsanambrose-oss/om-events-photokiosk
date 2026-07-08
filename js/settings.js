@@ -63,6 +63,9 @@ const Settings = {
 
   getMode() { return this.load().mode || 'soft'; },
 
+  // AI provider: 'gemini' (Nano Banana 2, fast, default) or 'openai' (GPT Image 2, backup)
+  getProvider() { return this.load().aiProvider || 'gemini'; },
+
   getWatermark() {
     const s = this.load();
     return {
