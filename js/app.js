@@ -340,8 +340,7 @@ const App = {
 
     if (sceneReferenceUrl) {
       // Reference image mode — simpler prompt focused on face placement
-      // Kontext sees both images; image_1 = face, image_2 = scene
-      // Don't add the usual prefix — the prompt already describes what to do
+      // image_1 = face, image_2 = scene
       const genderWord = (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64)
         ? (await GenderDetector.detect(API.capturedFaceBase64)).description
         : 'person';
@@ -358,13 +357,30 @@ const App = {
       enhancedPrompt = 'Using ONLY the exact people visible in the reference image — preserve every face, skin tone, hair and physical feature precisely, do not add or remove any people — place them naturally into this scene: ' + neutralPrompt;
     }
 
+    // FACE-ACCURACY BOOST — crop a tight high-res face close-up to send as an
+    // identity anchor alongside the full shot. This is the biggest lever for
+    // face accuracy: the AI locks the face from a large sharp crop instead of
+    // a small face in a wide full-body capture.
+    let faceCropBase64 = null;
+    if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+      try {
+        const crop = await GenderDetector.cropFaces(API.capturedFaceBase64);
+        if (crop) {
+          faceCropBase64 = crop.replace(/^data:image\/\w+;base64,/, '');
+          console.log('Face crop ready — sending as identity anchor');
+        }
+      } catch (e) {
+        console.warn('Face crop failed (non-critical):', e.message);
+      }
+    }
+
     if (navigator.onLine) {
       result = await API.generatePhoto(
         enhancedPrompt,
         scene.negative,
         updateMessage,
         sceneReferenceUrl,
-        { sceneName: scene.name || '', categoryName: scene.categoryName || '' }
+        { sceneName: scene.name || '', categoryName: scene.categoryName || '', faceCropBase64 }
       );
     } else {
       result = await API.generateOfflineFallback();

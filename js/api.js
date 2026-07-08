@@ -130,6 +130,7 @@ const API = {
       const result = await this.callWorker({
         step: 'generate',
         guestBase64,
+        faceCropBase64: sceneMeta.faceCropBase64 || null,
         sceneUrls,
         prompt,
         provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini'),

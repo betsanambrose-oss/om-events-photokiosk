@@ -147,6 +147,72 @@ const GenderDetector = {
     return prefix + prompt;
   },
 
+  // Crop a tight, high-detail close-up of the face(s) from the capture.
+  // This is the KEY face-accuracy technique: the AI gets a large sharp face
+  // to lock identity from, instead of a tiny face in a wide full-body shot.
+  // Returns a data URL of the cropped face region (single face = tight crop,
+  // multiple faces = crop bounding all faces), or null if no face detected.
+  async cropFaces(imageDataUrl) {
+    try {
+      if (!this.modelLoaded) await this.loadModels();
+      if (!this.modelLoaded || typeof faceapi === 'undefined' || !imageDataUrl) return null;
+
+      const img = await this._createImage(imageDataUrl);
+
+      const detections = await faceapi
+        .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.4 }));
+
+      if (!detections || detections.length === 0) {
+        console.log('cropFaces: no face detected — sending full image only');
+        return null;
+      }
+
+      // Compute a bounding box covering all detected faces
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      detections.forEach(d => {
+        const b = d.box || d.detection?.box;
+        if (!b) return;
+        minX = Math.min(minX, b.x);
+        minY = Math.min(minY, b.y);
+        maxX = Math.max(maxX, b.x + b.width);
+        maxY = Math.max(maxY, b.y + b.height);
+      });
+
+      if (!isFinite(minX)) return null;
+
+      // Expand the box generously to include hair, ears, neck, and some shoulders
+      // — this context helps the AI preserve the whole head/identity, not just the face
+      const boxW = maxX - minX;
+      const boxH = maxY - minY;
+      const padX = boxW * 0.6;   // 60% horizontal padding
+      const padTop = boxH * 0.7; // more on top for hair
+      const padBottom = boxH * 0.5;
+
+      let cropX = Math.max(0, minX - padX);
+      let cropY = Math.max(0, minY - padTop);
+      let cropW = Math.min(img.width - cropX, boxW + padX * 2);
+      let cropH = Math.min(img.height - cropY, boxH + padTop + padBottom);
+
+      // Draw the crop at full resolution (no downscale — maximum face detail)
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(cropW);
+      canvas.height = Math.round(cropH);
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, canvas.width, canvas.height);
+
+      // High quality JPEG — this is the identity anchor, keep it sharp
+      const cropDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      console.log(`cropFaces: ${detections.length} face(s), crop ${canvas.width}x${canvas.height}`);
+      return cropDataUrl;
+
+    } catch (err) {
+      console.warn('cropFaces error:', err.message);
+      return null;
+    }
+  },
+
   // Helper: HTMLImageElement from data URL
   _createImage(dataUrl) {
     return new Promise((resolve, reject) => {
