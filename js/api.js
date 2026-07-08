@@ -1,15 +1,13 @@
-// js/api.js — Flux Kontext with 2G network optimization
+// js/api.js — OpenAI GPT Image 2 direct (synchronous, no polling) with 2G network optimization
 
 const WORKER_URL = 'https://om-events-proxy.betsanambrose.workers.dev';
 
 const API = {
   capturedFaceBase64: null,
-  faceImageUrl: null,
   isGenerating: false,
 
   setCapturedFace(dataUrl) {
     this.capturedFaceBase64 = dataUrl;
-    this.faceImageUrl = null;
     const base64Part = dataUrl?.split(',')[1] || '';
     const sizeKB = Math.round((base64Part.length * 0.75) / 1024);
     console.log('Face set, size:', sizeKB + 'KB');
@@ -38,9 +36,9 @@ const API = {
 
       const img = new Image();
       img.onload = () => {
-        // Cap at 1280px max dimension — Kontext processes at 1024px internally
-        // Sending 1920px PNG wastes upload bandwidth with zero quality benefit
-        // and hits Cloudflare Worker body size limits
+        // Cap at 1280px max dimension — keeps upload small and fast
+        // GPT Image 2 processes inputs at high fidelity regardless
+        // and this avoids Cloudflare Worker body size limits
         const MAX_DIM = 1280;
         let w = img.width;
         let h = img.height;
@@ -58,7 +56,7 @@ const API = {
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
 
-        // JPEG 92% at 1280px = ~150-300KB — optimal for Kontext face reading
+        // JPEG 92% at 1280px = ~150-300KB — optimal for face reading
         // 2G: lower quality for faster upload
         const quality = is2G ? 0.78 : 0.92;
         const result = canvas.toDataURL('image/jpeg', quality);
@@ -73,49 +71,17 @@ const API = {
     });
   },
 
-  async pollKontext(statusUrl, responseUrl, onProgress) {
-    const pollInterval = typeof Network !== 'undefined' ? Network.getPollInterval() : 3000;
-    const maxPolls = typeof Network !== 'undefined' ? Network.getMaxPolls() : 60;
-    const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
-
-    for (let i = 0; i < maxPolls; i++) {
-      await new Promise(r => setTimeout(r, pollInterval));
-
-      const s = await this.callWorker({ step: 'kontext_status', statusUrl });
-      console.log(`Kontext poll ${i + 1}/${maxPolls}: ${s.status}`);
-
-      if (s.status === 'IN_QUEUE') {
-        const msg = isSlow
-          ? `Creating your scene — queue (${s.queuePosition ?? i})... Slow connection, please wait`
-          : `Creating your scene — queue (${s.queuePosition ?? i})...`;
-        onProgress?.(msg);
-      } else if (s.status === 'IN_PROGRESS') {
-        const msg = isSlow ? 'Creating your scene... Slow connection, almost there' : 'Creating your scene...';
-        onProgress?.(msg);
-      } else if (s.status === 'COMPLETED') {
-        const result = await this.callWorker({ step: 'kontext_result', responseUrl });
-        return result.resultUrl;
-      } else {
-        throw new Error('Generation failed with status: ' + s.status);
-      }
-    }
-    const minutes = Math.round((pollInterval * maxPolls) / 60000);
-    throw new Error(`Generation timed out after ${minutes} minutes. Please check your connection and try again.`);
-  },
-
   async generatePhoto(prompt, negativePrompt, onProgress, sceneReferenceUrl = null, sceneMeta = {}) {
     if (this.isGenerating) {
       return { success: false, error: 'Already running — please wait' };
     }
     this.isGenerating = true;
-    this._currentSceneName = sceneMeta.sceneName || '';
-    this._currentCategoryName = sceneMeta.categoryName || '';
 
     try {
-      // Detect network quality first
+      // Detect network quality for adaptive compression
       if (typeof Network !== 'undefined') {
         await Network.detect();
-        console.log('Network quality for generation:', Network.quality);
+        console.log('Network quality:', Network.quality);
       }
 
       const isSlow = typeof Network !== 'undefined' ? Network.isSlow() : false;
@@ -126,90 +92,67 @@ const API = {
         throw new Error('No photo captured. Please try again.');
       }
 
-      // Network-aware upload message
+      // STEP 2 — Compress guest photo for upload
       if (is2G) {
-        onProgress?.('Weak signal detected — compressing photo for upload...');
+        onProgress?.('Weak signal — compressing photo...');
       } else if (isSlow) {
-        onProgress?.('Uploading your photo... (slow connection)');
+        onProgress?.('Preparing your photo... (slow connection)');
       } else {
-        onProgress?.('Uploading your photo...');
+        onProgress?.('Preparing your photo...');
       }
 
-      // Compress/prepare for upload based on network
       const uploadDataUrl = await this.compressForUpload(this.capturedFaceBase64);
-      const isPng = uploadDataUrl.startsWith('data:image/png');
-      const base64 = uploadDataUrl.replace(/^data:image\/\w+;base64,/, '');
+      const guestBase64 = uploadDataUrl.replace(/^data:image\/\w+;base64,/, '');
+      if (!guestBase64) throw new Error('Photo capture failed — empty image. Please try again.');
 
-      if (!base64) throw new Error('Photo capture failed — empty image. Please try again.');
-
-      const estimatedKB = (base64.length * 0.75) / 1024;
+      const estimatedKB = (guestBase64.length * 0.75) / 1024;
       if (estimatedKB < 15) {
-        throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera connection and try again.`);
+        throw new Error(`Photo appears blank (${Math.round(estimatedKB)}KB). Check camera and try again.`);
       }
 
-      console.log('Uploading:', Math.round(estimatedKB) + 'KB', isPng ? '(PNG lossless)' : '(JPEG)', '| Network:', typeof Network !== 'undefined' ? Network.quality : 'unknown');
+      // STEP 3 — Build scene reference URLs array
+      const sceneUrls = [];
+      if (Array.isArray(sceneReferenceUrl)) {
+        sceneUrls.push(...sceneReferenceUrl);
+      } else if (sceneReferenceUrl) {
+        sceneUrls.push(sceneReferenceUrl);
+      }
+      if (sceneUrls.length > 0) console.log('Scene references:', sceneUrls);
 
-      const uploaded = await this.callWorker({ step: 'upload', base64, isPng });
-      if (!uploaded.fileUrl) throw new Error('Upload failed — no URL returned');
-      this.faceImageUrl = uploaded.fileUrl;
-      console.log('✅ Photo uploaded:', this.faceImageUrl);
+      // STEP 4 — Get active event info for R2 storage
+      const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
 
-      // STEP 2 — Submit Kontext
-      const submitMsg = isSlow ? 'Sending to AI... (slow connection, please wait)' : 'Creating your scene...';
-      onProgress?.(submitMsg);
+      // STEP 5 — Single synchronous call to OpenAI (no polling!)
+      const genMsg = isSlow ? 'Creating your scene... (slow connection, please wait)' : 'Creating your scene...';
+      onProgress?.(genMsg);
 
-      const job = await this.callWorker({
-        step: 'kontext_submit',
-        prompt: prompt,
-        faceImageUrl: this.faceImageUrl,
-        sceneReferenceUrl: sceneReferenceUrl || null
+      const result = await this.callWorker({
+        step: 'generate',
+        guestBase64,
+        sceneUrls,
+        prompt,
+        eventId: eventInfo?.id || 'unknown',
+        eventName: eventInfo?.name || 'OM Events',
+        photoId: 'ph_' + Date.now(),
+        sceneName: sceneMeta.sceneName || '',
+        categoryName: sceneMeta.categoryName || ''
       });
-      if (sceneReferenceUrl) {
-        console.log('Using scene reference:', sceneReferenceUrl);
-      }
-      if (!job.statusUrl) throw new Error('Scene generation job not created');
-      console.log('✅ Kontext job submitted:', job.requestId);
 
-      // STEP 3 — Poll until done
-      const pollMsg = isSlow ? 'AI is working... Slow connection — this may take a few minutes' : 'Creating your scene...';
-      onProgress?.(pollMsg);
-      const resultUrl = await this.pollKontext(job.statusUrl, job.responseUrl, onProgress);
-      if (!resultUrl) throw new Error('No result image returned');
-      console.log('✅ Final result:', resultUrl);
-
-      // STEP 4 — Save to R2 for permanent storage (7 days)
-      // Non-blocking — if R2 save fails, guest still gets their photo
-      // Only saves if an event is active — no event = no cloud storage
-      let finalImageUrl = resultUrl;
+      // Result is either R2 URL (saved) or base64 (no event / R2 failed)
+      let imageUrl;
       this._lastR2Url = null;
-      try {
-        const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
-
-        if (!eventInfo) {
-          console.log('⚠️ No active event — skipping R2 save');
-        } else {
-          onProgress?.('Saving your photo...');
-          const r2Result = await this.callWorker({
-            step: 'save_to_r2',
-            falUrl: resultUrl,
-            eventId: eventInfo.id,
-            eventName: eventInfo.name,
-            photoId: 'ph_' + Date.now(),
-            sceneName: this._currentSceneName || '',
-            categoryName: this._currentCategoryName || ''
-          });
-          if (r2Result.r2Url) {
-            finalImageUrl = r2Result.r2Url;
-            this._lastR2Url = r2Result.r2Url;
-            console.log('✅ Saved to R2:', r2Result.r2Url);
-          }
-        }
-      } catch (r2Err) {
-        // R2 save failed — use fal.ai URL as fallback, photo still works
-        console.warn('⚠️ R2 save failed (non-critical):', r2Err.message);
+      if (result.resultUrl) {
+        imageUrl = result.resultUrl;
+        this._lastR2Url = result.resultUrl;
+        console.log('✅ Result (R2):', result.resultUrl);
+      } else if (result.resultB64) {
+        imageUrl = 'data:image/jpeg;base64,' + result.resultB64;
+        console.log('✅ Result (base64, not stored)');
+      } else {
+        throw new Error('No result image returned');
       }
 
-      return { success: true, imageUrl: finalImageUrl, falUrl: resultUrl };
+      return { success: true, imageUrl };
 
     } catch (err) {
       console.error('❌ FAILED:', err.message);
