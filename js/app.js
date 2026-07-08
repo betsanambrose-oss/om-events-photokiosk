@@ -270,7 +270,7 @@ const App = {
     if (captureBtn) captureBtn.style.display = 'none';
     if (overlay) overlay.classList.add('active');
 
-    Camera.countdown(3,
+    Camera.countdown(5,
       (count) => {
         if (countNum) {
           countNum.textContent = count;

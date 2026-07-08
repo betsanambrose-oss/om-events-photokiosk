@@ -140,18 +140,24 @@ const API = {
         categoryName: sceneMeta.categoryName || ''
       });
 
-      // Result is either R2 URL (saved) or base64 (no event / R2 failed)
-      let imageUrl;
+      // Display uses base64 (already downloaded — instant, no network wait for large 2K image)
+      // Share/QR/download uses R2 URL (permanent, scannable)
+      let imageUrl;    // for on-screen display — prefer instant base64
       let shareUrl = null;  // R2 URL for QR — null if not saved to cloud
       this._lastR2Url = null;
+
+      if (result.resultB64) {
+        // Instant display — base64 is already in hand, no waiting for R2 to serve the 2K file
+        imageUrl = 'data:image/jpeg;base64,' + result.resultB64;
+      }
       if (result.resultUrl) {
-        imageUrl = result.resultUrl;
         shareUrl = result.resultUrl;
         this._lastR2Url = result.resultUrl;
-        console.log('✅ Result (R2):', result.resultUrl);
-      } else if (result.resultB64) {
-        imageUrl = 'data:image/jpeg;base64,' + result.resultB64;
-        console.log('✅ Result (base64, not stored)');
+        // If somehow no base64, fall back to R2 URL for display
+        if (!imageUrl) imageUrl = result.resultUrl;
+        console.log('✅ Result — display:base64, share:R2', result.resultUrl);
+      } else if (imageUrl) {
+        console.log('✅ Result (base64 only, not cloud-saved)');
       } else {
         throw new Error('No result image returned');
       }
