@@ -441,7 +441,6 @@ const Admin = {
     return res.json();
   },
 
-  // Show all photo links for an event
   async showEventPhotos(eventId) {
     const container = document.getElementById('photo-links-container');
     if (!container) return;
@@ -471,13 +470,13 @@ const Admin = {
           <td style="padding:8px;">
             <img src="${p.url}" style="width:80px;height:45px;object-fit:cover;border-radius:2px;border:1px solid var(--black-border);" loading="lazy"/>
           </td>
-          <td style="padding:8px;color:var(--white);font-size:11px;">${p.sceneName || '—'}</td>
-          <td style="padding:8px;color:var(--white-dim);font-size:11px;">${p.categoryName || '—'}</td>
-          <td style="padding:8px;color:var(--white-dim);font-size:10px;">${p.createdAt ? new Date(p.createdAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+          <td style="padding:8px;color:var(--white);font-size:11px;">${p.sceneName || '\u2014'}</td>
+          <td style="padding:8px;color:var(--white-dim);font-size:11px;">${p.categoryName || '\u2014'}</td>
+          <td style="padding:8px;color:var(--white-dim);font-size:10px;">${p.createdAt ? new Date(p.createdAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '\u2014'}</td>
           <td style="padding:8px;">
             <a href="${p.url}" target="_blank" download
                style="padding:4px 10px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;text-decoration:none;">
-              ⬇
+              \u2b07
             </a>
           </td>
         </tr>
@@ -491,7 +490,7 @@ const Admin = {
             </span>
             <button onclick="Admin.downloadPhotosZip('${resolvedId}')"
               style="padding:6px 14px;background:var(--gold);color:var(--black);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;border:none;font-weight:600;">
-              ⬇ Download All as ZIP
+              \u2b07 Download All as ZIP
             </button>
           </div>
           <div style="overflow-x:auto;">
@@ -516,7 +515,6 @@ const Admin = {
     }
   },
 
-  // Download all event photos as ZIP using JSZip
   async downloadPhotosZip(eventId) {
     const resolvedId = eventId === 'active'
       ? (typeof Tracker !== 'undefined' ? Tracker.getActiveEvent()?.id : null)
@@ -524,7 +522,6 @@ const Admin = {
 
     if (!resolvedId) { alert('No event found'); return; }
 
-    // Load JSZip dynamically
     if (typeof JSZip === 'undefined') {
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -542,19 +539,17 @@ const Admin = {
 
     try {
       showStatus('Preparing ZIP...');
-
       const data = await this._callWorker({ step: 'get_zip_links', eventId: resolvedId });
       if (!data.urls || data.urls.length === 0) {
         showStatus('No photos found for this event.');
         return;
       }
 
-      showStatus(`Downloading ${data.count} photos — please wait...`);
+      showStatus(`Downloading ${data.count} photos \u2014 please wait...`);
 
       const zip = new JSZip();
       const folder = zip.folder('om-events-photos');
 
-      // Fetch all photos and add to ZIP
       let done = 0;
       await Promise.all(data.urls.map(async ({ url, filename }) => {
         try {
@@ -570,9 +565,8 @@ const Admin = {
       }));
 
       showStatus('Creating ZIP file...');
-      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' }); // STORE = no recompression for jpegs
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
 
-      // Trigger download
       const events = typeof Tracker !== 'undefined' ? Tracker.getAllEvents() : [];
       const evt = events.find(e => e.id === resolvedId);
       const evtName = (evt?.name || 'event').replace(/\s+/g, '-');
@@ -588,7 +582,7 @@ const Admin = {
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 10000);
 
-      showStatus(`✓ ZIP downloaded — ${data.count} photos`);
+      showStatus(`\u2713 ZIP downloaded \u2014 ${data.count} photos`);
       setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 4000);
 
     } catch (err) {
@@ -807,7 +801,7 @@ const Admin = {
         result.textContent = '✓ Worker is connected and responding';
         result.style.color = 'var(--green)';
       } else if (data.error && data.error.includes('API key not configured')) {
-        result.textContent = '⚠ Worker alive but FAL_KEY missing';
+        result.textContent = '⚠ Worker alive but OPENAI_KEY missing';
         result.style.color = 'var(--gold)';
       } else {
         result.textContent = '✓ Worker responding: ' + JSON.stringify(data).substring(0, 60);
