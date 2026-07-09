@@ -135,6 +135,7 @@ const API = {
         step: 'generate',
         guestBase64,
         faceCropBase64: sceneMeta.faceCropBase64 || null,
+        isReferenceScene: sceneMeta.isReferenceScene || false,
         sceneUrls,
         prompt,
         provider: (typeof Settings !== 'undefined' ? Settings.getProvider() : 'gemini')

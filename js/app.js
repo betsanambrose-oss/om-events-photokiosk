@@ -415,18 +415,18 @@ const App = {
     // FACE-ACCURACY BOOST — crop a tight high-res face close-up to send as an
     // identity anchor alongside the full shot. This is the biggest lever for
     // face accuracy: the AI locks the face from a large sharp crop instead of
-    // a small face in a wide full-body capture.
-    // IMPORTANT: Skip the face crop for reference-image scenes (like the CM
-    // photo). Those prompts hand-reference exact image positions ("image_1 is
-    // the guest, image_2 is the scene") — adding a crop shifts the ordering and
-    // breaks them, causing a random face to be generated.
+    // Generate a tight, high-res face crop as the identity anchor.
+    // For STANDARD scenes: sent as an extra first image (face lock + full body).
+    // For REFERENCE scenes (CM photo): the crop REPLACES the wide guest photo as
+    //   PHOTO A, because a sharp close-up is a far stronger identity reference than
+    //   a small face in a wide full-body shot. This is the key CM-scene fix.
     let faceCropBase64 = null;
-    if (!sceneReferenceUrl && typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
+    if (typeof GenderDetector !== 'undefined' && API.capturedFaceBase64) {
       try {
         const crop = await GenderDetector.cropFaces(API.capturedFaceBase64);
         if (crop) {
           faceCropBase64 = crop.replace(/^data:image\/\w+;base64,/, '');
-          console.log('Face crop ready — sending as identity anchor');
+          console.log('Face crop ready — identity anchor');
         }
       } catch (e) {
         console.warn('Face crop failed (non-critical):', e.message);
@@ -439,7 +439,12 @@ const App = {
         scene.negative,
         updateMessage,
         sceneReferenceUrl,
-        { sceneName: scene.name || '', categoryName: scene.categoryName || '', faceCropBase64 }
+        {
+          sceneName: scene.name || '',
+          categoryName: scene.categoryName || '',
+          faceCropBase64,
+          isReferenceScene: !!sceneReferenceUrl
+        }
       );
     } else {
       result = await API.generateOfflineFallback();
