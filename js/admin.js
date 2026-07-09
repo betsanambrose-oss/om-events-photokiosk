@@ -957,6 +957,48 @@ const Admin = {
   exitToKiosk() {
     this.stopCameraPreview();
     window.location.href = '../index.html';
+  },
+
+  exitKiosk() {
+    // Best-effort close of the whole browser/kiosk.
+    // window.close() only works reliably on script-opened windows; a tab
+    // launched from a shortcut usually can't be closed by script. So we try
+    // several methods, then show a clear fallback instruction if none work.
+    this.stopCameraPreview();
+
+    const confirmClose = confirm('Close the kiosk and exit? This ends the session.');
+    if (!confirmClose) return;
+
+    // Try 1: standard close
+    try { window.close(); } catch (e) {}
+
+    // Try 2: close a self-referenced window (works in some launch modes)
+    try { window.open('', '_self'); window.close(); } catch (e) {}
+
+    // Try 3: navigate to about:blank as a last visual reset
+    // If the window is still here after a moment, show manual instructions.
+    setTimeout(() => {
+      document.body.innerHTML = `
+        <div style="position:fixed;inset:0;background:#080808;color:#fff;
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          font-family:Montserrat,sans-serif;text-align:center;padding:40px;z-index:99999;">
+          <img src="../assets/logo.png" alt="GAME ON" style="height:90px;margin-bottom:24px;"/>
+          <div style="font-size:22px;letter-spacing:2px;margin-bottom:16px;color:#F6020C;font-weight:600;">
+            KIOSK SESSION ENDED
+          </div>
+          <div style="font-size:13px;letter-spacing:1px;color:rgba(255,255,255,0.6);line-height:2;max-width:420px;">
+            The browser could not be closed automatically.<br/>
+            To fully close the kiosk, connect a keyboard and press
+            <b style="color:#fff;">Alt + F4</b>,<br/>or hold the device power button to shut down.
+          </div>
+          <button onclick="window.location.href='../index.html'"
+            style="margin-top:32px;padding:14px 32px;background:transparent;
+            border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:40px;
+            font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;">
+            ← Return to Kiosk
+          </button>
+        </div>`;
+    }, 300);
   }
 };
 
