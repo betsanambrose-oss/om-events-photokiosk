@@ -23,6 +23,7 @@ const Camera = {
     // More capture pixels = more real face detail for AI identity preservation
     // Falls back gracefully to lower res if 4K unsupported
     if (deviceId) {
+      strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 7680 }, height: { ideal: 4320 }, aspectRatio: { ideal: 1.7778 } }, audio: false });
       strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } }, audio: false });
       strategies.push({ video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
       strategies.push({ video: { deviceId: { exact: deviceId } }, audio: false });
@@ -31,6 +32,10 @@ const Camera = {
 
     // Front camera strategies — 4K first, then fall back
     // 16:9 landscape — matches AI output aspect ratio
+    strategies.push({
+      video: { facingMode: 'user', width: { ideal: 7680 }, height: { ideal: 4320 }, aspectRatio: { ideal: 1.7778 } },
+      audio: false
+    });
     strategies.push({
       video: { facingMode: 'user', width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } },
       audio: false
@@ -44,6 +49,10 @@ const Camera = {
       audio: false
     });
     // Any camera — 4K first, then 16:9 fallbacks
+    strategies.push({
+      video: { width: { ideal: 7680 }, height: { ideal: 4320 }, aspectRatio: { ideal: 1.7778 } },
+      audio: false
+    });
     strategies.push({
       video: { width: { ideal: 3840 }, height: { ideal: 2160 }, aspectRatio: { ideal: 1.7778 } },
       audio: false
@@ -101,7 +110,33 @@ const Camera = {
           this.videoEl.style.transform = this.isFrontFacing ? 'scaleX(-1)' : 'scaleX(1)';
         }
 
-        console.log('Camera started:', track?.label || 'unknown', '| front-facing:', this.isFrontFacing, '| res:', settings.width + 'x' + settings.height);
+        console.log('Camera started:', track?.label || 'unknown', '| front-facing:', this.isFrontFacing, '| video res:', settings.width + 'x' + settings.height);
+
+        // Set up ImageCapture to grab FULL PHOTO resolution stills (the camera's
+        // real 8MP sensor), not the lower video-stream resolution. This is the key
+        // to getting enough face detail when the guest stands back from the camera.
+        this.imageCapture = null;
+        this.photoMaxWidth = settings.width || 0;
+        try {
+          if (typeof ImageCapture !== 'undefined' && track) {
+            this.imageCapture = new ImageCapture(track);
+            // Query the camera's photo capabilities to know its true max still size
+            try {
+              const caps = await this.imageCapture.getPhotoCapabilities();
+              const maxW = caps?.imageWidth?.max;
+              if (maxW) {
+                this.photoMaxWidth = maxW;
+                console.log('ImageCapture available — max photo width:', maxW, '(video was', settings.width + ')');
+              }
+            } catch (capErr) {
+              console.log('ImageCapture ready (photo capabilities unavailable)');
+            }
+          }
+        } catch (icErr) {
+          console.warn('ImageCapture not available, will use video-frame capture:', icErr.message);
+          this.imageCapture = null;
+        }
+
         await this.refreshDevices();
         return true;
 
@@ -148,6 +183,69 @@ const Camera = {
     if (this.videoEl) {
       this.videoEl.srcObject = null;
     }
+  },
+
+  // Capture at FULL PHOTO resolution using ImageCapture.takePhoto().
+  // This grabs the camera's real sensor still (up to 8MP on the eMeet S800),
+  // which is much higher than the video-stream frame. Falls back to the
+  // standard video-frame capture() if ImageCapture isn't available or fails.
+  // Returns a PNG/JPEG data URL.
+  async captureHighRes() {
+    if (this.imageCapture) {
+      try {
+        // Grab the highest-resolution still the camera can produce
+        const blob = await this.imageCapture.takePhoto();
+        const dataUrl = await this._blobToDataUrl(blob);
+        const img = await this._loadImage(dataUrl);
+
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+
+        if (w && h && w >= 10 && h >= 10) {
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+
+          // takePhoto() is not mirrored by CSS, so mirror front-facing here to
+          // match the natural selfie view the guest saw.
+          if (this.isFrontFacing) {
+            ctx.scale(-1, 1);
+            ctx.translate(-w, 0);
+          }
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const out = canvas.toDataURL('image/jpeg', 0.96);
+          const kb = Math.round(((out.split(',')[1] || '').length * 0.75) / 1024);
+          console.log('📸 High-res photo capture:', w + 'x' + h, '| ~' + kb + 'KB (full sensor)');
+          return out;
+        }
+        console.warn('takePhoto returned invalid dimensions, falling back');
+      } catch (err) {
+        console.warn('takePhoto failed, falling back to video frame:', err.message);
+      }
+    }
+    // Fallback — standard video-frame capture
+    return this.capture();
+  },
+
+  _blobToDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = () => reject(new Error('blob read failed'));
+      r.readAsDataURL(blob);
+    });
+  },
+
+  _loadImage(dataUrl) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const t = setTimeout(() => reject(new Error('image load timeout')), 5000);
+      img.onload = () => { clearTimeout(t); resolve(img); };
+      img.onerror = () => { clearTimeout(t); reject(new Error('image load failed')); };
+      img.src = dataUrl;
+    });
   },
 
   // Capture current frame — handles both front and external cameras correctly
@@ -208,12 +306,13 @@ const Camera = {
     let count = seconds;
     onTick?.(count);
 
-    this.countdownInterval = setInterval(() => {
+    this.countdownInterval = setInterval(async () => {
       count--;
       if (count <= 0) {
         clearInterval(this.countdownInterval);
         this.countdownInterval = null;
-        const imageData = this.capture();
+        // Use full-resolution photo capture for maximum face detail
+        const imageData = await this.captureHighRes();
         onCapture?.(imageData);
       } else {
         onTick?.(count);
