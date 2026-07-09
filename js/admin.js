@@ -983,16 +983,16 @@ const Admin = {
           display:flex;flex-direction:column;align-items:center;justify-content:center;
           font-family:Montserrat,sans-serif;text-align:center;padding:40px;z-index:99999;">
           <img src="../assets/logo.png" alt="GAME ON" style="height:90px;margin-bottom:24px;"/>
-          <div style="font-size:22px;letter-spacing:2px;margin-bottom:16px;color:#F6020C;font-weight:600;">
+          <div style="font-size:22px;letter-spacing:2px;margin-bottom:20px;color:#F6020C;font-weight:600;">
             KIOSK SESSION ENDED
           </div>
-          <div style="font-size:13px;letter-spacing:1px;color:rgba(255,255,255,0.6);line-height:2;max-width:420px;">
-            The browser could not be closed automatically.<br/>
-            To fully close the kiosk, connect a keyboard and press
-            <b style="color:#fff;">Alt + F4</b>,<br/>or hold the device power button to shut down.
+          <div style="font-size:13px;letter-spacing:0.5px;color:rgba(255,255,255,0.75);line-height:2.2;max-width:460px;">
+            To fully shut down the kiosk, use one of these:<br/><br/>
+            <b style="color:#fff;">Press the device power button</b> — to sleep or shut down<br/>
+            <b style="color:#fff;">or connect a keyboard</b> and press <b style="color:#fff;">Alt + F4</b>
           </div>
           <button onclick="window.location.href='../index.html'"
-            style="margin-top:32px;padding:14px 32px;background:transparent;
+            style="margin-top:36px;padding:14px 32px;background:transparent;
             border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:40px;
             font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;">
             ← Return to Kiosk
