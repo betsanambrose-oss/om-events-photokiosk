@@ -5,6 +5,287 @@
 const TEMPLATES = {
   categories: [
     {
+      id: 'trending',
+      name: 'Trending Now',
+      icon: '🔥',
+      gradient: 'linear-gradient(135deg, #b3000c, #ff6a00, #1a0000)',
+      scenes: [
+        {
+          id: 'tr-podium',
+          name: 'Racing Podium',
+          gradient: 'linear-gradient(135deg, #b3000c, #2b0000)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a champion racing driver celebrating on the podium. For [GENDER], replace booth clothing with a professional racing suit — a fire-resistant racing overall in bold red and white with generic sponsor-style patches (no real brand logos or team names).
+
+CRITICAL: Helmets are OFF and held under an arm or set aside — heads bare, real faces fully visible, lit and sharp. Never cover a face with a helmet or visor.
+
+ACTION: They stand on the podium spraying champagne, one hand raised holding a gleaming trophy, mouths open in celebration, spray arcing through the air — faces turned toward the camera, fully visible and sharp.
+
+SCENE: A race-track podium, huge cheering crowd blurred below, confetti and champagne spray catching the sunlight, race cars visible on the track behind, bright sunny day.
+
+STYLE: Motorsport photography, dynamic celebration framing, champagne droplets frozen in the light, sharp faces, vivid saturated grade.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'tr-festival',
+          name: 'Music Festival',
+          gradient: 'linear-gradient(135deg, #6a00b3, #00b3a4)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the headline act on stage at a huge music festival. For [GENDER], replace booth clothing with bold stage wear — a statement jacket, layered festival styling, sunglasses pushed up on the head (never covering the eyes).
+
+ACTION: They stand at the front of the stage with arms thrown up, microphone in hand, heads back mid-shout of joy — but faces turned toward the camera, fully visible, lit and sharp.
+
+SCENE: A colossal night festival crowd stretching into the darkness, a sea of raised hands and phone lights, laser beams cutting through haze, towering LED screens, pyrotechnic jets, confetti raining down.
+
+STYLE: Live-music photography, wide lens from the stage, dramatic coloured stage lighting on the faces, haze and lasers, sharp faces with blurred crowd.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'tr-cover',
+          name: 'Magazine Cover',
+          gradient: 'linear-gradient(135deg, #1a1a1a, #d4a017)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is on the cover of a high-fashion magazine. For [GENDER], replace booth clothing with striking editorial fashion — a bold tailored outfit with dramatic silhouette and texture, high-fashion styling.
+
+ACTION: They pose with poise and attitude, strong confident expressions, chins level, looking directly into the lens — faces large in the frame, fully visible, immaculately lit and sharp.
+
+SCENE: A clean studio backdrop in a rich saturated colour, dramatic fashion lighting with a strong key light and controlled shadows, subtle haze.
+
+STYLE: High-fashion editorial photography, medium-format look, crisp detail, flawless studio lighting that still preserves real skin texture — never airbrushed or plastic.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'tr-esports',
+          name: 'Esports Champions',
+          gradient: 'linear-gradient(135deg, #0a0a2e, #00b3a4)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is an esports champion lifting the trophy in a packed arena. For [GENDER], replace booth clothing with a professional esports team jersey — a sleek black and neon-accented jersey (no real brand or team logos).
+
+ACTION: They stand on the arena stage holding a large glowing trophy aloft together, fists raised, roaring in celebration — faces turned toward the camera, fully visible, lit and sharp.
+
+SCENE: A darkened esports arena, an enormous crowd blurred in the stands with phone lights glittering, gigantic LED screens glowing behind, laser beams and haze, confetti falling through neon light.
+
+STYLE: Esports event photography, dramatic neon stage lighting on the faces, cyan and magenta accents, sharp faces with blurred arena behind.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'tr-rockstar',
+          name: 'Rockstar Concert',
+          gradient: 'linear-gradient(135deg, #b3000c, #ff6a00)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a rockstar mid-performance in a packed stadium. For [GENDER], replace booth clothing with rock stage wear — a leather jacket over a band-style tee, ripped jeans, boots, layered chains.
+
+ACTION: One person leans back mid-guitar-riff, another grips a microphone stand roaring into it — but every face is turned toward the camera, fully visible, lit and sharp. Energy in the bodies, clarity in the faces.
+
+SCENE: A stadium stage at night, towering amplifier stacks, pyrotechnic flames jetting up behind them, a vast crowd blurred in the darkness with countless raised hands, spotlights raking through smoke.
+
+STYLE: Live rock photography, dramatic stage lighting and pyro glow on the faces, high contrast, sharp faces with motion and haze around them.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'tr-century',
+          name: 'Cricket Century',
+          gradient: 'linear-gradient(135deg, #0a5c2e, #003318)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a cricketer celebrating a match-winning century. For [GENDER], replace booth clothing with cricket whites or a coloured one-day kit — plain jersey and trousers, pads and gloves, no brand logos or national crests.
+
+CRITICAL: Helmets are OFF and held in a hand or raised — heads bare, real faces fully visible, lit and sharp. Never cover a face with a helmet or grille.
+
+ACTION: One person raises their bat and helmet to the sky in the classic century salute, head back in celebration but face turned toward the camera and fully visible. Any others run in to celebrate, faces visible and toward the camera.
+
+SCENE: A packed floodlit cricket stadium at night, a roaring crowd blurred in the stands, the pitch and stumps behind, confetti and camera flashes sparkling through the stands.
+
+STYLE: Cricket sports photography, telephoto compression, floodlight glow, sharp faces with blurred jubilant crowd.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+{
+          id: 'tn-withcm',
+          name: 'Photo with CM',
+          gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
+          referenceImage: 'assets/references/tn-withcm.png',
+          prompt: `You are given TWO photos. PHOTO A shows the real guest(s) captured just now at a photo booth — this may be one person or several people. PHOTO B shows Tamil Nadu Chief Minister Vijay standing in his official government office.
+
+SCENE TO CREATE: A warm, natural greeting moment where the guest(s) from PHOTO A are meeting and being greeted by the Chief Minister inside his office from PHOTO B — as if they have come to see him and are sharing a friendly, respectful moment together. It should look like a genuine candid photograph taken during that meeting, not a stiff line-up.
+
+USE THE GUEST'S REAL FACE — CRITICAL: Every guest you place MUST be the exact same real human(s) from PHOTO A. Copy each of their real faces precisely — same facial structure, eyes, nose, mouth, jaw, skin tone, skin texture, hair, glasses if any, gender and body build. Do NOT invent, replace, beautify or substitute a different person. Keep the same number of guests as in PHOTO A. Each must be recognisably the SAME person — a real photograph of THEM.
+
+THE GREETING: Show a natural interaction — the guest(s) and the Chief Minister warmly greeting each other. This can be a handshake, the CM offering a welcoming gesture, or the guest(s) presenting a pink rose bouquet and a sweet box to him. Everyone looks happy and at ease, mostly facing the camera as if posing together during the meeting.
+
+PRESERVE THE CHIEF MINISTER EXACTLY: Keep Vijay's face, skin tone, hair, beard, white shirt and body pixel-identical to PHOTO B. Do not alter him.
+
+PRESERVE THE OFFICE EXACTLY from PHOTO B: Tamil Nadu government emblem on the wall, Indian tricolour flag, dark wood-panelled walls, Chief Minister nameplate on the desk, framed portrait — keep everything identical.
+
+Warm office lighting, natural blending, believable shadows and contact, no halo, no cut-out edges, ultra photorealistic. The guests' real faces are the single most important element — preserve them above all.`
+        }
+      ]
+    },
+    {
+      id: 'kollywood',
+      name: 'Kollywood',
+      icon: '🎥',
+      gradient: 'linear-gradient(135deg, #7a1010, #d4a017, #2b0000)',
+      scenes: [
+        {
+          id: 'kw-massentry',
+          name: 'Mass Hero Entry',
+          gradient: 'linear-gradient(135deg, #b31217, #2b0000)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the lead hero of a Tamil action film, making a mass entry. For [GENDER], replace booth clothing with sharp Tamil-cinema hero styling — crisp shirt or kurta with a jacket, dark sunglasses pushed up on the head (never covering the eyes — eyes and face must be fully visible), stylish boots.
+
+ACTION: They walk toward the camera in a confident slow-motion stride, coat and clothing billowing in the wind, chin up, intense heroic expression — faces sharp, fully visible and directly toward the camera. If several people, they walk side by side in a hero line-up.
+
+SCENE: Dramatic backlight flaring behind them, dust and embers drifting through the air, a burning-orange sky, silhouetted crowd or vehicles far behind, lens flare.
+
+STYLE: Tamil-cinema action still, anamorphic wide lens, heavy backlight and rim light, cinematic teal-and-orange grade, sharp faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'kw-retroposter',
+          name: 'Retro Tamil Poster',
+          gradient: 'linear-gradient(135deg, #d4a017, #6b3b00)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the star of a vintage Tamil film poster from the golden era. For [GENDER], replace booth clothing with retro Tamil-cinema styling — classic shirt or saree, period hairstyle cues kept subtle so the real face and hair are still recognisable.
+
+ACTION: They pose in classic film-poster fashion — bold, confident, looking straight out at the viewer with dramatic expression. Faces large in the frame, fully visible and sharp.
+
+SCENE: A hand-painted retro film-poster aesthetic — rich saturated colours, painterly background of dramatic skies and stylised scenery, ornate decorative borders. IMPORTANT: the painted look applies ONLY to the background and borders — the people's faces must remain fully photographic and real, never painted or illustrated.
+
+STYLE: Vintage Indian film-poster composition with photographic faces composited in, warm saturated palette, film grain.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'kw-action',
+          name: 'Action Sequence',
+          gradient: 'linear-gradient(135deg, #8a2b06, #2b0a00)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the hero in the middle of a Tamil-cinema action sequence. For [GENDER], replace booth clothing with rugged action-hero wear — a torn or dust-streaked shirt, sturdy trousers and boots, a little grime and sweat for realism (but never obscuring the face).
+
+ACTION: They stride or run toward the camera as an explosion erupts behind them — determined, fearless expression, faces turned toward the camera, fully visible, lit and razor-sharp. Never look back at the blast.
+
+SCENE: A huge fireball and debris blooming behind them, sparks and dust in the air, a wrecked street or industrial yard, low camera angle making them tower.
+
+STYLE: Blockbuster action still, anamorphic lens, warm firelight on the faces, high contrast, sharp on subjects with debris motion behind.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'kw-village',
+          name: 'Village Blockbuster',
+          gradient: 'linear-gradient(135deg, #6b5000, #1a2600)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the hero of a rural Tamil blockbuster. For [GENDER], replace booth clothing with rustic Tamil styling — a veshti or lungi with a shirt, or a cotton saree, simple and authentic, a towel over the shoulder.
+
+ACTION: They stand tall and heroic in the frame, chins raised, powerful and rooted expressions, facing the camera directly — every face fully visible and sharp.
+
+SCENE: A dramatic Tamil Nadu village at golden hour — vast paddy fields, coconut palms, a temple gopuram far behind, an enormous sky with towering clouds lit orange and gold, dust drifting in the low sun.
+
+STYLE: Tamil-cinema village-drama still, wide anamorphic lens, warm golden-hour light, low camera angle, cinematic grade, sharp faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'kw-poster',
+          name: 'Modern Film Poster',
+          gradient: 'linear-gradient(135deg, #1a1a2e, #7a1010)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is the star on a modern Tamil film poster. For [GENDER], replace booth clothing with contemporary stylish hero or heroine wear — a sharp jacket and shirt, or an elegant modern outfit.
+
+ACTION: They pose as a poster ensemble — the lead front and centre, any others arranged around them, all looking directly at the camera with intense, confident expressions. Faces large, fully visible and sharp.
+
+SCENE: A moody cinematic poster background — deep shadows, a stylised city skyline or abstract dramatic backdrop, strong rim lighting outlining each person, atmospheric haze and light beams.
+
+STYLE: Modern film-poster composition, dramatic key light on the faces, teal-and-orange cinematic grade, high production value.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        }
+      ]
+    },
+    {
       id: 'hollywood',
       name: 'Hollywood',
       icon: '🎬',
@@ -123,6 +404,410 @@ ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything
       ]
     },
     {
+      id: 'football',
+      name: 'Football Season',
+      icon: '⚽',
+      gradient: 'linear-gradient(135deg, #00305c, #0a7d3f, #001a33)',
+      scenes: [
+        {
+          id: 'fb-goal',
+          name: 'Striking the Goal',
+          gradient: 'linear-gradient(135deg, #0a7d3f, #00301a)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a star footballer in a packed stadium at the decisive moment of the match. For [GENDER], replace booth clothing with a professional football kit — plain team jersey with shorts, long socks and boots, no brand logos or club crests.
+
+ACTION: One person is striking the ball toward goal — planted foot, striking leg extended, ball just leaving the boot with a spray of grass, body leaning into the shot — but their head is turned toward the camera and their face is fully visible and sharp. Any other people are teammates sprinting in support behind, faces visible and turned toward the camera.
+
+SCENE: Floodlit night stadium, deep green pitch with mowing stripes, goal and net ahead, tens of thousands of blurred fans in the stands, flags and colour in the crowd, stadium lights flaring. Motion is in the ball, grass and background — never on the faces.
+
+STYLE: Sports photography, Canon 400mm f/2.8, fast shutter freezing the action, shallow depth of field with sharp subjects and blurred crowd.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'fb-trophy',
+          name: 'Trophy Lift',
+          gradient: 'linear-gradient(135deg, #c9a227, #4a3800)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a champion footballer lifting the trophy after winning the final. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks and boots, no brand logos or club crests.
+
+ACTION: The group lifts a large golden trophy together above their heads, mouths open mid-roar of celebration, arms raised — all faces clearly visible, lit and turned toward the camera. If only one person, they hold the trophy aloft alone.
+
+SCENE: Packed stadium at night under floodlights, gold and silver confetti and streamers raining down through the light beams, a wall of blurred cheering fans, camera flashes sparkling in the crowd, pitch beneath them.
+
+STYLE: Sports photography, wide-angle hero shot from slightly below, confetti caught in the air, warm floodlight glow.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'fb-slide',
+          name: 'Knee-Slide Celebration',
+          gradient: 'linear-gradient(135deg, #0a7d3f, #00251a)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a footballer celebrating a goal with the classic knee-slide. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks, boots, no logos or crests.
+
+ACTION: One person slides on their knees across the grass with arms spread wide and head thrown up in joy — but the face is turned toward the camera, fully visible and sharp. Any others run behind with arms raised, faces visible and toward the camera.
+
+SCENE: Grass spraying up from the slide, floodlit stadium at night, the crowd behind erupting in a blur of colour, corner flag, deep green pitch.
+
+STYLE: Sports photography, low camera angle at pitch level, fast shutter freezing the grass spray, blurred ecstatic crowd behind.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'fb-lineup',
+          name: 'Team Line-Up',
+          gradient: 'linear-gradient(135deg, #00305c, #001428)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a national-team footballer standing for the pre-match line-up. For [GENDER], replace booth clothing with a professional football kit — plain national-style jersey, shorts, socks, boots, no logos or crests.
+
+ACTION: They stand shoulder to shoulder in a proud line, arms linked, chins up, facing the camera directly — every face fully visible, lit and sharp. Serious, focused, ready expressions.
+
+SCENE: On the pitch before kick-off in a floodlit stadium, packed stands blurred behind, floodlights blazing, deep green grass, a hint of the tunnel and pitchside behind them.
+
+STYLE: Sports photography, straight-on team-photo framing, crisp detail on faces, cinematic floodlight.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'fb-stripes',
+          name: 'Blue & White Stripes',
+          gradient: 'linear-gradient(135deg, #75aadb, #0d3b66)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a footballer in a sky-blue and white vertically striped kit — the classic South American look — celebrating on the pitch. For [GENDER], replace booth clothing with this striped jersey, black or white shorts, socks and boots. Plain kit only — no brand logos, no club or federation crests.
+
+ACTION: They celebrate together, arms in the air, mid-cheer, some pointing to the sky — every face clearly visible, well-lit and turned toward the camera.
+
+SCENE: Floodlit stadium at night, a sea of blue-and-white fans blurred in the stands, flags waving, confetti in the air, green pitch underfoot.
+
+STYLE: Sports photography, energetic celebration framing, sharp on the subjects, crowd softly blurred.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'fb-penalty',
+          name: 'Penalty Shootout',
+          gradient: 'linear-gradient(135deg, #1a1a2e, #0a2540)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a footballer at the tensest moment of a penalty shootout. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks, boots, no logos or crests.
+
+ACTION: One person stands over the ball at the penalty spot, hands on hips, breathing hard, head up and face turned toward the camera — fully visible, lit and sharp. Any others stand linked arm-in-arm on the halfway line behind, faces visible and turned toward the camera, tense and watching.
+
+SCENE: Night stadium under harsh floodlights, the ball on the spot, goal and net ahead, an enormous blurred crowd holding its breath, long shadows stretching across the grass.
+
+STYLE: Sports photography, dramatic tension, cinematic floodlight, shallow depth of field, sharp faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        }
+      ]
+    },
+    {
+      id: 'superhero',
+      name: 'Superheroes',
+      icon: '🦸',
+      gradient: 'linear-gradient(135deg, #b3000c, #d4a017, #1a0000)',
+      scenes: [
+        {
+          id: 'sh-armor',
+          name: 'Armored Tech Hero',
+          gradient: 'linear-gradient(135deg, #b3000c, #d4a017)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is an armoured high-tech superhero. For [GENDER], replace booth clothing with a sleek original powered exo-suit in deep red and gold — segmented armour plating, a glowing circular power core in the chest, glowing thrusters in the palms. Original design only — do not copy any existing branded or trademarked character or costume.
+
+CRITICAL: The helmet is OFF or retracted — the head is bare and the real face is fully visible, lit and sharp. Never cover the face with a mask, visor or helmet.
+
+ACTION: They hover in mid-air above the city, one palm angled down with thrusters glowing, the other raised, bodies powerful and poised — faces turned toward the camera, fully visible and sharp.
+
+SCENE: High above a glittering city at dusk, skyscrapers below, clouds around them, blue-white thruster glow lighting their armour from beneath, warm sunset on the horizon.
+
+STYLE: Blockbuster superhero still, cinematic lighting, glowing tech accents, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'sh-landing',
+          name: 'Hero Landing',
+          gradient: 'linear-gradient(135deg, #0a2540, #b3000c)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a caped superhero at the moment of a dramatic landing. For [GENDER], replace booth clothing with an original heroic suit — a fitted armoured bodysuit with a flowing cape, a bold emblem of an original abstract design on the chest. Original design only — never copy an existing branded or trademarked hero costume.
+
+CRITICAL: No mask, no cowl, no helmet — the head is bare and the real face is fully visible, well-lit and sharp.
+
+ACTION: They land in the classic hero pose — one knee and one fist driven into the ground, cape billowing, cracks radiating outward through the asphalt, dust and debris bursting up around them — heads raised and faces turned toward the camera, fully visible and sharp.
+
+SCENE: A city street at night, cracked road beneath them, a shockwave of dust, neon signs and streetlights glowing, skyscrapers rising behind.
+
+STYLE: Blockbuster superhero still, low dramatic camera angle, rim lighting, dust and debris frozen in air, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'sh-shield',
+          name: 'Shield Defender',
+          gradient: 'linear-gradient(135deg, #0a4d8c, #b3000c)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a battle-hardened defender hero. For [GENDER], replace booth clothing with an original tactical hero suit — reinforced armour in blue and red with metallic accents, utility straps. One person carries a large round metal shield of an original design (concentric rings and a central star motif is acceptable only as a generic shape — no existing branded emblem or trademarked design).
+
+CRITICAL: No mask or helmet — the head is bare and the real face is fully visible, well-lit and sharp.
+
+ACTION: They stand braced in a defensive stance, the shield raised against an unseen force, debris flying past them, jaws set, faces turned toward the camera and fully visible.
+
+SCENE: A ruined city street mid-battle, dust and sparks in the air, smoke, rubble, dramatic shafts of light breaking through.
+
+STYLE: Blockbuster superhero still, gritty cinematic grade, hard rim light, debris frozen mid-air, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'sh-cosmic',
+          name: 'Cosmic Warrior',
+          gradient: 'linear-gradient(135deg, #4a00b3, #00b3a4)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a cosmic superhero channelling raw energy. For [GENDER], replace booth clothing with an original cosmic hero suit — a sleek dark bodysuit threaded with glowing energy lines in violet and cyan. Original design only.
+
+CRITICAL: No mask or helmet — heads bare, real faces fully visible, lit by the energy glow, and sharp.
+
+ACTION: They float in space with arms outstretched, brilliant energy surging from their hands and swirling around their bodies, hair and clothing lifted by the power — faces turned toward the camera, fully visible and sharp, expressions powerful and calm.
+
+SCENE: Deep space — a vast nebula in violet, blue and gold, distant stars, a glowing planet far below, energy particles streaming past.
+
+STYLE: Blockbuster cosmic superhero still, dramatic coloured rim light from the energy, glowing accents, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'sh-vigilante',
+          name: 'Night Vigilante',
+          gradient: 'linear-gradient(135deg, #12121f, #2b2b4a)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a brooding night vigilante hero. For [GENDER], replace booth clothing with an original dark tactical suit — matte black armoured plating, a long dark coat or cape, utility belt. Original design only — never copy an existing branded hero costume.
+
+CRITICAL: No mask, no cowl, no helmet — heads bare and the real faces fully visible, lit and sharp against the night.
+
+ACTION: They stand on a rooftop ledge overlooking the city, coats and capes snapping in the wind, one foot forward, watchful and resolute — faces turned toward the camera, fully visible and sharp.
+
+SCENE: A rain-slicked rooftop at night high above a neon city, glowing signage and traffic far below, mist and light rain drifting, moody blue moonlight with warm neon spill lighting the faces.
+
+STYLE: Dark cinematic superhero still, moody blue-and-neon grade, strong rim light, rain caught in the light, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        },
+        {
+          id: 'sh-team',
+          name: 'Hero Team-Up',
+          gradient: 'linear-gradient(135deg, #b3000c, #0a4d8c, #d4a017)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
+
+GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
+
+FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
+
+TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
+
+Every person from the photo is a member of a superhero team, assembled together. For [GENDER], give each person a DIFFERENT original hero suit so the team looks varied — one armoured and metallic, one caped, one with glowing energy accents, one in dark tactical gear. All original designs — never copy any existing branded or trademarked hero costume.
+
+CRITICAL: No masks, no helmets, no visors — every head is bare and every real face is fully visible, well-lit and sharp. Keep the same number of people as in the photo.
+
+ACTION: The team stands together in a powerful line-up, feet planted, capes and coats billowing, ready for battle — all faces turned toward the camera, fully visible and sharp, confident and resolute.
+
+SCENE: A city skyline at dusk behind them, smoke and light beams rising, dramatic clouds, debris drifting, a shaft of golden light breaking through.
+
+STYLE: Epic blockbuster team hero shot, wide anamorphic lens, low heroic camera angle, dramatic rim lighting, sharp photorealistic faces.
+
+ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
+        }
+      ]
+    },
+    {
+      id: 'sports',
+      name: 'Sports',
+      icon: '🏆',
+      gradient: 'linear-gradient(135deg, #003300, #006600, #009900)',
+      scenes: [
+        {
+          id: 'sp-cricket',
+          name: 'Cricket World Cup',
+          gradient: 'linear-gradient(135deg, #003300, #005500)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo as Indian cricket World Cup champions celebrating on the field. For [GENDER], replace booth outfit with the Indian cricket team uniform — current-style BCCI blue jersey, white trousers, spiked cricket shoes. One subject holds the ICC Cricket World Cup trophy aloft. All subjects celebrate together, full body visible.
+
+Packed international cricket stadium at night under floodlights — lush green outfield, blue and orange confetti and metallic streamers raining from the floodlight towers, 100,000 Indian fans waving Tricolor flags in the stands, LED advertising hoardings flashing congratulations around the boundary. Powerful stadium floodlights overhead create multiple hard light sources with complex overlapping shadows on the green grass below subjects. Confetti in the air catches the floodlight. Trophy surface reflects stadium lights as bright metallic highlights.
+
+Canon 1DX Mark III 300mm f/2.8, ultra photorealistic, professional cricket sports photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+        {
+          id: 'sp-ipl',
+          name: 'IPL Champion',
+          gradient: 'linear-gradient(135deg, #1a0033, #00004d)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo as IPL cricket superstars celebrating a championship victory. For [GENDER], replace booth outfit with an IPL team jersey — Mumbai Indians blue or Chennai Super Kings yellow. Subjects celebrate with the IPL trophy in a group, full body visible.
+
+IPL stadium during trophy presentation at night — IPL team colored flags and banners everywhere, characteristic branded ground hoardings lit around the boundary, cheerleaders performing, championship stage set up in the ground, stands packed with 50,000+ fans, confetti cannons firing multicolored paper into the air. Stage uplights in team colors (blue or yellow) create colored light pools on subjects from below and sides. Overhead floodlights provide hard white key illumination. Characteristic IPL championship lighting — vivid colors, hard shadows on green outfield.
+
+Nikon D6 400mm f/2.8, ultra photorealistic, IPL sports photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+        {
+          id: 'sp-football',
+          name: 'FIFA World Cup',
+          gradient: 'linear-gradient(135deg, #002200, #004400)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo as FIFA World Cup champion footballers celebrating on the pitch. For [GENDER], replace booth outfit with a national football team jersey — blue or white, national crest, shorts and football boots. One subject holds the golden FIFA World Cup trophy above their head. Full body visible.
+
+Packed FIFA World Cup final stadium at night after the final whistle — vivid green pitch under brilliant floodlights, multicolored fireworks exploding above the stadium rim in bursts of red, gold, white and blue, 80,000 fans erupting with national flags and scarves in the air, gold and silver confetti raining down.
+
+Sony A1 600mm f/4.0, ultra photorealistic, FIFA World Cup sports photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+      ]
+    },
+    {
+      id: 'luxury',
+      name: 'Luxury Life',
+      icon: '💎',
+      gradient: 'linear-gradient(135deg, #1a1a00, #3d3d00, #C9A84C)',
+      scenes: [
+        {
+          id: 'lx-jet',
+          name: 'Private Jet',
+          gradient: 'linear-gradient(135deg, #1a1a1a, #2d2d2d)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo inside a Boeing Business Jet private luxury aircraft. For [GENDER], replace booth outfit with designer casual luxury travel attire — a cashmere sweater, tailored trousers or elegant travel dress, premium leather accessories. Each subject holds a crystal champagne flute or reclines naturally in the seat. Full body visible.
+
+Ultra-luxury BBJ private aircraft interior — hand-stitched ivory and gold leather club seats, burled walnut wood veneers on all surfaces, thick monogram-patterned wool carpet, entertainment screens, fresh flowers in crystal vases, gourmet food and drink service tray. Oval aircraft windows show brilliant blue sky and white clouds at cruising altitude. Warm amber overhead LED mood lighting — characteristic private aviation interior look — with cool daylight from oval windows creating secondary cool fill light from the side.
+
+Leica Q2 28mm f/1.7, ultra photorealistic, luxury lifestyle aviation photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+        {
+          id: 'lx-penthouse',
+          name: 'Penthouse',
+          gradient: 'linear-gradient(135deg, #0a0a1a, #1a1a33)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo in a luxury Manhattan penthouse with an infinity pool overlooking the New York City skyline at night. For [GENDER], replace booth outfit with designer evening luxury wear — a sleek tailored suit or elegant cocktail dress in black or navy. Each subject holds a crystal champagne flute. Full body visible.
+
+Rooftop penthouse terrace in Manhattan at night — infinity edge pool glowing electric blue at the terrace edge, ultra-modern white and chrome outdoor furniture, NYC skyline at night with Empire State Building, One World Trade Center and Chrysler Building all lit up stretching in every direction, city's millions of lights reflecting on the pool water surface.
+
+Sony A7R V 35mm f/1.4, ultra photorealistic, luxury lifestyle architectural photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+        {
+          id: 'lx-fashion',
+          name: 'Fashion Week',
+          gradient: 'linear-gradient(135deg, #1a001a, #2d002d)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
+
+TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
+
+Place every person visible in this booth photo walking the runway at Paris Fashion Week as headline models. For [GENDER], replace booth outfit with an extraordinary haute couture runway look — an elaborate sculptural garment from a top Parisian fashion house (Dior, Chanel or Valentino aesthetic) with dramatic design elements. Subjects walk naturally down the runway with professional model posture. Full body visible.
+
+Grand finale of Paris Haute Couture Fashion Week at the Grand Palais — long white reflective runway floor in an ornate historic Parisian venue with baroque architecture and glass ceiling overhead, front row celebrities and fashion editors seated, banks of press photographers at the runway end firing flashes, Eiffel Tower visible through large windows, all models on the runway simultaneously.
+
+Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photography, 8K.
+
+ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
+        },
+      ]
+    },
+    {
       id: 'royal',
       name: 'Royal',
       icon: '👑',
@@ -173,31 +858,6 @@ Place every person visible in this booth photo as magnificent royalty in a grand
 Enormous mirrored walls reflecting the room infinitely, gilded baroque archways, multiple massive crystal chandeliers ablaze with candles, polished herringbone parquet floor gleaming, courtiers in formal dress in the background. Warm soft chandelier candlelight from multiple overhead sources creates natural shadows directly beneath each subject on the parquet floor. Golden chandelier light reflects on embroidery, diamond tiara facets, silk fabric and skin. Mirror walls show approximate reflections of subjects. No halo, no edge artifacts.
 
 Nikon Z9 85mm f/1.4, ultra photorealistic, baroque grand portrait lighting, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-      ]
-    },
-    {
-      id: 'annual-day',
-      name: 'Annual Day',
-      icon: '🏆',
-      gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
-      scenes: [
-        
-        {
-          id: 'ad-celebration',
-          name: 'Celebration',
-          gradient: 'linear-gradient(135deg, #2d0066, #110033)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo celebrating together at a grand corporate annual day party. For [GENDER], replace booth outfit with elegant party attire — a cocktail suit or party dress. Each subject holds a champagne flute with a natural joyful expression. Full body visible.
-
-Grand corporate party venue at night — dramatic purple and blue uplighting, large company logo projected on one wall, balloon clusters and floral installations overhead, hundreds of guests celebrating in background, DJ setup to one side, multicolored confetti and metallic streamers mid-burst from confetti cannons around subjects. Purple and blue uplight from floor creates dramatic colored shadows on faces from below. Overhead warm spotlights provide key illumination. Confetti suspended at natural falling angles — some resting on shoulders and hair. No halo, no edge artifacts.
-
-Nikon D6 35mm f/1.8, ultra photorealistic, corporate event party photography, 8K.
 
 ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
         },
@@ -419,7 +1079,7 @@ ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything 
         },
       ]
     },
-        {
+    {
       id: 'warriors',
       name: 'Warriors',
       icon: '⚔️',
@@ -512,735 +1172,6 @@ Pioneer CDJ-3000 players and DJM mixer on elevated stage with custom neon club b
 Sony A7S III 35mm f/1.4 ISO 6400, ultra photorealistic, professional nightclub photography, 8K.
 
 ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-      ]
-    },
-    {
-      id: 'sports',
-      name: 'Sports',
-      icon: '🏆',
-      gradient: 'linear-gradient(135deg, #003300, #006600, #009900)',
-      scenes: [
-        {
-          id: 'sp-cricket',
-          name: 'Cricket World Cup',
-          gradient: 'linear-gradient(135deg, #003300, #005500)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as Indian cricket World Cup champions celebrating on the field. For [GENDER], replace booth outfit with the Indian cricket team uniform — current-style BCCI blue jersey, white trousers, spiked cricket shoes. One subject holds the ICC Cricket World Cup trophy aloft. All subjects celebrate together, full body visible.
-
-Packed international cricket stadium at night under floodlights — lush green outfield, blue and orange confetti and metallic streamers raining from the floodlight towers, 100,000 Indian fans waving Tricolor flags in the stands, LED advertising hoardings flashing congratulations around the boundary. Powerful stadium floodlights overhead create multiple hard light sources with complex overlapping shadows on the green grass below subjects. Confetti in the air catches the floodlight. Trophy surface reflects stadium lights as bright metallic highlights.
-
-Canon 1DX Mark III 300mm f/2.8, ultra photorealistic, professional cricket sports photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'sp-ipl',
-          name: 'IPL Champion',
-          gradient: 'linear-gradient(135deg, #1a0033, #00004d)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as IPL cricket superstars celebrating a championship victory. For [GENDER], replace booth outfit with an IPL team jersey — Mumbai Indians blue or Chennai Super Kings yellow. Subjects celebrate with the IPL trophy in a group, full body visible.
-
-IPL stadium during trophy presentation at night — IPL team colored flags and banners everywhere, characteristic branded ground hoardings lit around the boundary, cheerleaders performing, championship stage set up in the ground, stands packed with 50,000+ fans, confetti cannons firing multicolored paper into the air. Stage uplights in team colors (blue or yellow) create colored light pools on subjects from below and sides. Overhead floodlights provide hard white key illumination. Characteristic IPL championship lighting — vivid colors, hard shadows on green outfield.
-
-Nikon D6 400mm f/2.8, ultra photorealistic, IPL sports photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'sp-football',
-          name: 'FIFA World Cup',
-          gradient: 'linear-gradient(135deg, #002200, #004400)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as FIFA World Cup champion footballers celebrating on the pitch. For [GENDER], replace booth outfit with a national football team jersey — blue or white, national crest, shorts and football boots. One subject holds the golden FIFA World Cup trophy above their head. Full body visible.
-
-Packed FIFA World Cup final stadium at night after the final whistle — vivid green pitch under brilliant floodlights, multicolored fireworks exploding above the stadium rim in bursts of red, gold, white and blue, 80,000 fans erupting with national flags and scarves in the air, gold and silver confetti raining down.
-
-Sony A1 600mm f/4.0, ultra photorealistic, FIFA World Cup sports photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-      ]
-    },
-    {
-      id: 'indian',
-      name: 'Indian Special',
-      icon: '🇮🇳',
-      gradient: 'linear-gradient(135deg, #FF9933, #138808)',
-      scenes: [
-        {
-          id: 'in-bollywood',
-          name: 'Bollywood Premiere',
-          gradient: 'linear-gradient(135deg, #4d1a00, #8B0000)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as Bollywood celebrities at a grand Mumbai movie premiere. For [GENDER], replace booth outfit with glamorous Bollywood premiere attire — Indian designer lehenga, saree or Indo-western fusion gown for women, or designer sherwani with Indian embroidery for men. All subjects stand together on the red carpet, full body visible.
-
-Custom step-and-repeat backdrop with Filmfare and film studio logos, paparazzi pit with cameras firing continuously, TV entertainment channel cameras, film stars and celebrities in the background, intensely glamorous warm event lighting atmosphere. Warm amber event uplighting from the step-and-repeat creates warm glow on subjects from behind and sides. Multiple simultaneous paparazzi camera flashes create intense white burst lights from the front — characteristic Bollywood premiere photography. Indian fabric embroidery catches flash light on sequins and zari work.
-
-Nikon D850 85mm f/1.8, ultra photorealistic, Bollywood entertainment photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'in-isro',
-          name: 'ISRO Scientist',
-          gradient: 'linear-gradient(135deg, #001a33, #003366)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo as ISRO scientists at the ISRO Mission Control Center during a landmark mission. For [GENDER], replace booth outfit with ISRO scientist attire — dark navy ISRO logo jacket or white shirt with ISRO mission badge, formal trousers or saree/churidar for women. All subjects stand confidently at mission control consoles, full body visible.
-
-ISRO Mission Control Centre at ISTRAC Bengaluru — rows of workstations with multiple screens showing telemetry, orbital plots and rocket trajectory visualizations, massive projection screen on far wall showing GSLV rocket launch, Chandrayaan-3 or Gaganyaan mission logo, India's map and real-time mission data, Indian Tricolor flag prominently displayed. Cool fluorescent white overhead lighting, augmented by intense blue-white glow from multiple monitor screens.
-
-Canon R6 35mm f/2.8, ultra photorealistic, documentary journalism photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-      ]
-    },
-    {
-      id: 'luxury',
-      name: 'Luxury Life',
-      icon: '💎',
-      gradient: 'linear-gradient(135deg, #1a1a00, #3d3d00, #C9A84C)',
-      scenes: [
-        {
-          id: 'lx-jet',
-          name: 'Private Jet',
-          gradient: 'linear-gradient(135deg, #1a1a1a, #2d2d2d)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo inside a Boeing Business Jet private luxury aircraft. For [GENDER], replace booth outfit with designer casual luxury travel attire — a cashmere sweater, tailored trousers or elegant travel dress, premium leather accessories. Each subject holds a crystal champagne flute or reclines naturally in the seat. Full body visible.
-
-Ultra-luxury BBJ private aircraft interior — hand-stitched ivory and gold leather club seats, burled walnut wood veneers on all surfaces, thick monogram-patterned wool carpet, entertainment screens, fresh flowers in crystal vases, gourmet food and drink service tray. Oval aircraft windows show brilliant blue sky and white clouds at cruising altitude. Warm amber overhead LED mood lighting — characteristic private aviation interior look — with cool daylight from oval windows creating secondary cool fill light from the side.
-
-Leica Q2 28mm f/1.7, ultra photorealistic, luxury lifestyle aviation photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'lx-penthouse',
-          name: 'Penthouse',
-          gradient: 'linear-gradient(135deg, #0a0a1a, #1a1a33)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo in a luxury Manhattan penthouse with an infinity pool overlooking the New York City skyline at night. For [GENDER], replace booth outfit with designer evening luxury wear — a sleek tailored suit or elegant cocktail dress in black or navy. Each subject holds a crystal champagne flute. Full body visible.
-
-Rooftop penthouse terrace in Manhattan at night — infinity edge pool glowing electric blue at the terrace edge, ultra-modern white and chrome outdoor furniture, NYC skyline at night with Empire State Building, One World Trade Center and Chrysler Building all lit up stretching in every direction, city's millions of lights reflecting on the pool water surface.
-
-Sony A7R V 35mm f/1.4, ultra photorealistic, luxury lifestyle architectural photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-        {
-          id: 'lx-fashion',
-          name: 'Fashion Week',
-          gradient: 'linear-gradient(135deg, #1a001a, #2d002d)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The people in the provided photo are real individuals. Preserve their exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye color, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. This must look like the SAME REAL PERSON from the photo — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate a new or different face. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear. Retain the exact photographic likeness as if compositing the real face into the scene.
-
-TASK: Place this exact person into the scene below. Their face and identity stay completely locked — only clothing, pose and environment change.
-
-Place every person visible in this booth photo walking the runway at Paris Fashion Week as headline models. For [GENDER], replace booth outfit with an extraordinary haute couture runway look — an elaborate sculptural garment from a top Parisian fashion house (Dior, Chanel or Valentino aesthetic) with dramatic design elements. Subjects walk naturally down the runway with professional model posture. Full body visible.
-
-Grand finale of Paris Haute Couture Fashion Week at the Grand Palais — long white reflective runway floor in an ornate historic Parisian venue with baroque architecture and glass ceiling overhead, front row celebrities and fashion editors seated, banks of press photographers at the runway end firing flashes, Eiffel Tower visible through large windows, all models on the runway simultaneously.
-
-Nikon Z9 85mm f/1.8, ultra photorealistic, Vogue Paris Fashion Week runway photography, 8K.
-
-ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything else. The face must be photorealistic and pixel-faithful — unmistakably the same person from the photo, never painted or generated.`
-        },
-      ]
-    },
-    {
-      id: 'football',
-      name: 'Football Season',
-      icon: '⚽',
-      gradient: 'linear-gradient(135deg, #00305c, #0a7d3f, #001a33)',
-      scenes: [
-        {
-          id: 'fb-goal',
-          name: 'Striking the Goal',
-          gradient: 'linear-gradient(135deg, #0a7d3f, #00301a)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a star footballer in a packed stadium at the decisive moment of the match. For [GENDER], replace booth clothing with a professional football kit — plain team jersey with shorts, long socks and boots, no brand logos or club crests.
-
-ACTION: One person is striking the ball toward goal — planted foot, striking leg extended, ball just leaving the boot with a spray of grass, body leaning into the shot — but their head is turned toward the camera and their face is fully visible and sharp. Any other people are teammates sprinting in support behind, faces visible and turned toward the camera.
-
-SCENE: Floodlit night stadium, deep green pitch with mowing stripes, goal and net ahead, tens of thousands of blurred fans in the stands, flags and colour in the crowd, stadium lights flaring. Motion is in the ball, grass and background — never on the faces.
-
-STYLE: Sports photography, Canon 400mm f/2.8, fast shutter freezing the action, shallow depth of field with sharp subjects and blurred crowd.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'fb-trophy',
-          name: 'Trophy Lift',
-          gradient: 'linear-gradient(135deg, #c9a227, #4a3800)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a champion footballer lifting the trophy after winning the final. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks and boots, no brand logos or club crests.
-
-ACTION: The group lifts a large golden trophy together above their heads, mouths open mid-roar of celebration, arms raised — all faces clearly visible, lit and turned toward the camera. If only one person, they hold the trophy aloft alone.
-
-SCENE: Packed stadium at night under floodlights, gold and silver confetti and streamers raining down through the light beams, a wall of blurred cheering fans, camera flashes sparkling in the crowd, pitch beneath them.
-
-STYLE: Sports photography, wide-angle hero shot from slightly below, confetti caught in the air, warm floodlight glow.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'fb-slide',
-          name: 'Knee-Slide Celebration',
-          gradient: 'linear-gradient(135deg, #0a7d3f, #00251a)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a footballer celebrating a goal with the classic knee-slide. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks, boots, no logos or crests.
-
-ACTION: One person slides on their knees across the grass with arms spread wide and head thrown up in joy — but the face is turned toward the camera, fully visible and sharp. Any others run behind with arms raised, faces visible and toward the camera.
-
-SCENE: Grass spraying up from the slide, floodlit stadium at night, the crowd behind erupting in a blur of colour, corner flag, deep green pitch.
-
-STYLE: Sports photography, low camera angle at pitch level, fast shutter freezing the grass spray, blurred ecstatic crowd behind.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'fb-lineup',
-          name: 'Team Line-Up',
-          gradient: 'linear-gradient(135deg, #00305c, #001428)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a national-team footballer standing for the pre-match line-up. For [GENDER], replace booth clothing with a professional football kit — plain national-style jersey, shorts, socks, boots, no logos or crests.
-
-ACTION: They stand shoulder to shoulder in a proud line, arms linked, chins up, facing the camera directly — every face fully visible, lit and sharp. Serious, focused, ready expressions.
-
-SCENE: On the pitch before kick-off in a floodlit stadium, packed stands blurred behind, floodlights blazing, deep green grass, a hint of the tunnel and pitchside behind them.
-
-STYLE: Sports photography, straight-on team-photo framing, crisp detail on faces, cinematic floodlight.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'fb-stripes',
-          name: 'Blue & White Stripes',
-          gradient: 'linear-gradient(135deg, #75aadb, #0d3b66)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a footballer in a sky-blue and white vertically striped kit — the classic South American look — celebrating on the pitch. For [GENDER], replace booth clothing with this striped jersey, black or white shorts, socks and boots. Plain kit only — no brand logos, no club or federation crests.
-
-ACTION: They celebrate together, arms in the air, mid-cheer, some pointing to the sky — every face clearly visible, well-lit and turned toward the camera.
-
-SCENE: Floodlit stadium at night, a sea of blue-and-white fans blurred in the stands, flags waving, confetti in the air, green pitch underfoot.
-
-STYLE: Sports photography, energetic celebration framing, sharp on the subjects, crowd softly blurred.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'fb-penalty',
-          name: 'Penalty Shootout',
-          gradient: 'linear-gradient(135deg, #1a1a2e, #0a2540)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a footballer at the tensest moment of a penalty shootout. For [GENDER], replace booth clothing with a professional football kit — plain jersey, shorts, socks, boots, no logos or crests.
-
-ACTION: One person stands over the ball at the penalty spot, hands on hips, breathing hard, head up and face turned toward the camera — fully visible, lit and sharp. Any others stand linked arm-in-arm on the halfway line behind, faces visible and turned toward the camera, tense and watching.
-
-SCENE: Night stadium under harsh floodlights, the ball on the spot, goal and net ahead, an enormous blurred crowd holding its breath, long shadows stretching across the grass.
-
-STYLE: Sports photography, dramatic tension, cinematic floodlight, shallow depth of field, sharp faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        }
-      ]
-    },
-    {
-      id: 'kollywood',
-      name: 'Kollywood',
-      icon: '🎥',
-      gradient: 'linear-gradient(135deg, #7a1010, #d4a017, #2b0000)',
-      scenes: [
-        {
-          id: 'kw-massentry',
-          name: 'Mass Hero Entry',
-          gradient: 'linear-gradient(135deg, #b31217, #2b0000)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the lead hero of a Tamil action film, making a mass entry. For [GENDER], replace booth clothing with sharp Tamil-cinema hero styling — crisp shirt or kurta with a jacket, dark sunglasses pushed up on the head (never covering the eyes — eyes and face must be fully visible), stylish boots.
-
-ACTION: They walk toward the camera in a confident slow-motion stride, coat and clothing billowing in the wind, chin up, intense heroic expression — faces sharp, fully visible and directly toward the camera. If several people, they walk side by side in a hero line-up.
-
-SCENE: Dramatic backlight flaring behind them, dust and embers drifting through the air, a burning-orange sky, silhouetted crowd or vehicles far behind, lens flare.
-
-STYLE: Tamil-cinema action still, anamorphic wide lens, heavy backlight and rim light, cinematic teal-and-orange grade, sharp faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'kw-retroposter',
-          name: 'Retro Tamil Poster',
-          gradient: 'linear-gradient(135deg, #d4a017, #6b3b00)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the star of a vintage Tamil film poster from the golden era. For [GENDER], replace booth clothing with retro Tamil-cinema styling — classic shirt or saree, period hairstyle cues kept subtle so the real face and hair are still recognisable.
-
-ACTION: They pose in classic film-poster fashion — bold, confident, looking straight out at the viewer with dramatic expression. Faces large in the frame, fully visible and sharp.
-
-SCENE: A hand-painted retro film-poster aesthetic — rich saturated colours, painterly background of dramatic skies and stylised scenery, ornate decorative borders. IMPORTANT: the painted look applies ONLY to the background and borders — the people's faces must remain fully photographic and real, never painted or illustrated.
-
-STYLE: Vintage Indian film-poster composition with photographic faces composited in, warm saturated palette, film grain.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'kw-action',
-          name: 'Action Sequence',
-          gradient: 'linear-gradient(135deg, #8a2b06, #2b0a00)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the hero in the middle of a Tamil-cinema action sequence. For [GENDER], replace booth clothing with rugged action-hero wear — a torn or dust-streaked shirt, sturdy trousers and boots, a little grime and sweat for realism (but never obscuring the face).
-
-ACTION: They stride or run toward the camera as an explosion erupts behind them — determined, fearless expression, faces turned toward the camera, fully visible, lit and razor-sharp. Never look back at the blast.
-
-SCENE: A huge fireball and debris blooming behind them, sparks and dust in the air, a wrecked street or industrial yard, low camera angle making them tower.
-
-STYLE: Blockbuster action still, anamorphic lens, warm firelight on the faces, high contrast, sharp on subjects with debris motion behind.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'kw-village',
-          name: 'Village Blockbuster',
-          gradient: 'linear-gradient(135deg, #6b5000, #1a2600)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the hero of a rural Tamil blockbuster. For [GENDER], replace booth clothing with rustic Tamil styling — a veshti or lungi with a shirt, or a cotton saree, simple and authentic, a towel over the shoulder.
-
-ACTION: They stand tall and heroic in the frame, chins raised, powerful and rooted expressions, facing the camera directly — every face fully visible and sharp.
-
-SCENE: A dramatic Tamil Nadu village at golden hour — vast paddy fields, coconut palms, a temple gopuram far behind, an enormous sky with towering clouds lit orange and gold, dust drifting in the low sun.
-
-STYLE: Tamil-cinema village-drama still, wide anamorphic lens, warm golden-hour light, low camera angle, cinematic grade, sharp faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'kw-poster',
-          name: 'Modern Film Poster',
-          gradient: 'linear-gradient(135deg, #1a1a2e, #7a1010)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the star on a modern Tamil film poster. For [GENDER], replace booth clothing with contemporary stylish hero or heroine wear — a sharp jacket and shirt, or an elegant modern outfit.
-
-ACTION: They pose as a poster ensemble — the lead front and centre, any others arranged around them, all looking directly at the camera with intense, confident expressions. Faces large, fully visible and sharp.
-
-SCENE: A moody cinematic poster background — deep shadows, a stylised city skyline or abstract dramatic backdrop, strong rim lighting outlining each person, atmospheric haze and light beams.
-
-STYLE: Modern film-poster composition, dramatic key light on the faces, teal-and-orange cinematic grade, high production value.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        }
-      ]
-    },
-    {
-      id: 'superhero',
-      name: 'Superheroes',
-      icon: '🦸',
-      gradient: 'linear-gradient(135deg, #b3000c, #d4a017, #1a0000)',
-      scenes: [
-        {
-          id: 'sh-armor',
-          name: 'Armored Tech Hero',
-          gradient: 'linear-gradient(135deg, #b3000c, #d4a017)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is an armoured high-tech superhero. For [GENDER], replace booth clothing with a sleek original powered exo-suit in deep red and gold — segmented armour plating, a glowing circular power core in the chest, glowing thrusters in the palms. Original design only — do not copy any existing branded or trademarked character or costume.
-
-CRITICAL: The helmet is OFF or retracted — the head is bare and the real face is fully visible, lit and sharp. Never cover the face with a mask, visor or helmet.
-
-ACTION: They hover in mid-air above the city, one palm angled down with thrusters glowing, the other raised, bodies powerful and poised — faces turned toward the camera, fully visible and sharp.
-
-SCENE: High above a glittering city at dusk, skyscrapers below, clouds around them, blue-white thruster glow lighting their armour from beneath, warm sunset on the horizon.
-
-STYLE: Blockbuster superhero still, cinematic lighting, glowing tech accents, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'sh-landing',
-          name: 'Hero Landing',
-          gradient: 'linear-gradient(135deg, #0a2540, #b3000c)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a caped superhero at the moment of a dramatic landing. For [GENDER], replace booth clothing with an original heroic suit — a fitted armoured bodysuit with a flowing cape, a bold emblem of an original abstract design on the chest. Original design only — never copy an existing branded or trademarked hero costume.
-
-CRITICAL: No mask, no cowl, no helmet — the head is bare and the real face is fully visible, well-lit and sharp.
-
-ACTION: They land in the classic hero pose — one knee and one fist driven into the ground, cape billowing, cracks radiating outward through the asphalt, dust and debris bursting up around them — heads raised and faces turned toward the camera, fully visible and sharp.
-
-SCENE: A city street at night, cracked road beneath them, a shockwave of dust, neon signs and streetlights glowing, skyscrapers rising behind.
-
-STYLE: Blockbuster superhero still, low dramatic camera angle, rim lighting, dust and debris frozen in air, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'sh-shield',
-          name: 'Shield Defender',
-          gradient: 'linear-gradient(135deg, #0a4d8c, #b3000c)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a battle-hardened defender hero. For [GENDER], replace booth clothing with an original tactical hero suit — reinforced armour in blue and red with metallic accents, utility straps. One person carries a large round metal shield of an original design (concentric rings and a central star motif is acceptable only as a generic shape — no existing branded emblem or trademarked design).
-
-CRITICAL: No mask or helmet — the head is bare and the real face is fully visible, well-lit and sharp.
-
-ACTION: They stand braced in a defensive stance, the shield raised against an unseen force, debris flying past them, jaws set, faces turned toward the camera and fully visible.
-
-SCENE: A ruined city street mid-battle, dust and sparks in the air, smoke, rubble, dramatic shafts of light breaking through.
-
-STYLE: Blockbuster superhero still, gritty cinematic grade, hard rim light, debris frozen mid-air, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'sh-cosmic',
-          name: 'Cosmic Warrior',
-          gradient: 'linear-gradient(135deg, #4a00b3, #00b3a4)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a cosmic superhero channelling raw energy. For [GENDER], replace booth clothing with an original cosmic hero suit — a sleek dark bodysuit threaded with glowing energy lines in violet and cyan. Original design only.
-
-CRITICAL: No mask or helmet — heads bare, real faces fully visible, lit by the energy glow, and sharp.
-
-ACTION: They float in space with arms outstretched, brilliant energy surging from their hands and swirling around their bodies, hair and clothing lifted by the power — faces turned toward the camera, fully visible and sharp, expressions powerful and calm.
-
-SCENE: Deep space — a vast nebula in violet, blue and gold, distant stars, a glowing planet far below, energy particles streaming past.
-
-STYLE: Blockbuster cosmic superhero still, dramatic coloured rim light from the energy, glowing accents, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'sh-vigilante',
-          name: 'Night Vigilante',
-          gradient: 'linear-gradient(135deg, #12121f, #2b2b4a)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a brooding night vigilante hero. For [GENDER], replace booth clothing with an original dark tactical suit — matte black armoured plating, a long dark coat or cape, utility belt. Original design only — never copy an existing branded hero costume.
-
-CRITICAL: No mask, no cowl, no helmet — heads bare and the real faces fully visible, lit and sharp against the night.
-
-ACTION: They stand on a rooftop ledge overlooking the city, coats and capes snapping in the wind, one foot forward, watchful and resolute — faces turned toward the camera, fully visible and sharp.
-
-SCENE: A rain-slicked rooftop at night high above a neon city, glowing signage and traffic far below, mist and light rain drifting, moody blue moonlight with warm neon spill lighting the faces.
-
-STYLE: Dark cinematic superhero still, moody blue-and-neon grade, strong rim light, rain caught in the light, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'sh-team',
-          name: 'Hero Team-Up',
-          gradient: 'linear-gradient(135deg, #b3000c, #0a4d8c, #d4a017)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a member of a superhero team, assembled together. For [GENDER], give each person a DIFFERENT original hero suit so the team looks varied — one armoured and metallic, one caped, one with glowing energy accents, one in dark tactical gear. All original designs — never copy any existing branded or trademarked hero costume.
-
-CRITICAL: No masks, no helmets, no visors — every head is bare and every real face is fully visible, well-lit and sharp. Keep the same number of people as in the photo.
-
-ACTION: The team stands together in a powerful line-up, feet planted, capes and coats billowing, ready for battle — all faces turned toward the camera, fully visible and sharp, confident and resolute.
-
-SCENE: A city skyline at dusk behind them, smoke and light beams rising, dramatic clouds, debris drifting, a shaft of golden light breaking through.
-
-STYLE: Epic blockbuster team hero shot, wide anamorphic lens, low heroic camera angle, dramatic rim lighting, sharp photorealistic faces.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        }
-      ]
-    },
-    {
-      id: 'trending',
-      name: 'Trending Now',
-      icon: '🔥',
-      gradient: 'linear-gradient(135deg, #b3000c, #ff6a00, #1a0000)',
-      scenes: [
-        {
-          id: 'tr-podium',
-          name: 'Racing Podium',
-          gradient: 'linear-gradient(135deg, #b3000c, #2b0000)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a champion racing driver celebrating on the podium. For [GENDER], replace booth clothing with a professional racing suit — a fire-resistant racing overall in bold red and white with generic sponsor-style patches (no real brand logos or team names).
-
-CRITICAL: Helmets are OFF and held under an arm or set aside — heads bare, real faces fully visible, lit and sharp. Never cover a face with a helmet or visor.
-
-ACTION: They stand on the podium spraying champagne, one hand raised holding a gleaming trophy, mouths open in celebration, spray arcing through the air — faces turned toward the camera, fully visible and sharp.
-
-SCENE: A race-track podium, huge cheering crowd blurred below, confetti and champagne spray catching the sunlight, race cars visible on the track behind, bright sunny day.
-
-STYLE: Motorsport photography, dynamic celebration framing, champagne droplets frozen in the light, sharp faces, vivid saturated grade.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'tr-festival',
-          name: 'Music Festival',
-          gradient: 'linear-gradient(135deg, #6a00b3, #00b3a4)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is the headline act on stage at a huge music festival. For [GENDER], replace booth clothing with bold stage wear — a statement jacket, layered festival styling, sunglasses pushed up on the head (never covering the eyes).
-
-ACTION: They stand at the front of the stage with arms thrown up, microphone in hand, heads back mid-shout of joy — but faces turned toward the camera, fully visible, lit and sharp.
-
-SCENE: A colossal night festival crowd stretching into the darkness, a sea of raised hands and phone lights, laser beams cutting through haze, towering LED screens, pyrotechnic jets, confetti raining down.
-
-STYLE: Live-music photography, wide lens from the stage, dramatic coloured stage lighting on the faces, haze and lasers, sharp faces with blurred crowd.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'tr-cover',
-          name: 'Magazine Cover',
-          gradient: 'linear-gradient(135deg, #1a1a1a, #d4a017)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is on the cover of a high-fashion magazine. For [GENDER], replace booth clothing with striking editorial fashion — a bold tailored outfit with dramatic silhouette and texture, high-fashion styling.
-
-ACTION: They pose with poise and attitude, strong confident expressions, chins level, looking directly into the lens — faces large in the frame, fully visible, immaculately lit and sharp.
-
-SCENE: A clean studio backdrop in a rich saturated colour, dramatic fashion lighting with a strong key light and controlled shadows, subtle haze.
-
-STYLE: High-fashion editorial photography, medium-format look, crisp detail, flawless studio lighting that still preserves real skin texture — never airbrushed or plastic.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'tr-esports',
-          name: 'Esports Champions',
-          gradient: 'linear-gradient(135deg, #0a0a2e, #00b3a4)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is an esports champion lifting the trophy in a packed arena. For [GENDER], replace booth clothing with a professional esports team jersey — a sleek black and neon-accented jersey (no real brand or team logos).
-
-ACTION: They stand on the arena stage holding a large glowing trophy aloft together, fists raised, roaring in celebration — faces turned toward the camera, fully visible, lit and sharp.
-
-SCENE: A darkened esports arena, an enormous crowd blurred in the stands with phone lights glittering, gigantic LED screens glowing behind, laser beams and haze, confetti falling through neon light.
-
-STYLE: Esports event photography, dramatic neon stage lighting on the faces, cyan and magenta accents, sharp faces with blurred arena behind.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'tr-rockstar',
-          name: 'Rockstar Concert',
-          gradient: 'linear-gradient(135deg, #b3000c, #ff6a00)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a rockstar mid-performance in a packed stadium. For [GENDER], replace booth clothing with rock stage wear — a leather jacket over a band-style tee, ripped jeans, boots, layered chains.
-
-ACTION: One person leans back mid-guitar-riff, another grips a microphone stand roaring into it — but every face is turned toward the camera, fully visible, lit and sharp. Energy in the bodies, clarity in the faces.
-
-SCENE: A stadium stage at night, towering amplifier stacks, pyrotechnic flames jetting up behind them, a vast crowd blurred in the darkness with countless raised hands, spotlights raking through smoke.
-
-STYLE: Live rock photography, dramatic stage lighting and pyro glow on the faces, high contrast, sharp faces with motion and haze around them.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'tr-century',
-          name: 'Cricket Century',
-          gradient: 'linear-gradient(135deg, #0a5c2e, #003318)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every person from the photo is a cricketer celebrating a match-winning century. For [GENDER], replace booth clothing with cricket whites or a coloured one-day kit — plain jersey and trousers, pads and gloves, no brand logos or national crests.
-
-CRITICAL: Helmets are OFF and held in a hand or raised — heads bare, real faces fully visible, lit and sharp. Never cover a face with a helmet or grille.
-
-ACTION: One person raises their bat and helmet to the sky in the classic century salute, head back in celebration but face turned toward the camera and fully visible. Any others run in to celebrate, faces visible and toward the camera.
-
-SCENE: A packed floodlit cricket stadium at night, a roaring crowd blurred in the stands, the pitch and stumps behind, confetti and camera flashes sparkling through the stands.
-
-STYLE: Cricket sports photography, telephoto compression, floodlight glow, sharp faces with blurred jubilant crowd.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        }
-      ]
-    },
-    {
-      id: 'tamilnadu',
-      name: 'Tamil Nadu',
-      icon: '🌟',
-      gradient: 'linear-gradient(135deg, #4d1a00, #8B0000, #FF9933)',
-      scenes: [
-        {
-          id: 'tn-withcm',
-          name: 'Photo with CM',
-          gradient: 'linear-gradient(135deg, #8B0000, #2d0000)',
-          referenceImage: 'assets/references/tn-withcm.png',
-          prompt: `image_1 is the captured guest. image_2 is CM Vijay alone in his official CMO office — use this as the exact scene.
-
-PRESERVE CM VIJAY EXACTLY: The person in image_2 is CM Vijay. His face, skin tone, skin texture, hair, beard, white shirt, body — every detail must be pixel-perfect identical to image_2. Do not change, reinterpret or alter CM Vijay in any way whatsoever.
-
-PLACE GUEST FROM image_1: Insert the captured person naturally standing to the RIGHT of CM Vijay. Preserve their exact face, skin tone, hair, body proportions — do not alter any feature.
-
-PRESERVE BACKGROUND EXACTLY FROM image_2: Tamil Nadu government emblem on wall, Indian tricolor flag, dark wood-paneled walls, Chief Minister nameplate on desk, framed portrait — keep everything identical.
-
-Both stand together facing camera, holding pink roses bouquet and sweet box. Warm office lighting, no halo, no artifacts. Ultra photorealistic.`
         },
       ]
     }
