@@ -124,10 +124,7 @@ const API = {
       }
       if (sceneUrls.length > 0) console.log('Scene references:', sceneUrls);
 
-      // STEP 4 — Get active event info for R2 storage
-      const eventInfo = typeof Tracker !== 'undefined' ? Tracker.getActiveEvent() : null;
-
-      // STEP 5 — Single synchronous call to OpenAI (no polling!)
+      // Single synchronous call — worker returns raw base64, branding happens in app.js
       const genMsg = isSlow ? 'Creating your scene... (slow connection, please wait)' : 'Creating your scene...';
       onProgress?.(genMsg);
 

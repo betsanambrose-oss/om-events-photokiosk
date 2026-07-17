@@ -69,7 +69,7 @@ const Settings = {
   getWatermark() {
     const s = this.load();
     return {
-      omEnabled: s.omWatermark !== false,
+      omEnabled: s.omWatermark === true,  // opt-IN: branding shows only when explicitly enabled
       clientFrame: s.clientFrame || null,
       clientLogo: s.clientLogo || null,
       watermarkPos: s.watermarkPos || 'bottom-left'
@@ -118,7 +118,7 @@ const Settings = {
           const fs = Math.max(10, Math.round(canvas.width * 0.0125));
           ctx.save();
           ctx.font = `500 ${fs}px Montserrat, Arial`;
-          ctx.fillStyle = 'rgba(201,168,76,0.80)';
+          ctx.fillStyle = 'rgba(255,255,255,0.85)';
           ctx.shadowColor = 'rgba(0,0,0,0.9)';
           ctx.shadowBlur = 4;
           ctx.textBaseline = 'bottom';

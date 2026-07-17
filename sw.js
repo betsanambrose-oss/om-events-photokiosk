@@ -2,7 +2,7 @@
 // Caches all app files for offline use
 // Never caches API calls
 
-const CACHE_NAME = 'gameon-kiosk-v7';
+const CACHE_NAME = 'gameon-kiosk-v8';
 
 const CACHE_ASSETS = [
   '/om-events-photokiosk/',

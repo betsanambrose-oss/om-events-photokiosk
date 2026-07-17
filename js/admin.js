@@ -77,7 +77,7 @@ const Admin = {
     this.setMode(s.mode || 'soft', false);
 
     // Branding
-    document.getElementById('toggle-om-watermark').checked = s.omWatermark !== false;
+    document.getElementById('toggle-om-watermark').checked = s.omWatermark === true;
     document.getElementById('toggle-client-logo').checked = !!s.clientLogo;
     document.getElementById('toggle-client-frame').checked = !!s.clientFrame;
 
@@ -902,7 +902,7 @@ const Admin = {
     this.settings.eventName = document.getElementById('event-name')?.value || '';
     this.settings.eventOrganizer = document.getElementById('event-organizer')?.value || '';
     this.settings.eventDate = document.getElementById('event-date')?.value || '';
-    this.settings.omWatermark = document.getElementById('toggle-om-watermark')?.checked !== false;
+    this.settings.omWatermark = document.getElementById('toggle-om-watermark')?.checked === true;
     this.settings.forceOffline = document.getElementById('toggle-force-offline')?.checked || false;
 
     // Print settings
