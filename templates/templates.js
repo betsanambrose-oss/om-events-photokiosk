@@ -246,33 +246,8 @@ SCENE: An epic fantasy realm — a shattered ancient temple on a floating island
 STYLE: Epic fantasy blockbuster still, dramatic coloured rim lighting from the magic, glowing accents, volumetric light, ultra-realistic photographic faces on a fantasy scene — the face remains fully photographic, never illustrated. Powerful, majestic, awe-inspiring.
 
 ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
-        {
-          id: 'gl-lover',
-          name: 'Romantic Moment',
-          gradient: 'linear-gradient(135deg, #d4145a, #6b0030)',
-          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people. Preserve EVERY person's exact facial identity with absolute fidelity — keep each face IDENTICAL to the photo: same eye shape, eye colour, eyebrows, nose shape and width, mouth and lip shape, jawline, cheekbones, chin, skin tone, real photographic skin texture with visible pores and natural detail, and hairstyle. Each must look like the SAME REAL PERSON — a real photograph, NOT smooth, airbrushed, painted, illustrated, rendered or CGI. Do NOT generate new or different faces. Do NOT beautify, slim, smooth or change age. Match each person's gender and natural body build exactly as they appear.
-
-GROUP RULE: Keep the SAME NUMBER of people as in the photo — do not add or remove anyone. Every person in the photo must appear in the scene, each with their own real preserved face.
-
-FACES MUST STAY VISIBLE: Even in dynamic action, every person's face must remain clearly visible, well-lit and unobstructed, turned toward the camera. Never hide a face behind motion blur, an arm, equipment, a helmet visor, a mask or hair. The action is the backdrop — the faces are the subject.
-
-TASK: Place these exact people into the scene below. Their faces and identities stay completely locked — only clothing, pose and environment change.
-
-Every woman from the photo is sharing a warm, happy romantic moment with a partner.
-
-IMPORTANT — CREATE THE PARTNER: For EACH woman in the photo, add ONE handsome young man beside her as her partner. Each man must have a COMPLETELY NEW, INVENTED face — never copy, clone or reuse the face of anyone from the photo. If there are two women, create two different men. If three, create three different men. Each couple stands together as a pair.
-
-ATTIRE: The women wear elegant modest dresses or stylish kurtis in soft romantic tones. The men wear smart casual shirts and jackets. Tasteful, warm and completely modest.
-
-POSE: Each couple stands close together in a sweet, natural, respectful moment — perhaps he is offering her a red rose, or they stand side by side laughing together, or gently holding hands. Everyone is smiling warmly and looking toward the camera — every real face fully visible, beautifully lit and sharp.
-
-SCENE: A dreamy romantic setting at golden hour — a garden path lined with blooming flowers and warm fairy lights strung through the trees, soft bokeh, rose petals drifting in the air, a glowing sunset sky behind.
-
-STYLE: Ultra-realistic romantic portrait photography, 85mm f/1.8, warm golden-hour light, soft dreamy bokeh, true photographic skin texture. Sweet, warm, joyful.
-
-ABSOLUTE PRIORITY: Preserve every person's real facial identity above everything else. Faces must be photorealistic and pixel-faithful — unmistakably the same people from the photo, never painted or generated. Ultra photorealistic, sharp facial detail, natural skin texture, 8K.`
-        },
+        }
+,
         {
           id: 'gl-beach',
           name: 'Beach Getaway',

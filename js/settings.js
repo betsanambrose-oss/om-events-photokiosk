@@ -87,7 +87,8 @@ const Settings = {
       paperSize: s.printPaperSize || '6x4',        // landscape default matches AI output
       orientation: s.printOrientation || 'landscape', // landscape to match 4:3 AI output
       colorMode: s.printColor || 'color',
-      borderless: s.printBorderless !== false
+      borderless: s.printBorderless !== false,
+      printBrightness: (s.printBrightness != null ? s.printBrightness : 7)  // % lift to compensate for darker prints
     };
   },
 
@@ -154,7 +155,26 @@ const Settings = {
 
   printImage(imageUrl) {
     const ps = this.getPrintSettings();
-    const colorFilter = ps.colorMode === 'grayscale' ? 'filter:grayscale(100%);' : '';
+
+    // ── Print colour compensation ──
+    // Paper is reflective, screens are backlit, so prints look darker than the
+    // on-screen / QR-download image. We lift brightness (and a touch of saturation
+    // and contrast) ONLY on the print path — the R2 image the QR points to is
+    // untouched, so the download keeps its original colour.
+    // Configurable in admin (printBrightness as a %, default 7). Set 0 to disable.
+    const brightnessPct = (ps.printBrightness != null ? ps.printBrightness : 7);
+    const b = 1 + (brightnessPct / 100);          // e.g. 7% -> 1.07
+    const sat = 1 + (brightnessPct / 100) * 0.6;   // gentle saturation lift alongside
+    const con = 1 + (brightnessPct / 100) * 0.3;   // slight contrast so it doesn't wash out
+
+    const filters = [];
+    if (ps.colorMode === 'grayscale') filters.push('grayscale(100%)');
+    if (brightnessPct > 0) {
+      filters.push(`brightness(${b.toFixed(3)})`);
+      filters.push(`saturate(${sat.toFixed(3)})`);
+      filters.push(`contrast(${con.toFixed(3)})`);
+    }
+    const filterCss = filters.length ? `filter: ${filters.join(' ')}; -webkit-filter: ${filters.join(' ')};` : '';
 
     // 6x4 landscape photo paper — fixed for the booth
     const pw = '6in';
@@ -165,7 +185,6 @@ const Settings = {
     // When Chrome is launched with --kiosk-printing, iframe.print() sends
     // directly to the Windows DEFAULT printer using its saved settings —
     // no print dialog appears. The page stays on the result screen.
-    // (Without the flag, this still works but Chrome shows the normal dialog.)
 
     // Remove any previous print iframe
     const existing = document.getElementById('kiosk-print-frame');
@@ -173,7 +192,6 @@ const Settings = {
 
     const iframe = document.createElement('iframe');
     iframe.id = 'kiosk-print-frame';
-    // Keep it in the layout flow but invisible (display:none can suppress printing in some engines)
     iframe.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; opacity:0; pointer-events:none;';
     document.body.appendChild(iframe);
 
@@ -185,11 +203,12 @@ const Settings = {
       * { margin:0; padding:0; box-sizing:border-box; }
       html, body { width:${pw}; height:${ph}; overflow:hidden; background:#000; }
       .wrap { width:${pw}; height:${ph}; display:flex; align-items:center; justify-content:center; background:#000; }
-      img { width:100%; height:100%; object-fit:cover; display:block; ${colorFilter} }
+      img { width:100%; height:100%; object-fit:cover; display:block; ${filterCss} }
       @media print {
         @page { size: ${pw} ${ph} landscape; margin: ${margin}; }
         html, body { width:${pw}; height:${ph}; }
-        img { width:100%; height:100%; object-fit:cover; }
+        /* Re-apply the same filter inside print media and force colour-accurate output */
+        img { width:100%; height:100%; object-fit:cover; ${filterCss} -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       }
     </style></head><body>
     <div class="wrap"><img id="pimg" src="${imageUrl}" /></div>

@@ -111,6 +111,13 @@ const Admin = {
     }
     const borderlessEl = document.getElementById('print-borderless');
     if (borderlessEl) borderlessEl.checked = s.printBorderless !== false;
+    const brightnessEl = document.getElementById('print-brightness');
+    if (brightnessEl) {
+      const bv = (s.printBrightness != null ? s.printBrightness : 7);
+      brightnessEl.value = bv;
+      const lbl = document.getElementById('print-brightness-val');
+      if (lbl) lbl.textContent = bv;
+    }
 
     // Update event control UI
     this.updateEventControlUI();
@@ -903,6 +910,8 @@ const Admin = {
     this.settings.printOrientation = document.getElementById('print-orientation')?.value || 'portrait';
     this.settings.printColor = document.getElementById('print-color')?.value || 'color';
     this.settings.printBorderless = document.getElementById('print-borderless')?.checked !== false;
+    const pb = document.getElementById('print-brightness');
+    if (pb) this.settings.printBrightness = parseInt(pb.value, 10);
 
     // Ensure all valid categories are included if none saved
     if (!this.settings.activeCategories || this.settings.activeCategories.length === 0) {
