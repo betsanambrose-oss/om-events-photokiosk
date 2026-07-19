@@ -11,6 +11,13 @@ const TEMPLATES = {
       gradient: 'linear-gradient(135deg, #b3000c, #ff6a00, #1a0000)',
       scenes: [
         {
+          id: 'plain-photo',
+          name: 'Just a Photo',
+          gradient: 'linear-gradient(135deg, #2b2b2b, #0a0a0a)',
+          noAI: true,
+          prompt: ``
+        },
+        {
           id: 'tr-podium',
           name: 'Racing Podium',
           gradient: 'linear-gradient(135deg, #b3000c, #2b0000)',

@@ -203,11 +203,16 @@ const App = {
       thumbImg.src = `assets/thumbnails/${scene.id}.webp`;
     }
 
-    // Camera instructions — same for all, no person count
+    // Camera instructions — simpler wording for the plain (no-AI) photo
     const instructionEl = document.getElementById('camera-instruction-text');
     const hintEl = document.getElementById('face-guide-hint');
-    if (instructionEl) instructionEl.innerHTML = 'Stand 3-4 feet from camera<br>Everyone face forward<br>Full body visible in frame';
-    if (hintEl) hintEl.textContent = 'Everyone stand in this area';
+    if (scene.noAI) {
+      if (instructionEl) instructionEl.innerHTML = 'Get everyone in the frame<br>Look at the camera<br>Smile!';
+      if (hintEl) hintEl.textContent = 'Stand in this area';
+    } else {
+      if (instructionEl) instructionEl.innerHTML = 'Stand 3-4 feet from camera<br>Everyone face forward<br>Full body visible in frame';
+      if (hintEl) hintEl.textContent = 'Everyone stand in this area';
+    }
 
     // Reset face guide to full-body frame
     const faceGuide = document.querySelector('.face-guide');
@@ -391,9 +396,21 @@ const App = {
 
     let result;
 
+    const scene = this.state.selectedScene;
+
+    // ── PLAIN PHOTO (no AI) ──
+    // Scenes flagged noAI skip generation entirely: the captured photo is used
+    // as-is. Costs nothing, returns instantly. It still flows through the normal
+    // branding, R2 upload, QR and print path below.
+    if (scene.noAI) {
+      console.log('Plain photo mode — skipping AI generation');
+      Steps.stopAuto();
+      Steps.set(3);
+      result = { success: true, imageUrl: this.state.capturedImage };
+    } else {
+
     // Build gender-aware prompt
     const rawPrompt = this.state.selectedScene.prompt || '';
-    const scene = this.state.selectedScene;
 
     // Resolve scene reference image URL if present
     let sceneReferenceUrl = null;
@@ -462,6 +479,8 @@ const App = {
     } else {
       result = await API.generateOfflineFallback();
     }
+
+    } // end of AI-generation branch (skipped for plain-photo scenes)
 
     if (!result || !result.success) {
       console.error('Generation failed:', result?.error);
