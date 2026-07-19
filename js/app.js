@@ -282,6 +282,7 @@ const App = {
       },
       async (imageData) => {
         if (overlay) overlay.classList.remove('active');
+        if (countNum) countNum.style.fontSize = '';   // reset any capturing style
 
         // Validate capture — check it's not null or blank
         if (!imageData) {
@@ -308,6 +309,18 @@ const App = {
         Camera.stop();
         this.showScreen('processing');
         await this.startGeneration();
+      },
+      // onCapturing — fires the moment the count hits zero, before the
+      // full-resolution grab. Without this the counter sits frozen on "1"
+      // for a couple of seconds and looks like it has hung.
+      () => {
+        if (countNum) {
+          countNum.textContent = 'HOLD STILL';
+          countNum.style.fontSize = '40px';
+          countNum.style.animation = 'none';
+          countNum.offsetHeight;
+          countNum.style.animation = 'countPop 0.4s ease both';
+        }
       }
     );
   },

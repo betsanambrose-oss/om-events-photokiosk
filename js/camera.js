@@ -193,8 +193,15 @@ const Camera = {
   async captureHighRes() {
     if (this.imageCapture) {
       try {
-        // Grab the highest-resolution still the camera can produce
-        const blob = await this.imageCapture.takePhoto();
+        // Grab the highest-resolution still the camera can produce.
+        // Race against a timeout — on a busy or slow device an 8MP takePhoto()
+        // can hang for many seconds, which freezes the capture UI. If it takes
+        // too long we abandon it and fall back to the instant video-frame grab.
+        const TAKE_PHOTO_TIMEOUT = 3500;
+        const blob = await Promise.race([
+          this.imageCapture.takePhoto(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('takePhoto timeout')), TAKE_PHOTO_TIMEOUT))
+        ]);
         const dataUrl = await this._blobToDataUrl(blob);
         const img = await this._loadImage(dataUrl);
 
@@ -302,7 +309,19 @@ const Camera = {
     return dataUrl;
   },
 
-  countdown(seconds, onTick, onCapture) {
+  countdown(seconds, onTick, onCapture, onCapturing) {
+    // Always clear any previous countdown first. Without this, a double-invoke
+    // (e.g. two click handlers, or a stray tap) leaves an orphaned interval
+    // running that keeps ticking and makes the counter appear to restart.
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+    if (this._capturing) {
+      console.warn('Capture already in progress — ignoring');
+      return;
+    }
+
     let count = seconds;
     onTick?.(count);
 
@@ -311,8 +330,23 @@ const Camera = {
       if (count <= 0) {
         clearInterval(this.countdownInterval);
         this.countdownInterval = null;
-        // Use full-resolution photo capture for maximum face detail
-        const imageData = await this.captureHighRes();
+
+        if (this._capturing) return;   // belt and braces
+        this._capturing = true;
+
+        // Tell the UI we've moved from counting to capturing, BEFORE the await.
+        // The full-resolution grab can take a couple of seconds, and without this
+        // the counter just sits frozen on "1" and looks broken.
+        onCapturing?.();
+
+        let imageData = null;
+        try {
+          imageData = await this.captureHighRes();
+        } catch (e) {
+          console.error('Capture failed:', e.message);
+        } finally {
+          this._capturing = false;
+        }
         onCapture?.(imageData);
       } else {
         onTick?.(count);
@@ -325,5 +359,8 @@ const Camera = {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
+    // Clear the in-progress flag too, otherwise backing out mid-capture
+    // leaves it stuck and the next capture is silently ignored.
+    this._capturing = false;
   }
 };
