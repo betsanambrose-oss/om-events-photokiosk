@@ -21,6 +21,9 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  /* Removes the 300ms double-tap delay and prevents double-tap zoom,
+     which was slowing the booth and mis-firing actions on quick taps. */
+  touch-action: manipulation;
 }
 
 html, body {

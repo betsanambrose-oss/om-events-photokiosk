@@ -1182,6 +1182,110 @@ ABSOLUTE PRIORITY: Preserve each person's real facial identity above everything 
       ]
     },
     {
+      id: 'destinations',
+      name: 'Travel the World',
+      icon: '🌍',
+      gradient: 'linear-gradient(135deg, #1e88a8, #f7c873, #0a3d52)',
+      scenes: [
+        {
+          id: 'dt-dubai',
+          name: 'Dubai — Burj Khalifa',
+          gradient: 'linear-gradient(135deg, #d4a017, #6b4200)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: The iconic Dubai skyline with the towering Burj Khalifa rising into a clear blue sky directly behind the people, the elegant modern cityscape and the Dubai Fountain area around it. Bright warm Gulf sunshine, palm trees, pristine plaza. A glamorous, sunny holiday feel. The Burj Khalifa is clearly recognisable, tall and majestic behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        },
+        {
+          id: 'dt-singapore',
+          name: 'Singapore — Marina Bay',
+          gradient: 'linear-gradient(135deg, #00b3a4, #0a4d5c)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: Singapore's iconic Marina Bay Sands hotel with its three towers and the boat-shaped SkyPark on top, rising behind the people, with the Gardens by the Bay Supertrees and the modern skyline nearby. Lush greenery, a bright pleasant sky, the waterfront promenade. A clean, vibrant, tropical-city holiday feel. Marina Bay Sands is clearly recognisable behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        },
+        {
+          id: 'dt-malaysia',
+          name: 'Malaysia — Twin Towers',
+          gradient: 'linear-gradient(135deg, #1e88a8, #143d5c)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: Kuala Lumpur's iconic Petronas Twin Towers rising tall and gleaming into a bright sky directly behind the people, with the KLCC park greenery and modern city around them. Warm tropical daylight, lush palms, a beautiful fountain area. A pleasant, sunny holiday feel. The Petronas Twin Towers are clearly recognisable, silver and majestic behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        },
+        {
+          id: 'dt-france',
+          name: 'France — Eiffel Tower',
+          gradient: 'linear-gradient(135deg, #6a7fb3, #2a3a5c)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: The iconic Eiffel Tower in Paris rising elegantly into a soft blue sky directly behind the people, viewed from the Champ de Mars lawns or Trocadéro, with manicured gardens, classic Parisian charm and gentle golden daylight. A romantic, elegant holiday feel. The Eiffel Tower is clearly recognisable, tall and graceful behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        },
+        {
+          id: 'dt-tajmahal',
+          name: 'India — Taj Mahal',
+          gradient: 'linear-gradient(135deg, #d4a017, #7a4a00)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: The magnificent Taj Mahal in Agra rising in gleaming white marble directly behind the people, perfectly symmetrical with its central dome and four minarets, the long reflecting pool and manicured Mughal gardens leading up to it. Warm golden daylight, a soft clear sky. A majestic, iconic holiday feel. The Taj Mahal is clearly recognisable, radiant white and grand behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        },
+        {
+          id: 'dt-russia',
+          name: "Russia — St. Basil's",
+          gradient: 'linear-gradient(135deg, #b3000c, #2a0a4a)',
+          prompt: `CRITICAL IDENTITY INSTRUCTION — READ FIRST: The photo shows one or more REAL people (a person, couple, family or group). Preserve EVERY person EXACTLY as they appear — keep each face IDENTICAL (same eyes, nose, mouth, jawline, skin tone, real skin texture, hair), and preserve the SAME NUMBER of people. Do not add or remove anyone. Do not beautify, slim or alter anyone.
+
+KEEP THEIR CLOTHES AND APPEARANCE UNCHANGED — THIS IS ESSENTIAL: Do NOT change, restyle or replace anyone's clothing, outfit, hairstyle or accessories. Keep exactly what each person is already wearing in the photo. The ONLY thing that changes is the BACKGROUND behind them.
+
+TASK: Replace ONLY the background behind the people with the destination described below, as if they are really standing there on holiday. Keep the people, their poses, their clothes and their faces exactly as in the original photo. Blend them naturally into the new location.
+
+BACKGROUND: Moscow's iconic Saint Basil's Cathedral in Red Square rising directly behind the people, with its famous colourful swirled onion domes in red, blue, green and gold, the grand Kremlin walls and cobbled square around it. Crisp bright daylight, a dramatic sky. A grand, storybook holiday feel. Saint Basil's Cathedral is clearly recognisable, vivid and ornate behind them.
+
+BLENDING: Match the lighting on the people to the new location — natural daylight, believable direction and colour, soft contact shadows at their feet. No halo, no cut-out edges, no mismatched lighting. The people must look like they were really photographed standing at this place. Keep every real face sharp and photographic. Preserve identity and clothing above all.
+
+Ultra photorealistic travel photograph, sharp faces, natural daylight, 8K. No text, no watermarks, no signage.`
+        }
+      ]
+    },
+    {
       id: 'warriors',
       name: 'Warriors',
       icon: '⚔️',

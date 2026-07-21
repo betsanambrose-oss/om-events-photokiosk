@@ -275,7 +275,16 @@ const App = {
     // Show a clear message
     this.setCameraStatus('Face Not Recognized\nPlease face the camera and try again.');
 
-    // Re-show the capture button after a moment
+    // Auto-clear the message after 3.5s so it never lingers, and re-show the
+    // capture button so they can retry.
+    if (this._faceGateTimer) clearTimeout(this._faceGateTimer);
+    this._faceGateTimer = setTimeout(() => {
+      const statusEl = document.getElementById('camera-status');
+      if (statusEl) statusEl.style.display = 'none';
+      if (captureBtn) captureBtn.style.display = 'flex';
+    }, 3500);
+
+    // Re-show the capture button sooner too
     setTimeout(() => {
       if (captureBtn) captureBtn.style.display = 'flex';
     }, 100);
@@ -289,6 +298,11 @@ const App = {
 
     // Lock immediately on first tap
     this.lock();
+
+    // Clear any lingering status message (e.g. the face-gate "Face Not
+    // Recognized" overlay) so it doesn't sit on top of the countdown.
+    const statusEl = document.getElementById('camera-status');
+    if (statusEl) statusEl.style.display = 'none';
 
     const overlay = document.getElementById('countdown-overlay');
     const countNum = document.getElementById('countdown-number');
@@ -626,8 +640,10 @@ const App = {
         this._resultImageReady = true;
         if (printBtn) { printBtn.disabled = false; printBtn.classList.remove('loading'); }
       }
-      resultImg.style.cursor = shareUrl ? 'pointer' : 'default';
-      resultImg.onclick = shareUrl ? () => window.open(shareUrl, '_blank') : null;
+      // Image is NOT clickable — tapping it used to open the photo in a new
+      // fullscreen tab with no way back in kiosk mode. The QR is for downloading.
+      resultImg.style.cursor = 'default';
+      resultImg.onclick = null;
     }
     this.showScreen('result');
 
@@ -708,6 +724,14 @@ const App = {
   },
 
   handlePrint() {
+    // Debounce — ignore a second tap within 1.5s (double-tap protection)
+    const now = Date.now();
+    if (this._lastPrintTap && now - this._lastPrintTap < 1500) {
+      console.warn('Print double-tap ignored');
+      return;
+    }
+    this._lastPrintTap = now;
+
     const imageUrl = this.state.resultImageUrl;
     if (!imageUrl) return;
 
@@ -792,6 +816,11 @@ const App = {
   // grid for the next guest. Frees the booth immediately — no waiting for the
   // 30s download timer or the thank-you screen. This is the main queue-buster.
   nextGuest() {
+    // Debounce — a double-tap here could fire the reset twice
+    const now = Date.now();
+    if (this._lastNextTap && now - this._lastNextTap < 1200) return;
+    this._lastNextTap = now;
+
     QRManager.stopTimer();
     if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
     this.resetAndGoHome();
