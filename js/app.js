@@ -260,6 +260,27 @@ const App = {
     }
   },
 
+  // Shown when the face gate rejects a capture (turned/blocked/no face).
+  // Keeps the guest on the camera screen and lets them retake immediately —
+  // no API call spent, no processing screen, no wasted time.
+  showFaceGateError() {
+    const overlay = document.getElementById('countdown-overlay');
+    const captureBtn = document.getElementById('capture-btn');
+    if (overlay) overlay.classList.remove('active');
+
+    // Unlock so they can tap capture again
+    this.unlock();
+    Camera._capturing = false;
+
+    // Show a clear message
+    this.setCameraStatus('Face Not Recognized\nPlease face the camera and try again.');
+
+    // Re-show the capture button after a moment
+    setTimeout(() => {
+      if (captureBtn) captureBtn.style.display = 'flex';
+    }, 100);
+  },
+
   startCapture() {
     if (this.LOCKED) {
       console.warn('LOCKED — ignoring capture tap');
@@ -311,20 +332,32 @@ const App = {
 
         this.state.capturedImage = imageData;
         API.setCapturedFace(imageData);
+
+        // ── FACE GATE (AI scenes only) ──
+        // Before spending an API call, verify a clear front-facing face is present.
+        // Turned/blocked/absent faces make the model invent a stranger — so we
+        // catch it here and ask for a recapture. Plain-photo scenes skip this.
+        const scene = this.state.selectedScene;
+        if (scene && !scene.noAI && typeof GenderDetector !== 'undefined') {
+          const gate = await GenderDetector.detectFaceCount(imageData);
+          if (!gate.ok) {
+            console.warn('Face gate failed:', gate.reason);
+            this.showFaceGateError();
+            return;
+          }
+        }
+
         Camera.stop();
         this.showScreen('processing');
         await this.startGeneration();
       },
-      // onCapturing — fires the moment the count hits zero, before the
-      // full-resolution grab. Without this the counter sits frozen on "1"
-      // for a couple of seconds and looks like it has hung.
+      // onCapturing — fires the moment the count hits zero, before the grab.
+      // Just a brief visual cue; the capture itself is near-instant, so this
+      // adds no real delay (no artificial pause).
       () => {
         if (countNum) {
-          countNum.textContent = 'HOLD STILL';
-          countNum.style.fontSize = '40px';
-          countNum.style.animation = 'none';
-          countNum.offsetHeight;
-          countNum.style.animation = 'countPop 0.4s ease both';
+          countNum.textContent = '📸';
+          countNum.style.fontSize = '48px';
         }
       }
     );
@@ -566,8 +599,33 @@ const App = {
     // QR must NEVER receive base64 — it can't encode that much data
 
     const resultImg = document.getElementById('result-image');
+    const printBtn = document.getElementById('print-btn');
+
+    // Disable the print button until the result image has fully loaded.
+    // Printing before the image is ready was hanging the whole browser and
+    // forcing a system restart. The button re-enables on image load.
+    this._resultImageReady = false;
+    if (printBtn) {
+      printBtn.disabled = true;
+      printBtn.classList.add('loading');
+    }
+
     if (resultImg) {
+      resultImg.onload = () => {
+        this._resultImageReady = true;
+        if (printBtn) { printBtn.disabled = false; printBtn.classList.remove('loading'); }
+      };
+      resultImg.onerror = () => {
+        // Even on error, let staff proceed (don't leave the button dead forever)
+        this._resultImageReady = true;
+        if (printBtn) { printBtn.disabled = false; printBtn.classList.remove('loading'); }
+      };
       resultImg.src = displayUrl;
+      // If it was already cached and loaded instantly, onload may not fire
+      if (resultImg.complete && resultImg.naturalWidth > 0) {
+        this._resultImageReady = true;
+        if (printBtn) { printBtn.disabled = false; printBtn.classList.remove('loading'); }
+      }
       resultImg.style.cursor = shareUrl ? 'pointer' : 'default';
       resultImg.onclick = shareUrl ? () => window.open(shareUrl, '_blank') : null;
     }
@@ -602,11 +660,17 @@ const App = {
     const printSection = document.getElementById('print-section');
     const qrSection = document.getElementById('qr-section');
 
-    // Reset print UI state every time result screen shows
-    const printBtn = document.getElementById('print-btn');
+    // Reset print UI state every time result screen shows.
+    // NOTE: printBtn is already declared above (for the load-gating). Reuse it.
     const printConfirm = document.getElementById('print-confirm');
     const printBadge = document.getElementById('print-status-badge');
-    if (printBtn) { printBtn.style.display = 'flex'; printBtn.disabled = false; printBtn.classList.remove('loading'); }
+    // Show the button, but keep it disabled until the image finishes loading
+    // (the onload handler set above re-enables it). This prevents the print hang.
+    if (printBtn) {
+      printBtn.style.display = 'flex';
+      printBtn.disabled = !this._resultImageReady;
+      printBtn.classList.toggle('loading', !this._resultImageReady);
+    }
     if (printConfirm) printConfirm.style.display = 'none';
     if (printBadge) { printBadge.style.display = 'none'; printBadge.className = 'print-status-badge'; }
 
@@ -646,6 +710,13 @@ const App = {
   handlePrint() {
     const imageUrl = this.state.resultImageUrl;
     if (!imageUrl) return;
+
+    // Safety guard — never print before the result image has loaded.
+    // Printing an unready image was hanging the browser and forcing a restart.
+    if (!this._resultImageReady) {
+      console.warn('Print blocked — image not ready yet');
+      return;
+    }
 
     const printBtn = document.getElementById('print-btn');
     const printConfirm = document.getElementById('print-confirm');
@@ -717,16 +788,30 @@ const App = {
     this.handlePrint();
   },
 
+  // Skip everything on the result screen and go straight back to the scene
+  // grid for the next guest. Frees the booth immediately — no waiting for the
+  // 30s download timer or the thank-you screen. This is the main queue-buster.
+  nextGuest() {
+    QRManager.stopTimer();
+    if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
+    this.resetAndGoHome();
+  },
+
+  // Tapping the thank-you screen skips its countdown and returns home now.
+  skipThankYou() {
+    if (this.thankYouInterval) { clearInterval(this.thankYouInterval); this.thankYouInterval = null; }
+    this.resetAndGoHome();
+  },
+
   showThankYou() {
     QRManager.stopTimer();
     this.showScreen('thankyou');
     let count = 5;
     const el = document.getElementById('thankyou-countdown');
-    if (el) el.textContent = `Returning in ${count} seconds...`;
+    if (el) el.textContent = 'Tap anywhere to continue';
     if (this.thankYouInterval) clearInterval(this.thankYouInterval);
     this.thankYouInterval = setInterval(() => {
       count--;
-      if (el) el.textContent = `Returning in ${count} seconds...`;
       if (count <= 0) {
         clearInterval(this.thankYouInterval);
         this.thankYouInterval = null;

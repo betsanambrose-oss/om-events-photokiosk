@@ -4,7 +4,7 @@
   "description": "AI-powered photo experience by GAME ON",
   "start_url": "/om-events-photokiosk/",
   "scope": "/om-events-photokiosk/",
-  "display": "fullscreen",
+  "display": "browser",
   "orientation": "landscape",
   "background_color": "#080808",
   "theme_color": "#F6020C",

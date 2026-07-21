@@ -12,17 +12,19 @@
 </head>
 <body>
 
-<!-- Force unregister old service workers and reset stale template data -->
+<!-- Service worker fully disabled — booth runs as a plain browser page (URL or --kiosk).
+     No offline need, and the SW cache/standalone behaviour caused a fullscreen "kiosk trap"
+     and dead back/refresh in normal browsers. This unregisters any previously installed SW. -->
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(registrations => {
       registrations.forEach(reg => reg.unregister());
     });
-    // Clear all caches to force fresh load
     if ('caches' in window) {
       caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
     }
   }
+</script>
   // Force reset if old template version
   try {
     const s = JSON.parse(localStorage.getItem('om-kiosk-settings') || '{}');
@@ -299,6 +301,12 @@
       <img src="assets/logo.png" class="brand-logo small" alt="GAME ON" />
     </div>
 
+    <!-- Take Another — always available, skips the download timer and goes
+         straight back to the scene grid. Keeps the queue moving. -->
+    <button id="new-photo-btn" class="new-photo-btn" onclick="App.nextGuest()">
+      ➜ Take Another Photo
+    </button>
+
   </div>
 
 </div>
@@ -307,7 +315,7 @@
 <!-- ══════════════════════════════════════
      SCREEN 6 — THANK YOU
 ══════════════════════════════════════ -->
-<div id="screen-thankyou" class="screen">
+<div id="screen-thankyou" class="screen" onclick="App.skipThankYou()">
 
   <div class="thankyou-content">
     <div class="thankyou-icon">✨</div>
@@ -315,7 +323,7 @@
     <div class="gold-line wide"></div>
     <h1 class="thankyou-title">Thank<br><span>You</span></h1>
     <p class="thankyou-sub">Enjoy your magical moment</p>
-    <p class="thankyou-countdown" id="thankyou-countdown">Returning in 5 seconds...</p>
+    <p class="thankyou-countdown" id="thankyou-countdown">Tap anywhere to continue</p>
   </div>
 
 </div>
@@ -339,23 +347,7 @@
 <script src="js/gender.js"></script>
 <script src="js/app.js"></script>
 
-<!-- Service Worker registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      // Check for updates on each load
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // New version available — reload silently
-            window.location.reload();
-          }
-        });
-      });
-    }).catch(err => console.log('SW registration failed:', err));
-  }
-</script>
+<!-- Service worker registration removed — see note above. Booth runs as a plain page. -->
 
 </body>
 </html>

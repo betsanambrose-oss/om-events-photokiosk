@@ -152,6 +152,44 @@ const GenderDetector = {
   // to lock identity from, instead of a tiny face in a wide full-body shot.
   // Returns a data URL of the cropped face region (single face = tight crop,
   // multiple faces = crop bounding all faces), or null if no face detected.
+  // Face-recognition gate. Returns { ok, count, reason }.
+  // Used before AI generation to catch turned/blocked/absent faces so we can
+  // ask the guest to recapture instead of generating a wrong/stranger face.
+  // Uses a higher confidence threshold than cropping — we want CLEAR faces.
+  async detectFaceCount(imageDataUrl) {
+    try {
+      if (!this.modelLoaded) await this.loadModels();
+      if (!this.modelLoaded || typeof faceapi === 'undefined' || !imageDataUrl) {
+        // If the model can't load, don't block the guest — fail open.
+        return { ok: true, count: -1, reason: 'detector-unavailable' };
+      }
+      const img = await this._createImage(imageDataUrl);
+      const detections = await faceapi
+        .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.5 }));
+
+      const count = detections ? detections.length : 0;
+      if (count === 0) {
+        return { ok: false, count: 0, reason: 'no-face' };
+      }
+      // Require each detected face to be a reasonable size (not a tiny speck),
+      // which also filters out background people and profile/turned faces that
+      // score low. A clear front face is decently large.
+      const imgArea = img.width * img.height;
+      const bigEnough = detections.filter(d => {
+        const b = d.box || d.detection?.box;
+        if (!b) return false;
+        return (b.width * b.height) / imgArea > 0.004; // ~0.4% of frame minimum
+      });
+      if (bigEnough.length === 0) {
+        return { ok: false, count, reason: 'face-too-small-or-turned' };
+      }
+      return { ok: true, count: bigEnough.length, reason: 'ok' };
+    } catch (err) {
+      console.warn('detectFaceCount error:', err.message);
+      return { ok: true, count: -1, reason: 'error-fail-open' };
+    }
+  },
+
   async cropFaces(imageDataUrl) {
     try {
       if (!this.modelLoaded) await this.loadModels();
